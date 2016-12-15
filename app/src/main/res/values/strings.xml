@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">NFL-Tip-App</string>
+    <string name="email">Email</string>
+    <string name="password">Passwort</string>
+    <string name="login">Einloggen</string>
+    <string name="register_now">Registrieren</string>
+    <string name="name">Name</string>
+    <string name="register">Registrieren</string>
+    <string name="login_now">Einloggen</string>
+</resources>
