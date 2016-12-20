@@ -19,5 +19,8 @@ public interface RequestInterface {
     Call<NameExistResponse> nameExist(@Body NameExistRequest request);
 
     @POST("registerLogin/")
-    Call<RegisterLoginResponse> registerLogin(@Body RegisterLoginRequest request);
+    Call<RegisterLoginResponse> loginUser(@Body RegisterLoginRequest request);
+
+    @POST("registerUser/")
+    Call<RegisterLoginResponse> registerUser(@Body RegisterLoginRequest request);
 }

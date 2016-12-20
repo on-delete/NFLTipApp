@@ -6,6 +6,20 @@ package com.andre.nfltipapp.model;
 
 public class User {
 
+    public User (String name, String email, String password){
+        setUuid("");
+        setName(name);
+        setEmail(email);
+        setPassword(password);
+    }
+
+    public User (String name, String password){
+        setUuid("");
+        setName(name);
+        setEmail("");
+        setPassword(password);
+    }
+
     private String uuid;
     private String name;
     private String email;

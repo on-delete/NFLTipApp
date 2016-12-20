@@ -2,6 +2,7 @@ package com.andre.nfltipapp;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.AppCompatButton;
@@ -68,11 +69,11 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
                 String name = et_name.getText().toString();
                 String email = et_email.getText().toString();
                 String password = et_password.getText().toString();
+                User newUser = new User(name, email, password);
 
                 if(!name.isEmpty() && !email.isEmpty() && !password.isEmpty()) {
                     progress.setVisibility(View.VISIBLE);
-                    nameExistingProcess(name);
-                    registerProcess(name,email,password);
+                    nameExistingProcess(newUser);
                 } else {
                     Snackbar.make(getView(), "Fields are empty !", Snackbar.LENGTH_LONG).show();
                 }
@@ -81,7 +82,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    private void nameExistingProcess(String name) {
+    private void nameExistingProcess(final User newUser) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -89,19 +90,27 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
 
         RequestInterface requestInterface = retrofit.create(RequestInterface.class);
 
-        User user = new User();
-        user.setName(name);
         NameExistRequest request = new NameExistRequest();
-        request.setName(name);
+        request.setName(newUser.getName());
         Call<NameExistResponse> response = requestInterface.nameExist(request);
 
         response.enqueue(new Callback<NameExistResponse>() {
             @Override
             public void onResponse(Call<NameExistResponse> call, retrofit2.Response<NameExistResponse> response) {
                 NameExistResponse resp = response.body();
-                Snackbar.make(getView(), resp.getMessage(), Snackbar.LENGTH_LONG).show();
                 progress.setVisibility(View.INVISIBLE);
-                //goToMainActivity();
+                if(resp.getResult().equals(Constants.SUCCESS)){
+                    if(resp.getMessage().equals(Constants.USERNAME_FREE)) {
+                        registerProcess(newUser);
+                    }
+                    else{
+                        Snackbar.make(getView(),"Username already in use!", Snackbar.LENGTH_LONG).show();
+                    }
+                }
+                else{
+                    Log.d(Constants.FAILURE, resp.getMessage());
+                    Snackbar.make(getView(),"Error", Snackbar.LENGTH_LONG).show();
+                }
             }
 
             @Override
@@ -113,7 +122,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         });
     }
 
-    private void registerProcess(String name, String email, String password){
+    private void registerProcess(User newUser){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -121,21 +130,22 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
 
         RequestInterface requestInterface = retrofit.create(RequestInterface.class);
 
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPassword(password);
         RegisterLoginRequest request = new RegisterLoginRequest();
-        request.setUser(user);
-        Call<RegisterLoginResponse> response = requestInterface.registerLogin(request);
+        request.setUser(newUser);
+        Call<RegisterLoginResponse> response = requestInterface.registerUser(request);
 
         response.enqueue(new Callback<RegisterLoginResponse>() {
             @Override
             public void onResponse(Call<RegisterLoginResponse> call, retrofit2.Response<RegisterLoginResponse> response) {
                 RegisterLoginResponse resp = response.body();
-                Snackbar.make(getView(), resp.getMessage(), Snackbar.LENGTH_LONG).show();
                 progress.setVisibility(View.INVISIBLE);
-                goToMainActivity();
+                if(resp.getResult().equals(Constants.SUCCESS)){
+                    Snackbar.make(getView(),"Registered!", Snackbar.LENGTH_LONG).show();
+                    goToLogin();
+                }
+                else{
+                    Snackbar.make(getView(),"Error", Snackbar.LENGTH_LONG).show();
+                }
             }
 
             @Override
@@ -152,9 +162,5 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_frame,login);
         ft.commit();
-    }
-
-    private void goToMainActivity(){
-//TODO: Switch to MainActivity after success
     }
 }

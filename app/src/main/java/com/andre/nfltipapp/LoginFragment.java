@@ -65,16 +65,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             case R.id.btn_login:
                 String name = et_name.getText().toString();
                 String password = et_password.getText().toString();
+                User loginUser = new User(name, password);
                 if(!name.isEmpty() && !password.isEmpty()) {
                     progress.setVisibility(View.VISIBLE);
-                    loginProcess(name,password);
+                    loginProcess(loginUser);
                 } else {
                     Snackbar.make(getView(), "Fields are empty !", Snackbar.LENGTH_LONG).show();
                 }
                 break;
         }
     }
-    private void loginProcess(String name,String password){
+    private void loginProcess(User loginUser){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -82,27 +83,27 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
 
         RequestInterface requestInterface = retrofit.create(RequestInterface.class);
 
-        User user = new User();
-        user.setName(name);
-        user.setPassword(password);
         RegisterLoginRequest request = new RegisterLoginRequest();
-        request.setUser(user);
-        Call<RegisterLoginResponse> response = requestInterface.registerLogin(request);
+        request.setUser(loginUser);
+        Call<RegisterLoginResponse> response = requestInterface.loginUser(request);
 
         response.enqueue(new Callback<RegisterLoginResponse>() {
             @Override
             public void onResponse(Call<RegisterLoginResponse> call, retrofit2.Response<RegisterLoginResponse> response) {
                 RegisterLoginResponse resp = response.body();
-                Snackbar.make(getView(), resp.getMessage(), Snackbar.LENGTH_LONG).show();
-                if(resp.getResult().equals(Constants.SUCCESS)){
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putBoolean(Constants.IS_LOGGED_IN,true);
-                    editor.putString(Constants.NAME,resp.getUser().getName());
-                    editor.putString(Constants.UUID,resp.getUser().getUuid());
-                    editor.apply();
-                    goToMainActivity();
-                }
                 progress.setVisibility(View.INVISIBLE);
+                if(resp.getResult().equals(Constants.SUCCESS)){
+                    if(resp.getMessage().equals(Constants.LOGIN_SUCCESSFULL)){
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putBoolean(Constants.IS_LOGGED_IN,true);
+                        editor.putString(Constants.NAME,resp.getUser().getName());
+                        editor.putString(Constants.UUID,resp.getUser().getUuid());
+                        editor.apply();
+                        goToMainActivity();
+                    } else {
+                        Snackbar.make(getView(),"Login Failed!", Snackbar.LENGTH_LONG).show();
+                    }
+                }
             }
 
             @Override
@@ -122,6 +123,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     }
 
     private void goToMainActivity(){
+        Log.d(Constants.TAG, "Login successfull!");
 //TODO: Switch to MainActivity after success
     }
 
