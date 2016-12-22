@@ -2,9 +2,8 @@ package com.andre.nfltipapp;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
@@ -29,11 +28,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class LoginFragment extends Fragment implements View.OnClickListener{
-    private AppCompatButton btn_login;
     private EditText et_name,et_password;
-    private TextView tv_register;
     private ProgressBar progress;
-    private SharedPreferences pref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,10 +39,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     }
 
     private void initViews(View view){
-        pref = getActivity().getPreferences(0);
-
-        btn_login = (AppCompatButton)view.findViewById(R.id.btn_login);
-        tv_register = (TextView)view.findViewById(R.id.tv_register);
+        AppCompatButton btn_login = (AppCompatButton) view.findViewById(R.id.btn_login);
+        TextView tv_register = (TextView) view.findViewById(R.id.tv_register);
         et_name = (EditText)view.findViewById(R.id.et_name);
         et_password = (EditText)view.findViewById(R.id.et_password);
 
@@ -94,12 +88,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 progress.setVisibility(View.INVISIBLE);
                 if(resp.getResult().equals(Constants.SUCCESS)){
                     if(resp.getMessage().equals(Constants.LOGIN_SUCCESSFULL)){
-                        SharedPreferences.Editor editor = pref.edit();
-                        editor.putBoolean(Constants.IS_LOGGED_IN,true);
-                        editor.putString(Constants.NAME,resp.getUser().getName());
-                        editor.putString(Constants.UUID,resp.getUser().getUuid());
-                        editor.apply();
-                        goToMainActivity();
+                        Snackbar.make(getView(),"Login Successfull!", Snackbar.LENGTH_LONG).show();
+                        goToMainActivity(resp.getUser().getName(), resp.getUser().getUuid());
                     } else {
                         Snackbar.make(getView(),"Login Failed!", Snackbar.LENGTH_LONG).show();
                     }
@@ -122,9 +112,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         ft.commit();
     }
 
-    private void goToMainActivity(){
+    private void goToMainActivity(String name, String uuid){
         Log.d(Constants.TAG, "Login successfull!");
-//TODO: Switch to MainActivity after success
+        Intent intent = new Intent(this.getActivity(), MainActivity.class);
+        intent.putExtra(Constants.NAME, name);
+        intent.putExtra(Constants.UUID, uuid);
+        this.getActivity().finish();
+        startActivity(intent);
     }
 
 }

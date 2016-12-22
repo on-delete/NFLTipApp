@@ -2,7 +2,6 @@ package com.andre.nfltipapp;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.AppCompatButton;
@@ -32,9 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RegisterFragment extends Fragment implements View.OnClickListener{
 
-    private AppCompatButton btn_register;
     private EditText et_email,et_password,et_name;
-    private TextView tv_login;
     private ProgressBar progress;
 
     @Override
@@ -45,8 +42,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     }
 
     private void initViews(View view){
-        btn_register = (AppCompatButton)view.findViewById(R.id.btn_register);
-        tv_login = (TextView)view.findViewById(R.id.tv_login);
+        AppCompatButton btn_register = (AppCompatButton) view.findViewById(R.id.btn_register);
+        TextView tv_login = (TextView) view.findViewById(R.id.tv_login);
         et_email = (EditText)view.findViewById(R.id.et_email);
         et_password = (EditText)view.findViewById(R.id.et_password);
         et_name = (EditText)view.findViewById(R.id.et_name);
