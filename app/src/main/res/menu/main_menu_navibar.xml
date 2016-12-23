@@ -4,9 +4,9 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_tip"
-            android:title="@string/tip" />
+            android:title="@string/tip"/>
         <item
             android:id="@+id/nav_scoreboard"
-            android:title="@string/scoreboard" />
+            android:title="@string/scoreboard"/>
     </group>
 </menu>

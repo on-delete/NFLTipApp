@@ -1,4 +1,4 @@
-package com.andre.nfltipapp.model;
+package com.andre.nfltipapp.loginregistryview.model;
 
 /**
  * Created by Andre on 15.12.2016.

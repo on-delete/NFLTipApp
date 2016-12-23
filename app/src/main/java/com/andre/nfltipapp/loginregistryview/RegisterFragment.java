@@ -1,4 +1,4 @@
-package com.andre.nfltipapp;
+package com.andre.nfltipapp.loginregistryview;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -14,11 +14,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
-import com.andre.nfltipapp.model.NameExistRequest;
-import com.andre.nfltipapp.model.NameExistResponse;
-import com.andre.nfltipapp.model.RegisterLoginRequest;
-import com.andre.nfltipapp.model.RegisterLoginResponse;
-import com.andre.nfltipapp.model.User;
+import com.andre.nfltipapp.Constants;
+import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.rest.RequestInterface;
+import com.andre.nfltipapp.loginregistryview.model.NameExistRequest;
+import com.andre.nfltipapp.loginregistryview.model.NameExistResponse;
+import com.andre.nfltipapp.loginregistryview.model.RegisterLoginRequest;
+import com.andre.nfltipapp.loginregistryview.model.RegisterLoginResponse;
+import com.andre.nfltipapp.loginregistryview.model.User;
 
 import retrofit2.Call;
 import retrofit2.Callback;

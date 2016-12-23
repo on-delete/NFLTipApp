@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".loginregistryview.LoginActivity"
             android:label="@string/title_activity_main_fragment"
             android:theme="@style/AppTheme.NoActionBar"/>
     </application>

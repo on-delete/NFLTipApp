@@ -1,9 +1,9 @@
-package com.andre.nfltipapp;
+package com.andre.nfltipapp.rest;
 
-import com.andre.nfltipapp.model.NameExistRequest;
-import com.andre.nfltipapp.model.NameExistResponse;
-import com.andre.nfltipapp.model.RegisterLoginRequest;
-import com.andre.nfltipapp.model.RegisterLoginResponse;
+import com.andre.nfltipapp.loginregistryview.model.NameExistRequest;
+import com.andre.nfltipapp.loginregistryview.model.NameExistResponse;
+import com.andre.nfltipapp.loginregistryview.model.RegisterLoginRequest;
+import com.andre.nfltipapp.loginregistryview.model.RegisterLoginResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

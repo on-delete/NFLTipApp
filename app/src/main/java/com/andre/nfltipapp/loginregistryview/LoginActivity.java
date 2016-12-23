@@ -1,9 +1,11 @@
-package com.andre.nfltipapp;
+package com.andre.nfltipapp.loginregistryview;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.andre.nfltipapp.R;
 
 public class LoginActivity extends AppCompatActivity {
 
