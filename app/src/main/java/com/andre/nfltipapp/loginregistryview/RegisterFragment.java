@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.rest.RequestInterface;
@@ -28,19 +27,17 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Andre on 15.12.2016.
- */
-
 public class RegisterFragment extends Fragment implements View.OnClickListener{
 
     private EditText et_email,et_password,et_name;
     private ProgressBar progress;
+    private RequestInterface requestInterface;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register,container,false);
         initViews(view);
+        initRequestInterface();
         return view;
     }
 
@@ -55,6 +52,15 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
 
         btn_register.setOnClickListener(this);
         tv_login.setOnClickListener(this);
+    }
+
+    private void initRequestInterface(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        requestInterface = retrofit.create(RequestInterface.class);
     }
 
     @Override
@@ -83,13 +89,6 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     }
 
     private void nameExistingProcess(final User newUser) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
-
         NameExistRequest request = new NameExistRequest();
         request.setName(newUser.getName());
         Call<NameExistResponse> response = requestInterface.nameExist(request);
@@ -123,13 +122,6 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     }
 
     private void registerProcess(User newUser){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
-
         RegisterLoginRequest request = new RegisterLoginRequest();
         request.setUser(newUser);
         Call<RegisterLoginResponse> response = requestInterface.registerUser(request);

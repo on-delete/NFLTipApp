@@ -1,9 +1,5 @@
 package com.andre.nfltipapp.loginregistryview.model;
 
-/**
- * Created by Andre on 15.12.2016.
- */
-
 public class RegisterLoginResponse {
 
     private String result;

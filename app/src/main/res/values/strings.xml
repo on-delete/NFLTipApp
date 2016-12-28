@@ -7,13 +7,8 @@
     <string name="name">Name</string>
     <string name="register">Registrieren</string>
     <string name="login_now">Einloggen</string>
-    <string name="title_activity_main_fragment">MainFragment</string>
+    <string name="title_activity_main_fragment">NFL Tip App</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="action_settings">Settings</string>
-    <string name="tip">Tippen</string>
-    <string name="scoreboard">Scoreboard</string>
-    <string name="menu_title">Menü</string>
+    <string name="rank">Rang</string>
+    <string name="points">Punkte</string>
 </resources>

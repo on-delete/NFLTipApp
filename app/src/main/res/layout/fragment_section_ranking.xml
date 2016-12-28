@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+    <TableLayout
+        android:id="@+id/rankingTable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="1">
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tableRow">
+
+            <TextView
+                android:layout_width="70dp"
+                android:text="@string/rank"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:padding="10dp"
+                android:background="@drawable/back">
+            </TextView>
+            <TextView
+                android:layout_width="60dp"
+                android:text="@string/name"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:padding="10dp"
+                android:background="@drawable/back">
+            </TextView>
+            <TextView
+                android:layout_width="90dp"
+                android:text="@string/points"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:padding="10dp"
+                android:background="@drawable/back">
+            </TextView>
+        </TableRow>
+    </TableLayout>
+    </ScrollView>

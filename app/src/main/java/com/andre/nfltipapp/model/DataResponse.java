@@ -1,9 +1,10 @@
-package com.andre.nfltipapp.loginregistryview.model;
+package com.andre.nfltipapp.model;
 
-public class NameExistResponse {
+public class DataResponse {
 
     private String result;
     private String message;
+    private Data data;
 
     public String getResult() {
         return result;
@@ -12,4 +13,7 @@ public class NameExistResponse {
     public String getMessage() {
         return message;
     }
+
+    public Data getData() {return data; }
+
 }

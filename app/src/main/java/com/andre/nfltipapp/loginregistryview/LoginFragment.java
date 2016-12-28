@@ -17,6 +17,9 @@ import android.widget.TextView;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.MainActivity;
 import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.model.Data;
+import com.andre.nfltipapp.model.DataRequest;
+import com.andre.nfltipapp.model.DataResponse;
 import com.andre.nfltipapp.rest.RequestInterface;
 import com.andre.nfltipapp.loginregistryview.model.RegisterLoginRequest;
 import com.andre.nfltipapp.loginregistryview.model.RegisterLoginResponse;
@@ -27,18 +30,16 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Andre on 15.12.2016.
- */
-
 public class LoginFragment extends Fragment implements View.OnClickListener{
     private EditText et_name,et_password;
     private ProgressBar progress;
+    private RequestInterface requestInterface;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login,container,false);
         initViews(view);
+        initRequestInterface();
         return view;
     }
 
@@ -47,11 +48,22 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         TextView tv_register = (TextView) view.findViewById(R.id.tv_register);
         et_name = (EditText)view.findViewById(R.id.et_name);
         et_password = (EditText)view.findViewById(R.id.et_password);
+        et_name.setText("admin");
+        et_password.setText("password");
 
         progress = (ProgressBar)view.findViewById(R.id.progress);
 
         btn_login.setOnClickListener(this);
         tv_register.setOnClickListener(this);
+    }
+
+    private void initRequestInterface(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        requestInterface = retrofit.create(RequestInterface.class);
     }
 
     @Override
@@ -74,13 +86,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         }
     }
     private void loginProcess(User loginUser){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
-
         RegisterLoginRequest request = new RegisterLoginRequest();
         request.setUser(loginUser);
         Call<RegisterLoginResponse> response = requestInterface.loginUser(request);
@@ -89,11 +94,40 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onResponse(Call<RegisterLoginResponse> call, retrofit2.Response<RegisterLoginResponse> response) {
                 RegisterLoginResponse resp = response.body();
-                progress.setVisibility(View.INVISIBLE);
                 if(resp.getResult().equals(Constants.SUCCESS)){
                     if(resp.getMessage().equals(Constants.LOGIN_SUCCESSFULL)){
+                        //Snackbar.make(getView(),"Login Successfull!", Snackbar.LENGTH_LONG).show();
+                        getDataProcess(resp.getUser().getName(), resp.getUser().getUuid());
+                    } else {
+                        Snackbar.make(getView(),"Login Failed!", Snackbar.LENGTH_LONG).show();
+                        progress.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RegisterLoginResponse> call, Throwable t) {
+                progress.setVisibility(View.INVISIBLE);
+                Log.d(Constants.TAG,t.getMessage());
+                Snackbar.make(getView(), t.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getDataProcess(final String name, final String uuid){
+        DataRequest request = new DataRequest();
+        request.setUuid(uuid);
+        Call<DataResponse> response = requestInterface.getData(request);
+
+        response.enqueue(new Callback<DataResponse>() {
+            @Override
+            public void onResponse(Call<DataResponse> call, retrofit2.Response<DataResponse> response) {
+                DataResponse resp = response.body();
+                progress.setVisibility(View.INVISIBLE);
+                if(resp.getResult().equals(Constants.SUCCESS)){
+                    if(resp.getMessage().equals(Constants.GET_DATA_SUCCESSFULL)){
                         Snackbar.make(getView(),"Login Successfull!", Snackbar.LENGTH_LONG).show();
-                        goToMainActivity(resp.getUser().getName(), resp.getUser().getUuid());
+                        goToMainActivity(name, uuid, resp.getData());
                     } else {
                         Snackbar.make(getView(),"Login Failed!", Snackbar.LENGTH_LONG).show();
                     }
@@ -101,7 +135,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
             }
 
             @Override
-            public void onFailure(Call<RegisterLoginResponse> call, Throwable t) {
+            public void onFailure(Call<DataResponse> call, Throwable t) {
                 progress.setVisibility(View.INVISIBLE);
                 Log.d(Constants.TAG,t.getMessage());
                 Snackbar.make(getView(), t.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
@@ -116,11 +150,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         ft.commit();
     }
 
-    private void goToMainActivity(String name, String uuid){
+    private void goToMainActivity(String name, String uuid, Data data){
         Log.d(Constants.TAG, "Login successfull!");
         Intent intent = new Intent(this.getActivity(), MainActivity.class);
         intent.putExtra(Constants.NAME, name);
         intent.putExtra(Constants.UUID, uuid);
+        intent.putExtra(Constants.DATA, data);
         this.getActivity().finish();
         startActivity(intent);
     }

@@ -1,9 +1,5 @@
 package com.andre.nfltipapp.loginregistryview.model;
 
-/**
- * Created by Andre on 15.12.2016.
- */
-
 public class User {
 
     public User (String name, String email, String password){
