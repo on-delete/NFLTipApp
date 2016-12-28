@@ -163,15 +163,21 @@ app.post('/registerLogin', function (req, res, next) {
                     sendResponse(res, resp, connection);
                 }
                 else {
-                    var password = rows[0].user_password;
-                    if (password === req.body.user.password) {
-                        resp.result = "success";
-                        resp.message = "login successfull";
-                        resp.user.uuid = rows[0].user_id;
+                    if(rows[0] !== undefined) {
+                        var password = rows[0].user_password;
+                        if (password === req.body.user.password) {
+                            resp.result = "success";
+                            resp.message = "login successfull";
+                            resp.user.uuid = rows[0].user_id;
 
-                    } else {
+                        } else {
+                            resp.result = "success";
+                            resp.message = "password wrong";
+                        }
+                    }
+                    else{
                         resp.result = "success";
-                        resp.message = "login failed";
+                        resp.message = "user not found";
                     }
                     sendResponse(res, resp, connection);
                 }
@@ -320,9 +326,22 @@ function insertNewPrediction(gameid){
     });
 }
 
+app.post('/getData', function (req, res, next) {
+    var data = {"rankings" : [{"place" : "1", "name" : "andre", "points" : "380"}, {"place" : "2", "name" : "admin", "points" : "300"}], "predictions" : [{"week" : "14", "type" : "REG", "games" : [{"hometeam": "DET", "awayteam": "REG", "homepoints": "12", "awaypoints" : "14", "isfinished" : "true", "haspredicted": "true", "predictedhometeam" : "false"}]}, {"week" : "14", "type" : "REG", "games" : [{"hometeam": "DET", "awayteam": "REG", "homepoints": "12", "awaypoints" : "14", "isfinished" : "true", "haspredicted": "true", "predictedhometeam" : "false"}]}]};
+    var resp = {
+        "result": "success",
+        "message": "data successfull",
+        "data" : data
+    };
+
+    sendResponse(res, resp, null);
+});
+
 function sendResponse(res, resp, connection) {
     res.end(JSON.stringify(resp));
-    connection.release();
+    if(connection!==null) {
+        connection.release();
+    }
 }
 
 // catch 404 and forward to error handler
