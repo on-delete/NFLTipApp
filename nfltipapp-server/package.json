@@ -17,6 +17,7 @@
     "request": "~2.79.0",
     "xml2js": "~0.4.17",
     "simple-rate-limiter": "~0.2.3",
-    "node-schedule": "~1.2.0"
+    "node-schedule": "~1.2.0",
+    "winston": "~2.3.0"
   }
 }

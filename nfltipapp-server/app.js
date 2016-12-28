@@ -9,6 +9,16 @@ var parseString = require('xml2js').parseString;
 var limit = require("simple-rate-limiter");
 var request = limit(require("request")).to(1).per(1000);
 var schedule = require('node-schedule');
+var winston = require('winston');
+
+winston.add(
+    winston.transports.File, {
+        filename: 'serverlog.log',
+        level: 'info',
+        json: true,
+        timestamp: true
+    }
+);
 
 var index = require('./routes/index');
 
@@ -52,7 +62,7 @@ function startUpdateTask(){
 
     var j = schedule.scheduleJob(rule, function(){
         var d = new Date();
-        console.log('new update is started at ' + d);
+        winston.info('new update is started at ' + d);
         updateSchedule();
     });
 }
@@ -195,7 +205,7 @@ function updateSchedule() {
 
             weeks.forEach(function (week) {
                 request(replaceValuesInSring(year, spart, week), function (error, response, body) {
-                    console.log('Update schedule for week ' + week + ' in Part ' + spart + ' for year ' + year);
+                    winston.info('Update schedule for week ' + week + ' in Part ' + spart + ' for year ' + year);
                     if (!error && response.statusCode == 200) {
                         parseString(body, function (err, result) {
                             if (result.ss !== '') {
@@ -206,7 +216,7 @@ function updateSchedule() {
                         });
                     }
                     else {
-                        console.error("Server request failed. " + error.message);
+                        winston.info("Server request failed. " + error.message);
                     }
                 });
             })
@@ -221,7 +231,7 @@ function replaceValuesInSring(year, stype, sweek) {
 function checkIfGameAlreadyPresent(game, week){
     pool.getConnection(function (err, connection) {
         if (err) {
-            console.error("error in database connection");
+            winston.info("error in database connection");
         }
         else {
             var sql = "SELECT * FROM games WHERE game_id = ?";
@@ -229,7 +239,7 @@ function checkIfGameAlreadyPresent(game, week){
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, rows) {
                 if (err) {
-                    console.error("error in database query checkIfGameAlreadyPresent");
+                    winston.info("error in database query checkIfGameAlreadyPresent");
                 }
                 else {
                     if(rows[0] !== undefined){
@@ -250,7 +260,7 @@ function checkIfGameAlreadyPresent(game, week){
 function updatePresentGame(game){
     pool.getConnection(function (err, connection) {
         if (err) {
-            console.error("error in database connection updatePresentGame");
+            winston.info("error in database connection updatePresentGame");
         }
         else {
             var sql = "UPDATE games SET game_finished=?, home_team_score=?, away_team_score=? WHERE game_id=?";
@@ -258,7 +268,7 @@ function updatePresentGame(game){
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {
                 if (err) {
-                    console.error("error in database query updatePresentGame");
+                    winston.info("error in database query updatePresentGame");
                 }
             });
         }
@@ -269,7 +279,7 @@ function updatePresentGame(game){
 function insertNewGame(game, week){
     pool.getConnection(function (err, connection) {
         if (err) {
-            console.error("error in database connection");
+            winston.info("error in database connection");
         }
         else {
             var sql = "INSERT INTO games (game_id, game_finished, home_team_score, away_team_score, week, season_type, home_team_id, away_team_id) " +
@@ -278,8 +288,8 @@ function insertNewGame(game, week){
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {
                 if (err) {
-                    console.error("error in database query insertNewGame");
-                    console.error(err.message);
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
                 }
                 else{
                     insertNewPrediction(game.$.eid);
@@ -293,7 +303,7 @@ function insertNewGame(game, week){
 function insertNewPrediction(gameid){
     pool.getConnection(function (err, connection) {
         if (err) {
-            console.error("error in database connection");
+            winston.info("error in database connection");
         }
         else {
             var sql = "INSERT INTO predictions (user_id, predicted, home_team_predicted, game_id) select user_id, 'false', 'NULL', ? from user;";
@@ -301,8 +311,8 @@ function insertNewPrediction(gameid){
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {
                 if (err) {
-                    console.error("error in database query insertNewGame");
-                    console.error(err.message);
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
                 }
             });
         }
