@@ -327,7 +327,7 @@ function insertNewPrediction(gameid){
 }
 
 app.post('/getData', function (req, res, next) {
-    var data = {"rankings" : [{"place" : "1", "name" : "andre", "points" : "380"}, {"place" : "2", "name" : "admin", "points" : "300"}], "predictions" : [{"week" : "14", "type" : "REG", "games" : [{"hometeam": "DET", "awayteam": "REG", "homepoints": "12", "awaypoints" : "14", "isfinished" : "true", "haspredicted": "true", "predictedhometeam" : "false"}]}, {"week" : "14", "type" : "REG", "games" : [{"hometeam": "DET", "awayteam": "REG", "homepoints": "12", "awaypoints" : "14", "isfinished" : "true", "haspredicted": "true", "predictedhometeam" : "false"}]}]};
+    var data = {"ranking" : [{"place" : "1", "name" : "andre", "points" : "380"}, {"place" : "2", "name" : "admin", "points" : "300"}], "predictions" : [{"week" : "14", "type" : "REG", "games" : [{"hometeam": "DET", "awayteam": "REG", "homepoints": "12", "awaypoints" : "14", "isfinished" : "true", "haspredicted": "true", "predictedhometeam" : "false"}]}, {"week" : "14", "type" : "REG", "games" : [{"hometeam": "DET", "awayteam": "REG", "homepoints": "12", "awaypoints" : "14", "isfinished" : "true", "haspredicted": "true", "predictedhometeam" : "false"}]}]};
     var resp = {
         "result": "success",
         "message": "data successfull",
