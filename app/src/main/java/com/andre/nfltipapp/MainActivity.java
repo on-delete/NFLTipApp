@@ -144,6 +144,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     public static class PredictionSectionFragment extends Fragment {
 
+        int lastExpandedPosition = -1;
         ExpandableListView expandableListView;
         ExpandableListAdapter expandableListAdapter;
 
@@ -160,7 +161,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             expandableListAdapter = new CustomExpandableListAdapter(getActivity().getApplicationContext(), predictionList);
             expandableListView.setAdapter(expandableListAdapter);
 
+            expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+                @Override
+                public void onGroupExpand(int groupPosition) {
+                    if (lastExpandedPosition != -1
+                            && groupPosition != lastExpandedPosition) {
+                        expandableListView.collapseGroup(lastExpandedPosition);
+                    }
+                    lastExpandedPosition = groupPosition;
+                }
+            });
+
             return rootView;
         }
+
+
     }
 }

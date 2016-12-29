@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.model.Game;
@@ -19,13 +21,10 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private List<String> expandableListTitle = new ArrayList<>();
-   // private HashMap<String, List<String>> expandableListDetail;
    private HashMap<String, List<Game>> expandableListDetail = new HashMap<>();
 
     public CustomExpandableListAdapter(Context context, List<Prediction> predictionList) {
         this.context = context;
-        /*this.expandableListTitle = expandableListTitle;
-        this.expandableListDetail = expandableListDetail;*/
 
         for(Prediction predictionItem : predictionList){
             String title = "Woche " + predictionItem.getWeek() + " in " + predictionItem.getType();
@@ -54,9 +53,60 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_view_item, null);
         }
-        TextView expandedListTextView = (TextView) convertView
-                .findViewById(R.id.expandedListItem);
-        expandedListTextView.setText(expandedListItem.getHometeam());
+        LinearLayout homeBackground = (LinearLayout) convertView
+                .findViewById(R.id.background_home_team);
+        LinearLayout awayBackground = (LinearLayout) convertView
+                .findViewById(R.id.background_away_team);
+        CheckBox homeTeamCheckbox = (CheckBox) convertView
+                .findViewById(R.id.home_team_checkbox);
+        CheckBox awayTeamCheckbox = (CheckBox) convertView
+                .findViewById(R.id.away_team_checkbox);
+        TextView homePrefixTextView = (TextView) convertView
+                .findViewById(R.id.home_team_prefix_text);
+        TextView homeScoreTextView = (TextView) convertView
+                .findViewById(R.id.home_team_score_text);
+        TextView awayPrefixTextView = (TextView) convertView
+                .findViewById(R.id.away_team_prefix_text);
+        TextView awayScoreTextView = (TextView) convertView
+                .findViewById(R.id.away_team_score_text);
+
+        homePrefixTextView.setText(expandedListItem.getHometeam());
+        homeScoreTextView.setText(String.valueOf(expandedListItem.getHomepoints()));
+        awayPrefixTextView.setText(expandedListItem.getAwayteam());
+        awayScoreTextView.setText(String.valueOf(expandedListItem.getAwaypoints()));
+
+        homeTeamCheckbox.setChecked(false);
+        awayTeamCheckbox.setChecked(false);
+        homeBackground.setBackgroundResource(R.drawable.back);
+        awayBackground.setBackgroundResource(R.drawable.back);
+
+        if(expandedListItem.hasPredicted() == 1){
+            if(expandedListItem.predictedHometeam() == 1){
+                homeTeamCheckbox.setChecked(true);
+            }
+            else{
+                awayTeamCheckbox.setChecked(true);
+            }
+        }
+
+        if(expandedListItem.isFinished() == 1){
+            homeTeamCheckbox.setEnabled(false);
+            awayTeamCheckbox.setEnabled(false);
+
+            if(expandedListItem.getHomepoints() > expandedListItem.getAwaypoints()){
+                homeBackground.setBackgroundResource(R.drawable.back_green);
+                awayBackground.setBackgroundResource(R.drawable.back_red);
+            }
+            else if(expandedListItem.getHomepoints() < expandedListItem.getAwaypoints()){
+                homeBackground.setBackgroundResource(R.drawable.back_red);
+                awayBackground.setBackgroundResource(R.drawable.back_green);
+            }
+            else {
+                homeBackground.setBackgroundResource(R.drawable.back_yellow);
+                awayBackground.setBackgroundResource(R.drawable.back_yellow);
+            }
+        }
+
         return convertView;
     }
 
