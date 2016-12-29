@@ -327,7 +327,136 @@ function insertNewPrediction(gameid){
 }
 
 app.post('/getData', function (req, res, next) {
-    var data = {"ranking" : [{"place" : "1", "name" : "andre", "points" : "380"}, {"place" : "2", "name" : "admin", "points" : "300"}], "predictions" : [{"week" : "14", "type" : "REG", "games" : [{"hometeam": "DET", "awayteam": "REG", "homepoints": "12", "awaypoints" : "14", "isfinished" : "true", "haspredicted": "true", "predictedhometeam" : "false"}]}, {"week" : "14", "type" : "REG", "games" : [{"hometeam": "DET", "awayteam": "REG", "homepoints": "12", "awaypoints" : "14", "isfinished" : "true", "haspredicted": "true", "predictedhometeam" : "false"}]}]};
+    //calculateRanking(res, req.body.user.uuid);
+    calculateRanking(res, "10");
+});
+
+function calculateRanking(res, uuid){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+        }
+        else {
+            var sql = "SELECT user_name, user_id FROM user;";
+            connection.query(sql, function (err, rows) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
+                }
+                else{
+                    if(rows !== undefined) {
+                        var rankingList = [];
+                        var i = -1;
+                        (function calculateForEveryUser(rankingList) {
+                            i++;
+                            if(i >= rows.length){
+                                connection.release();
+                                getPredictions(rankingList, res, uuid)
+                            }
+                            else{
+                                var user_name = rows[i].user_name;
+                                var sql = "SELECT predictions.home_team_predicted as home_team_predicted, games.home_team_score as home_team_score, games.away_team_score as away_team_score, games.game_finished as finished, predictions.predicted as predicted " +
+                                    "FROM predictions " +
+                                    "RIGHT JOIN user " +
+                                    "ON user.user_id = predictions.user_id " +
+                                    "RIGHT JOIN games " +
+                                    "ON predictions.game_id = games.game_id " +
+                                    "WHERE predictions.user_id = ? AND games.game_finished = true AND predicted = true;";
+                                var inserts = [rows[i].user_id];
+                                sql = mysql.format(sql, inserts);
+                                connection.query(sql, function (err, rows2) {
+                                    if (err) {
+                                        winston.info("error in database query insertNewGame");
+                                        winston.info(err.message);
+                                    }
+                                    else {
+                                        if (rows2 !== undefined) {
+                                            var j = -1;
+                                            var score = 0;
+                                            (function calculateRankingForUser(score) {
+                                                j++;
+                                                if(j >= rows2.length){
+                                                    rankingList.push({"place": "", "name": user_name, "points": score});
+                                                    calculateForEveryUser(rankingList);
+                                                }
+                                                else{
+                                                    var home_team_score = rows2[j].home_team_score;
+                                                    var away_team_score = rows2[j].away_team_score;
+                                                    var home_team_predicted = rows2[j].home_team_predicted;
+                                                    if ((home_team_score > away_team_score && home_team_predicted === 1) || (home_team_score < away_team_score && home_team_predicted === 0)) {
+                                                        score += 3;
+                                                    }
+                                                    calculateRankingForUser(score);
+                                                }
+
+                                            })(score);
+                                        }
+                                    }
+                                });
+                            }
+                        })(rankingList);
+                    }
+                    else{
+                        connection.release();
+                        getPredictions([]);
+                    }
+                }
+            });
+        }
+    });
+}
+
+function getPredictions(rankingList, res, uuid){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+        }
+        else {
+            var sql = "SELECT predictions.game_id as game_id, predictions.predicted as predicted, predictions.home_team_predicted as home_team_predicted, games.game_finished as game_finished, games.home_team_score as home_team_score, games.away_team_score as away_team_score, games.season_type as season_type, games.week as week, teams_home.team_prefix as home_team_prefix, teams_away.team_prefix as away_team_prefix " +
+            "FROM predictions " +
+            "RIGHT JOIN games " +
+            "ON predictions.game_id = games.game_id " +
+            "Right JOIN teams as teams_home " +
+            "ON games.home_team_id = teams_home.team_id " +
+            "RIGHT JOIN teams as teams_away " +
+            "ON games.away_team_id = teams_away.team_id " +
+            "WHERE predictions.user_id = ? " +
+            "ORDER BY game_id;";
+            var inserts = [uuid];
+            sql = mysql.format(sql, inserts);
+            connection.query(sql, function (err, rows) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
+                }
+                else{
+                    if(rows!==undefined){
+                        var predictionsList = [];
+                        for(var i=0; i<rows.length; i++){
+                            var actualRow = rows[i];
+                            var predictionListItem = getPredictionListItem(predictionsList, actualRow.week, actualRow.season_type);
+                            if(predictionListItem.length === 0){
+                                var tempItem = {"week": actualRow.week, "type": actualRow.season_type, "games": []};
+                                tempItem.games.push({"gameid": actualRow.game_id, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
+                                predictionsList.push(tempItem);
+                            }
+                            else{
+                                predictionListItem[0].games.push({"gameid": actualRow.game_id, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
+                            }
+                        }
+                        sendDataResponse(rankingList, predictionsList, res);
+                    }
+                }
+                connection.release();
+            });
+        }
+    });
+}
+
+function sendDataResponse(rankingList, predictionsList, res){
+    var data = {"ranking" : rankingList,
+        "predictions": predictionsList};
+
     var resp = {
         "result": "success",
         "message": "data successfull",
@@ -335,13 +464,24 @@ app.post('/getData', function (req, res, next) {
     };
 
     sendResponse(res, resp, null);
-});
+}
 
 function sendResponse(res, resp, connection) {
     res.end(JSON.stringify(resp));
     if(connection!==null) {
         connection.release();
     }
+}
+
+function getPredictionListItem(predictionsList, week, stype){
+    var tempList = [];
+        for (var i = 0; i < predictionsList.length; i++) {
+            if (predictionsList[i].week === week && predictionsList[i].type === stype) {
+                tempList.push(predictionsList[i]);
+                break;
+            }
+        }
+    return tempList;
 }
 
 // catch 404 and forward to error handler

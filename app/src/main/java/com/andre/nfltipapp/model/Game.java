@@ -5,22 +5,28 @@ import android.os.Parcelable;
 
 public class Game implements Parcelable{
 
+    private String gameid;
     private String hometeam;
     private String awayteam;
     private int homepoints;
     private int awaypoints;
-    private boolean isfinished;
-    private boolean haspredicted;
-    private boolean predictedhometeam;
+    private int isfinished;
+    private int haspredicted;
+    private int predictedhometeam;
 
     public Game(Parcel parcel){
+        gameid = parcel.readString();
         hometeam = parcel.readString();
         awayteam = parcel.readString();
         homepoints = parcel.readInt();
         awaypoints = parcel.readInt();
-        isfinished = (Boolean) parcel.readValue( null );
-        haspredicted = (Boolean) parcel.readValue( null );
-        predictedhometeam = (Boolean) parcel.readValue( null );
+        isfinished = parcel.readInt();
+        haspredicted = parcel.readInt();
+        predictedhometeam = parcel.readInt();
+    }
+
+    public String getGameid() {
+        return gameid;
     }
 
     public String getHometeam() {
@@ -39,15 +45,15 @@ public class Game implements Parcelable{
         return awaypoints;
     }
 
-    public boolean isFinished() {
+    public int isFinished() {
         return isfinished;
     }
 
-    public boolean hasPredicted() {
+    public int hasPredicted() {
         return haspredicted;
     }
 
-    public boolean predictedHometeam() {
+    public int predictedHometeam() {
         return predictedhometeam;
     }
 
@@ -58,13 +64,14 @@ public class Game implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(gameid);
         dest.writeString(hometeam);
         dest.writeString(awayteam);
         dest.writeInt(homepoints);
         dest.writeInt(awaypoints);
-        dest.writeValue(isfinished);
-        dest.writeValue(haspredicted);
-        dest.writeValue(predictedhometeam);
+        dest.writeInt(isfinished);
+        dest.writeInt(haspredicted);
+        dest.writeInt(predictedhometeam);
     }
 
     public static final Parcelable.Creator<Game> CREATOR =
