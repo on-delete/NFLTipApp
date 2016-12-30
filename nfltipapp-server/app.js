@@ -348,8 +348,7 @@ function insertNewPrediction(gameid){
 }
 
 app.post('/getData', function (req, res, next) {
-    //calculateRanking(res, req.body.user.uuid);
-    calculateRanking(res, "10");
+    calculateRanking(res, req.body.uuid);
 });
 
 function calculateRanking(res, uuid){
