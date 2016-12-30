@@ -3,6 +3,7 @@ package com.andre.nfltipapp;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -34,10 +35,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        String name = intent.getStringExtra(Constants.NAME) == null ? "admin" : intent.getStringExtra(Constants.NAME);
+        String userName = intent.getStringExtra(Constants.NAME) == null ? "admin" : intent.getStringExtra(Constants.NAME);
         String uuid = intent.getStringExtra(Constants.UUID) == null ? "10" : intent.getStringExtra(Constants.UUID);
 
-        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
+        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager(), userName);
 
         final ActionBar actionBar = getActionBar();
 
@@ -79,15 +80,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public AppSectionsPagerAdapter(FragmentManager fm) {
+        private String userName;
+
+        public AppSectionsPagerAdapter(FragmentManager fm, String userName) {
+
             super(fm);
+            this.userName = userName;
         }
 
         @Override
         public Fragment getItem(int i) {
             switch (i) {
                 case 0:
-                    return new RankingSectionFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("username", this.userName);
+                    RankingSectionFragment rankingSectionFragment = new RankingSectionFragment();
+                    rankingSectionFragment.setArguments(bundle);
+                    return rankingSectionFragment;
 
                 default:
                     return new PredictionSectionFragment();
@@ -119,6 +128,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_section_ranking, container, false);
 
+            Bundle bundle = this.getArguments();
+            String userName = "";
+            if (bundle != null) {
+                userName = bundle.getString("username");
+            }
+
             table = (TableLayout) rootView.findViewById(R.id.rankingTable);
             table.removeViews(1, table.getChildCount() - 1);
 
@@ -126,16 +141,25 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             List<Ranking> rankingList = data.getRanking();
 
             for(Ranking rankingEntry : rankingList){
-                View row = inflater.inflate(R.layout.table_row, container, false);
+                View rowView = inflater.inflate(R.layout.table_row, container, false);
 
-                TextView textViewRanking = (TextView) row.findViewById(R.id.table_text_ranking) ;
-                textViewRanking.setText(rankingEntry.getPlace());
-                TextView textViewName = (TextView) row.findViewById(R.id.table_text_name) ;
+                TextView textViewRanking = (TextView) rowView.findViewById(R.id.table_text_ranking) ;
+                textViewRanking.setText(String.valueOf(rankingList.indexOf(rankingEntry) + 1));
+                TextView textViewName = (TextView) rowView.findViewById(R.id.table_text_name) ;
                 textViewName.setText(rankingEntry.getName());
-                TextView textViewPoints = (TextView) row.findViewById(R.id.table_text_points) ;
+                TextView textViewPoints = (TextView) rowView.findViewById(R.id.table_text_points) ;
                 textViewPoints.setText(rankingEntry.getPoints());
 
-                table.addView(row);
+                if(rankingEntry.getName().equals(userName)){
+                    textViewRanking.setTypeface(textViewRanking.getTypeface(), Typeface.BOLD);
+                    textViewRanking.setBackgroundResource(R.drawable.back_grey);
+                    textViewName.setTypeface(textViewRanking.getTypeface(), Typeface.BOLD);
+                    textViewName.setBackgroundResource(R.drawable.back_grey);
+                    textViewPoints.setTypeface(textViewRanking.getTypeface(), Typeface.BOLD);
+                    textViewPoints.setBackgroundResource(R.drawable.back_grey);
+                }
+
+                table.addView(rowView);
             }
 
             return rootView;

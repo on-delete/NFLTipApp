@@ -5,28 +5,17 @@ import android.os.Parcelable;
 
 public class Ranking implements Parcelable{
 
-    private String place;
     private String name;
     private String points;
 
     public Ranking(String place, String name, String points) {
-        this.place = place;
         this.name = name;
         this.points = points;
     }
 
     public Ranking(Parcel parcel){
-        this.place = parcel.readString();
         this.name = parcel.readString();
         this.points = parcel.readString();
-    }
-
-    public String getPlace() {
-        return place;
-    }
-
-    public void setPlace(String place) {
-        this.place = place;
     }
 
     public String getName() {
@@ -52,7 +41,6 @@ public class Ranking implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(place);
         dest.writeString(name);
         dest.writeString(points);
     }
