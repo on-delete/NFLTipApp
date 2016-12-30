@@ -351,6 +351,9 @@ function calculateRanking(res, uuid){
                             i++;
                             if(i >= rows.length){
                                 connection.release();
+                                rankingList = rankingList.sort(function (a, b) {
+                                    return b.points - a.points;
+                                });
                                 getPredictions(rankingList, res, uuid)
                             }
                             else{
@@ -376,7 +379,7 @@ function calculateRanking(res, uuid){
                                             (function calculateRankingForUser(score) {
                                                 j++;
                                                 if(j >= rows2.length){
-                                                    rankingList.push({"place": "", "name": user_name, "points": score});
+                                                    rankingList.push({"name": user_name, "points": score});
                                                     calculateForEveryUser(rankingList);
                                                 }
                                                 else{
