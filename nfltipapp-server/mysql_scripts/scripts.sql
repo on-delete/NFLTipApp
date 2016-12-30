@@ -49,6 +49,7 @@ insert into teams (team_name, team_prefix) VALUES
 
 CREATE TABLE games (
 	game_id int unique not null,
+	game_datetime datetime not null,
 	game_finished boolean not null,
 	home_team_id int not null,
 	home_team_score int,

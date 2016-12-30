@@ -309,9 +309,9 @@ function insertNewGame(game, week){
             winston.info("error in database connection");
         }
         else {
-            var sql = "INSERT INTO games (game_id, game_finished, home_team_score, away_team_score, week, season_type, home_team_id, away_team_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?, (SELECT team_id FROM teams WHERE team_prefix=?), (SELECT team_id FROM teams WHERE team_prefix=?));";
-            var inserts = [game.$.eid, (game.$.q !== 'P'), game.$.hs, game.$.vs, week, game.$.gt, game.$.h, game.$.v];
+            var sql = "INSERT INTO games (game_id, game_datetime, game_finished, home_team_score, away_team_score, week, season_type, home_team_id, away_team_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT team_id FROM teams WHERE team_prefix=?), (SELECT team_id FROM teams WHERE team_prefix=?));";
+            var inserts = [game.$.eid, getGameDateTime(game.$.eid, game.$.t), (game.$.q !== 'P'), game.$.hs, game.$.vs, week, game.$.gt, game.$.h, game.$.v];
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {
                 if (err) {
@@ -325,6 +325,14 @@ function insertNewGame(game, week){
         }
         connection.release();
     });
+}
+
+function getGameDateTime(gameId, time){
+    var year = gameId.substr(0, 4);
+    var month = gameId.substr(4, 2);
+    var day = gameId.substr(6, 2);
+
+    return year+"-"+month+"-"+day+" "+time+":00";
 }
 
 function insertNewPrediction(gameid){
@@ -435,7 +443,7 @@ function getPredictions(rankingList, res, uuid){
             winston.info("error in database connection");
         }
         else {
-            var sql = "SELECT predictions.game_id as game_id, predictions.predicted as predicted, predictions.home_team_predicted as home_team_predicted, games.game_finished as game_finished, games.home_team_score as home_team_score, games.away_team_score as away_team_score, games.season_type as season_type, games.week as week, teams_home.team_prefix as home_team_prefix, teams_away.team_prefix as away_team_prefix " +
+            var sql = "SELECT predictions.game_id as game_id, predictions.predicted as predicted, predictions.home_team_predicted as home_team_predicted, games.game_finished as game_finished, games.home_team_score as home_team_score, games.away_team_score as away_team_score, DATE_FORMAT(games.game_datetime, \"%Y-%m-%d %T\") as game_datetime, games.season_type as season_type, games.week as week, teams_home.team_prefix as home_team_prefix, teams_away.team_prefix as away_team_prefix " +
             "FROM predictions " +
             "RIGHT JOIN games " +
             "ON predictions.game_id = games.game_id " +
@@ -460,11 +468,11 @@ function getPredictions(rankingList, res, uuid){
                             var predictionListItem = getPredictionListItem(predictionsList, actualRow.week, actualRow.season_type);
                             if(predictionListItem.length === 0){
                                 var tempItem = {"week": actualRow.week, "type": actualRow.season_type, "games": []};
-                                tempItem.games.push({"gameid": actualRow.game_id, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
+                                tempItem.games.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
                                 predictionsList.push(tempItem);
                             }
                             else{
-                                predictionListItem[0].games.push({"gameid": actualRow.game_id, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
+                                predictionListItem[0].games.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
                             }
                         }
                         sendDataResponse(rankingList, predictionsList, res);

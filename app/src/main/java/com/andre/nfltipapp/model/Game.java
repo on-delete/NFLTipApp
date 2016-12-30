@@ -6,6 +6,7 @@ import android.os.Parcelable;
 public class Game implements Parcelable{
 
     private String gameid;
+    private String gamedatetime;
     private String hometeam;
     private String awayteam;
     private int homepoints;
@@ -16,6 +17,7 @@ public class Game implements Parcelable{
 
     public Game(Parcel parcel){
         gameid = parcel.readString();
+        gamedatetime = parcel.readString();
         hometeam = parcel.readString();
         awayteam = parcel.readString();
         homepoints = parcel.readInt();
@@ -28,6 +30,8 @@ public class Game implements Parcelable{
     public String getGameid() {
         return gameid;
     }
+
+    public String getGamedatetime() { return gamedatetime; }
 
     public String getHometeam() {
         return hometeam;
@@ -65,6 +69,7 @@ public class Game implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(gameid);
+        dest.writeString(gamedatetime);
         dest.writeString(hometeam);
         dest.writeString(awayteam);
         dest.writeInt(homepoints);
