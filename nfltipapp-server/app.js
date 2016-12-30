@@ -129,12 +129,33 @@ app.post('/registerUser', function (req, res, next) {
                 else {
                     resp.result = "success";
                     resp.message = "user registered";
+                    initPredictionsForNewUser(result.insertId);
                     sendResponse(res, resp, connection);
                 }
             });
         }
     });
 });
+
+function initPredictionsForNewUser(userId){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+        }
+        else {
+            var sql = "INSERT INTO predictions (game_id, predicted, home_team_predicted, user_id) select game_id, 'false', 'NULL', ? from games;";
+            var inserts = [userId];
+            sql = mysql.format(sql, inserts);
+            connection.query(sql, function (err, result) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
+                }
+            });
+        }
+        connection.release();
+    });
+}
 
 app.post('/registerLogin', function (req, res, next) {
     var resp = {
