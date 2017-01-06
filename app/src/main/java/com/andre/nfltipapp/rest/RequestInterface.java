@@ -6,6 +6,8 @@ import com.andre.nfltipapp.loginregistryview.model.RegisterLoginRequest;
 import com.andre.nfltipapp.loginregistryview.model.RegisterLoginResponse;
 import com.andre.nfltipapp.model.DataRequest;
 import com.andre.nfltipapp.model.DataResponse;
+import com.andre.nfltipapp.model.UpdatePredictionRequest;
+import com.andre.nfltipapp.model.UpdatePredictionResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -24,4 +26,7 @@ public interface RequestInterface {
 
     @POST("getData/")
     Call<DataResponse> getData(@Body DataRequest request);
+
+    @POST("updatePrediction")
+    Call<UpdatePredictionResponse> updatePrediction(@Body UpdatePredictionRequest request);
 }

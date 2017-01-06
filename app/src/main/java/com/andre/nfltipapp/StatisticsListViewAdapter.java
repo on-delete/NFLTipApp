@@ -17,19 +17,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
+public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private List<String> expandableListTitle = new ArrayList<>();
    private HashMap<String, List<Game>> expandableListDetail = new HashMap<>();
 
-    public CustomExpandableListAdapter(Context context, List<Prediction> predictionList) {
+    public StatisticsListViewAdapter(Context context, List<Prediction> predictionList) {
         this.context = context;
 
         for(Prediction predictionItem : predictionList){
-            String title = "Woche " + predictionItem.getWeek() + " in " + predictionItem.getType();
-            this.expandableListTitle.add(title);
-            this.expandableListDetail.put(title, predictionItem.getGames());
+            List<Game> tempGamesList = new ArrayList<>();
+
+            for (Game game : predictionItem.getGames()){
+                if(game.isFinished()==1){
+                    tempGamesList.add(game);
+                }
+            }
+
+            if(tempGamesList.size()>0){
+                String title = "Woche " + predictionItem.getWeek() + " in " + predictionItem.getType();
+                this.expandableListTitle.add(title);
+                this.expandableListDetail.put(title, tempGamesList);
+            }
         }
     }
 
@@ -51,16 +61,12 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_view_item, null);
+            convertView = layoutInflater.inflate(R.layout.statistics_list_item, null);
         }
         LinearLayout homeBackground = (LinearLayout) convertView
                 .findViewById(R.id.background_home_team);
         LinearLayout awayBackground = (LinearLayout) convertView
                 .findViewById(R.id.background_away_team);
-        CheckBox homeTeamCheckbox = (CheckBox) convertView
-                .findViewById(R.id.home_team_checkbox);
-        CheckBox awayTeamCheckbox = (CheckBox) convertView
-                .findViewById(R.id.away_team_checkbox);
         TextView homePrefixTextView = (TextView) convertView
                 .findViewById(R.id.home_team_prefix_text);
         TextView homeScoreTextView = (TextView) convertView
@@ -75,38 +81,26 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         awayPrefixTextView.setText(expandedListItem.getAwayteam());
         awayScoreTextView.setText(String.valueOf(expandedListItem.getAwaypoints()));
 
-        homeTeamCheckbox.setChecked(false);
-        awayTeamCheckbox.setChecked(false);
         homeBackground.setBackgroundResource(R.drawable.back);
         awayBackground.setBackgroundResource(R.drawable.back);
 
-        if(expandedListItem.hasPredicted() == 1){
-            if(expandedListItem.predictedHometeam() == 1){
-                homeTeamCheckbox.setChecked(true);
-            }
-            else{
-                awayTeamCheckbox.setChecked(true);
-            }
+        if(expandedListItem.hasPredicted()==0){
+            homeBackground.setBackgroundResource(R.drawable.back_red);
+            awayBackground.setBackgroundResource(R.drawable.back_red);
         }
-
-        if(expandedListItem.isFinished() == 1){
-            homeTeamCheckbox.setEnabled(false);
-            awayTeamCheckbox.setEnabled(false);
-
-            if(expandedListItem.getHomepoints() > expandedListItem.getAwaypoints()){
+        else {
+            if (((expandedListItem.getHomepoints() > expandedListItem.getAwaypoints()) && expandedListItem.predictedHometeam() == 1) || ((expandedListItem.getHomepoints() < expandedListItem.getAwaypoints()) && expandedListItem.predictedHometeam() == 0)) {
                 homeBackground.setBackgroundResource(R.drawable.back_green);
-                awayBackground.setBackgroundResource(R.drawable.back_red);
-            }
-            else if(expandedListItem.getHomepoints() < expandedListItem.getAwaypoints()){
-                homeBackground.setBackgroundResource(R.drawable.back_red);
                 awayBackground.setBackgroundResource(R.drawable.back_green);
-            }
-            else {
+            } else if (expandedListItem.getHomepoints() == expandedListItem.getAwaypoints()){
                 homeBackground.setBackgroundResource(R.drawable.back_yellow);
                 awayBackground.setBackgroundResource(R.drawable.back_yellow);
             }
+            else {
+                homeBackground.setBackgroundResource(R.drawable.back_red);
+                awayBackground.setBackgroundResource(R.drawable.back_red);
+            }
         }
-
         return convertView;
     }
 

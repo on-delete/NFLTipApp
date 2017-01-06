@@ -33,7 +33,7 @@ var pool = mysql.createPool({
 
 var pre_saison_weeks = [1, 2, 3, 4, 5];
 var reg_saison_weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
-var post_saison_weeks = [1, 2, 3, 4];
+var post_saison_weeks = [18, 19, 20, 21, 22];
 var saison_parts = ['PRE', 'REG', 'POST'];
 var saison_years = [2016];
 var request_string = 'http://www.nfl.com/ajax/scorestrip?season=';
@@ -514,6 +514,48 @@ function getPredictionListItem(predictionsList, week, stype){
         }
     return tempList;
 }
+
+app.post('/updatePrediction', function (req, res, next) {
+    var resp = {
+        "result": "",
+        "message": ""
+    };
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+            resp.result = "failed";
+            resp.message = err.message;
+            sendResponse(res, resp, connection);
+        }
+        else {
+            var sql;
+            var inserts;
+            if(req.body.hasPredicted){
+                sql = "UPDATE predictions SET predicted=1, home_team_predicted=? where game_id=? and user_id=?;";
+                inserts = [(req.body.hasHomeTeamPredicted ? 1 : 0), req.body.gameid, req.body.uuid];
+            }
+            else{
+                sql = "UPDATE predictions SET predicted=0, home_team_predicted=0 where game_id=? and user_id=?;";
+                inserts = [req.body.gameid, req.body.uuid];
+            }
+            sql = mysql.format(sql, inserts);
+            connection.query(sql, function (err, result) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
+                    resp.result = "failed";
+                    resp.message = err.message;
+                    sendResponse(res, resp, connection);
+                }
+                else{
+                    resp.result = "success";
+                    resp.message = "prediction updated";
+                    sendResponse(res, resp, connection);
+                }
+            });
+        }
+    });
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

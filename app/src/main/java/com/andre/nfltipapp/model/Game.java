@@ -31,7 +31,7 @@ public class Game implements Parcelable{
         return gameid;
     }
 
-    public String getGamedatetime() { return gamedatetime; }
+    public String getGamedatetime() { return gamedatetime + " PM"; }
 
     public String getHometeam() {
         return hometeam;

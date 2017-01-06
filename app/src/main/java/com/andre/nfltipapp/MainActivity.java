@@ -38,7 +38,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         String userName = intent.getStringExtra(Constants.NAME) == null ? "admin" : intent.getStringExtra(Constants.NAME);
         String uuid = intent.getStringExtra(Constants.UUID) == null ? "10" : intent.getStringExtra(Constants.UUID);
 
-        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager(), userName);
+        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager(), userName, uuid);
 
         final ActionBar actionBar = getActionBar();
 
@@ -81,31 +81,38 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public static class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
         private String userName;
+        private String uuid;
+        private Bundle bundle = new Bundle();
 
-        public AppSectionsPagerAdapter(FragmentManager fm, String userName) {
+        public AppSectionsPagerAdapter(FragmentManager fm, String userName, String uuid) {
 
             super(fm);
             this.userName = userName;
+            this.uuid = uuid;
         }
 
         @Override
         public Fragment getItem(int i) {
             switch (i) {
                 case 0:
-                    Bundle bundle = new Bundle();
                     bundle.putString("username", this.userName);
                     RankingSectionFragment rankingSectionFragment = new RankingSectionFragment();
                     rankingSectionFragment.setArguments(bundle);
                     return rankingSectionFragment;
 
+                case 1:
+                    bundle.putString("uuid", this.uuid);
+                    PredictionSectionFragment predictionSectionFragment = new PredictionSectionFragment();
+                    predictionSectionFragment.setArguments(bundle);
+                    return predictionSectionFragment;
                 default:
-                    return new PredictionSectionFragment();
+                    return new StatisticsSectionFragment();
             }
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -113,8 +120,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             if(position==0){
                 return "Ranking";
             }
+            else if(position==1){
+                return "Prognosen";
+            }
             else{
-                return "Prognose";
+                return "Statistik";
             }
         }
     }
@@ -177,12 +187,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_section_prediction, container, false);
 
-            expandableListView = (ExpandableListView) rootView.findViewById(R.id.expandableListView);
+            Bundle bundle = this.getArguments();
+            String uuid = "";
+            if (bundle != null) {
+                uuid = bundle.getString("uuid");
+            }
+
+            expandableListView = (ExpandableListView) rootView.findViewById(R.id.predictionsListView);
 
             Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
             List<Prediction> predictionList = data.getPredictions();
 
-            expandableListAdapter = new CustomExpandableListAdapter(getActivity().getApplicationContext(), predictionList);
+            expandableListAdapter = new PredictionsListViewAdapter(getActivity().getApplicationContext(), predictionList, uuid);
             expandableListView.setAdapter(expandableListAdapter);
 
             expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
@@ -199,7 +215,40 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             return rootView;
         }
+    }
 
+    public static class StatisticsSectionFragment extends Fragment {
 
+        int lastExpandedPosition = -1;
+        ExpandableListView expandableListView;
+        ExpandableListAdapter expandableListAdapter;
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_section_statistics, container, false);
+
+            expandableListView = (ExpandableListView) rootView.findViewById(R.id.statisticsListView);
+
+            Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
+            List<Prediction> predictionList = data.getPredictions();
+
+            expandableListAdapter = new StatisticsListViewAdapter(getActivity().getApplicationContext(), predictionList);
+            expandableListView.setAdapter(expandableListAdapter);
+
+            expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
+                @Override
+                public void onGroupExpand(int groupPosition) {
+                    if (lastExpandedPosition != -1
+                            && groupPosition != lastExpandedPosition) {
+                        expandableListView.collapseGroup(lastExpandedPosition);
+                    }
+                    lastExpandedPosition = groupPosition;
+                }
+            });
+
+            return rootView;
+        }
     }
 }
