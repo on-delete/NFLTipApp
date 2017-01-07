@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NFL-Tip-App</string>
+    <string name="app_name">NFL Tipapp</string>
     <string name="email">Email</string>
     <string name="password">Passwort</string>
     <string name="login">Einloggen</string>
@@ -7,7 +7,7 @@
     <string name="name">Name</string>
     <string name="register">Registrieren</string>
     <string name="login_now">Einloggen</string>
-    <string name="title_activity_main_fragment">NFL Tip App</string>
+    <string name="title_activity_main_fragment">NFL Tipapp</string>
 
     <string name="rank">Rang</string>
     <string name="points">Punkte</string>
