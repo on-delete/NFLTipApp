@@ -49,7 +49,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             List<Game> tempGamesList = new ArrayList<>();
 
             for (Game game : predictionItem.getGames()){
-                if(game.isFinished()==0 && Utils.getActualGameTime(game.getGamedatetime()).getTimeInMillis() >= System.currentTimeMillis()){
+                if(game.isFinished()==0){
                     tempGamesList.add(game);
                 }
             }

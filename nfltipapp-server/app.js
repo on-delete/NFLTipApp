@@ -286,8 +286,8 @@ function updatePresentGame(game){
             winston.info("error in database connection updatePresentGame");
         }
         else {
-            var sql = "UPDATE games SET game_finished=?, home_team_score=?, away_team_score=? WHERE game_id=?";
-            var inserts = [true, game.$.hs, game.$.vs, game.$.eid];
+            var sql = "UPDATE games SET game_finished=?, home_team_score=?, away_team_score=? game_datetime=? WHERE game_id=?";
+            var inserts = [true, game.$.hs, game.$.vs, game.$.eid, getGameDateTime(game.$.eid, game.$.t)];
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {
                 if (err) {
