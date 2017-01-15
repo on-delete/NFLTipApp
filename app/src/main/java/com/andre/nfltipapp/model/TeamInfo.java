@@ -1,0 +1,30 @@
+package com.andre.nfltipapp.model;
+
+/**
+ * Created by Andre on 15.01.2017.
+ */
+
+public class TeamInfo {
+
+    private String teamName;
+    private int teamIcon;
+    private String teamColor;
+
+    public TeamInfo(String teamName, int teamIcon, String teamColor) {
+        this.teamName = teamName;
+        this.teamIcon = teamIcon;
+        this.teamColor = teamColor;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public int getTeamIcon() {
+        return teamIcon;
+    }
+
+    public String getTeamColor() {
+        return teamColor;
+    }
+}

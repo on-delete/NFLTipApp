@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -76,9 +75,9 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         TextView awayScoreTextView = (TextView) convertView
                 .findViewById(R.id.away_team_score_text);
 
-        homePrefixTextView.setText(Constants.TEAM_MAP.get(expandedListItem.getHometeam()));
+        homePrefixTextView.setText(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamName());
         homeScoreTextView.setText(String.valueOf(expandedListItem.getHomepoints()));
-        awayPrefixTextView.setText(Constants.TEAM_MAP.get(expandedListItem.getAwayteam()));
+        awayPrefixTextView.setText(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamName());
         awayScoreTextView.setText(String.valueOf(expandedListItem.getAwaypoints()));
 
         homeBackground.setBackgroundResource(R.drawable.back);

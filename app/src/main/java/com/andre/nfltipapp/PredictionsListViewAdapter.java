@@ -1,7 +1,9 @@
 package com.andre.nfltipapp;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
@@ -79,13 +83,24 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.home_team_checkbox);
         final CheckBox awayTeamCheckbox = (CheckBox) convertView
                 .findViewById(R.id.away_team_checkbox);
-        TextView homePrefixTextView = (TextView) convertView
-                .findViewById(R.id.home_team_prefix_text);
-        TextView awayPrefixTextView = (TextView) convertView
-                .findViewById(R.id.away_team_prefix_text);
+        ImageView awayTeamIcon = (ImageView) convertView.findViewById(R.id.icon_away_team);
+        ImageView homeTeamIcon = (ImageView) convertView.findViewById(R.id.icon_home_team);
+        RelativeLayout awayLogoBackground = (RelativeLayout) convertView.findViewById(R.id.away_team_logo_background);
+        RelativeLayout homeLogoBackground = (RelativeLayout) convertView.findViewById(R.id.home_team_logo_background);
 
-        homePrefixTextView.setText(Constants.TEAM_MAP.get(expandedListItem.getHometeam()));
-        awayPrefixTextView.setText(Constants.TEAM_MAP.get(expandedListItem.getAwayteam()));
+        GradientDrawable gdAway = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()), Color.parseColor(Constants.WHITE_BACKGROUND)});
+        gdAway.setGradientCenter(0.5f, 0.0f);
+        awayLogoBackground.setBackground(gdAway);
+
+        GradientDrawable gdHome = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()), Color.parseColor(Constants.WHITE_BACKGROUND)});
+        gdHome.setGradientCenter(0.5f, 0.0f);
+        homeLogoBackground.setBackground(gdHome);
+
+        awayTeamIcon.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()));
+        homeTeamIcon.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()));
+
+        awayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamIcon());
+        homeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamIcon());
 
         homeTeamCheckbox.setChecked(false);
         awayTeamCheckbox.setChecked(false);
