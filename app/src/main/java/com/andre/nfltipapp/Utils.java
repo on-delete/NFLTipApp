@@ -35,10 +35,11 @@ public class Utils {
         Calendar rightNow = Calendar.getInstance();
         if(gameTimeCal != null){
             gameTimeCal.add(Calendar.MINUTE, -30);
-            return rightNow.before(gameTimeCal);
+            return rightNow.getTimeInMillis() > gameTimeCal.getTimeInMillis();
         }
-
-        return false;
+        else{
+            return false;
+        }
     }
 
 
