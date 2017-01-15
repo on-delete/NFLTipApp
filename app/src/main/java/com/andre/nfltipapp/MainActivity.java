@@ -29,7 +29,7 @@ public class MainActivity extends FragmentActivity {
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
-                return Color.parseColor("#00E5FF");
+                return R.color.colorAccent;
             }
         });
 

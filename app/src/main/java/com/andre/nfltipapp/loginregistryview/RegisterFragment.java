@@ -4,12 +4,12 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,7 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RegisterFragment extends Fragment implements View.OnClickListener{
 
-    private EditText et_email,et_password,et_name;
+    private TextInputEditText et_email,et_password,et_name;
     private ProgressBar progress;
     private RequestInterface requestInterface;
 
@@ -44,9 +44,9 @@ public class RegisterFragment extends Fragment implements View.OnClickListener{
     private void initViews(View view){
         AppCompatButton btn_register = (AppCompatButton) view.findViewById(R.id.btn_register);
         TextView tv_login = (TextView) view.findViewById(R.id.tv_login);
-        et_email = (EditText)view.findViewById(R.id.et_email);
-        et_password = (EditText)view.findViewById(R.id.et_password);
-        et_name = (EditText)view.findViewById(R.id.et_name);
+        et_email = (TextInputEditText)view.findViewById(R.id.et_email);
+        et_password = (TextInputEditText)view.findViewById(R.id.et_password);
+        et_name = (TextInputEditText)view.findViewById(R.id.et_name);
 
         progress = (ProgressBar)view.findViewById(R.id.progress);
 

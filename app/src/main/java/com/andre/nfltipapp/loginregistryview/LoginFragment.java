@@ -5,12 +5,12 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -31,7 +31,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginFragment extends Fragment implements View.OnClickListener{
-    private EditText et_name,et_password;
+    private TextInputEditText et_name,et_password;
     private ProgressBar progress;
     private RequestInterface requestInterface;
 
@@ -46,8 +46,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     private void initViews(View view){
         AppCompatButton btn_login = (AppCompatButton) view.findViewById(R.id.btn_login);
         TextView tv_register = (TextView) view.findViewById(R.id.tv_register);
-        et_name = (EditText)view.findViewById(R.id.et_name);
-        et_password = (EditText)view.findViewById(R.id.et_password);
+        et_name = (TextInputEditText)view.findViewById(R.id.et_name);
+        et_password = (TextInputEditText)view.findViewById(R.id.et_password);
 
         progress = (ProgressBar)view.findViewById(R.id.progress);
 
@@ -157,5 +157,4 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         this.getActivity().finish();
         startActivity(intent);
     }
-
 }
