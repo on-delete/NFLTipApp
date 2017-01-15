@@ -1,4 +1,4 @@
-package com.andre.nfltipapp;
+package com.andre.nfltipapp.tabview;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -9,6 +9,8 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.andre.nfltipapp.Constants;
+import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Game;
 import com.andre.nfltipapp.model.Prediction;
 
