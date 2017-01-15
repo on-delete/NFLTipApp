@@ -55,7 +55,6 @@ public class Constants {
     }};
 
     public static final Map<String, String> WEEK_TYPE_MAP = new HashMap<String, String>() {{
-        put("PRE", "Preseason");
         put("REG", "Regular Season");
         put("WC", "Wildcard");
         put("DIV", "Divisional Playoffs");

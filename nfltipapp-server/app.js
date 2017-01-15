@@ -31,10 +31,9 @@ var pool = mysql.createPool({
     database: 'nfltipappdb'
 });
 
-var pre_saison_weeks = [1, 2, 3, 4, 5];
 var reg_saison_weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
 var post_saison_weeks = [18, 19, 20, 21, 22];
-var saison_parts = ['PRE', 'REG', 'POST'];
+var saison_parts = ['REG', 'POST'];
 var saison_years = [2016];
 var request_string = 'http://www.nfl.com/ajax/scorestrip?season=';
 
@@ -217,9 +216,6 @@ function updateSchedule() {
         saison_parts.forEach(function (spart) {
             var weeks;
             switch (spart) {
-                case 'PRE' :
-                    weeks = pre_saison_weeks;
-                    break;
                 case 'REG' :
                     weeks = reg_saison_weeks;
                     break;
