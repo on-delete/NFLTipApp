@@ -42,7 +42,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             List<Game> tempGamesList = new ArrayList<>();
 
             for (Game game : predictionItem.getGames()){
-                if(game.isFinished()==0 && Utils.getActualGameTimeInMilliSeconds(game.getGamedatetime()) >= System.currentTimeMillis()){
+                if(game.isFinished()==0 && Utils.getActualGameTime(game.getGamedatetime()).getTimeInMillis() >= System.currentTimeMillis()){
                     tempGamesList.add(game);
                 }
             }
@@ -99,10 +99,15 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
         }
 
+        if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime())){
+            homeTeamCheckbox.setEnabled(false);
+            awayTeamCheckbox.setEnabled(false);
+        }
+
         homeTeamCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(Utils.getActualGameTimeInMilliSeconds(expandedListItem.getGamedatetime()) < System.currentTimeMillis()){
+                if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime())){
                     if(isChecked){
                         homeTeamCheckbox.setChecked(false);
                     }
@@ -129,7 +134,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         awayTeamCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(Utils.getActualGameTimeInMilliSeconds(expandedListItem.getGamedatetime()) < System.currentTimeMillis()){
+                if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime())){
                     if(isChecked){
                         awayTeamCheckbox.setChecked(false);
                     }
