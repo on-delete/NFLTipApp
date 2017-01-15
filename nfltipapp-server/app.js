@@ -26,9 +26,9 @@ var app = express();
 
 var pool = mysql.createPool({
     host: 'localhost',
-    user: 'andre',
-    password: 'Kartoffelecke',
-    database: 'andre'
+    user: 'andredb',
+    password: 'database123',
+    database: 'nfltipappdb'
 });
 
 var pre_saison_weeks = [1, 2, 3, 4, 5];

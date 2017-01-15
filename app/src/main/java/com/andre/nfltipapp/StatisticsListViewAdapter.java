@@ -36,7 +36,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             }
 
             if(tempGamesList.size()>0){
-                String title = "Woche " + predictionItem.getWeek() + " in " + predictionItem.getType();
+                String title = "Woche " + predictionItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionItem.getType()) : "");
                 this.expandableListTitle.add(title);
                 this.expandableListDetail.put(title, tempGamesList);
             }
@@ -76,9 +76,9 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         TextView awayScoreTextView = (TextView) convertView
                 .findViewById(R.id.away_team_score_text);
 
-        homePrefixTextView.setText(expandedListItem.getHometeam());
+        homePrefixTextView.setText(Constants.TEAM_MAP.get(expandedListItem.getHometeam()));
         homeScoreTextView.setText(String.valueOf(expandedListItem.getHomepoints()));
-        awayPrefixTextView.setText(expandedListItem.getAwayteam());
+        awayPrefixTextView.setText(Constants.TEAM_MAP.get(expandedListItem.getAwayteam()));
         awayScoreTextView.setText(String.valueOf(expandedListItem.getAwaypoints()));
 
         homeBackground.setBackgroundResource(R.drawable.back);

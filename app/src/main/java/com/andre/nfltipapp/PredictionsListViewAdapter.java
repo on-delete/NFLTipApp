@@ -48,7 +48,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
 
             if(tempGamesList.size()>0){
-                String title = "Woche " + predictionItem.getWeek() + " in " + predictionItem.getType();
+                String title = "Woche " + predictionItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionItem.getType()) : "");
                 this.expandableListTitle.add(title);
                 this.expandableListDetail.put(title, tempGamesList);
             }
@@ -84,8 +84,8 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         TextView awayPrefixTextView = (TextView) convertView
                 .findViewById(R.id.away_team_prefix_text);
 
-        homePrefixTextView.setText(expandedListItem.getHometeam());
-        awayPrefixTextView.setText(expandedListItem.getAwayteam());
+        homePrefixTextView.setText(Constants.TEAM_MAP.get(expandedListItem.getHometeam()));
+        awayPrefixTextView.setText(Constants.TEAM_MAP.get(expandedListItem.getAwayteam()));
 
         homeTeamCheckbox.setChecked(false);
         awayTeamCheckbox.setChecked(false);
@@ -116,12 +116,10 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     if(isChecked) {
                         awayTeamCheckbox.setChecked(false);
                         updatePrediction(0, expandedListItem.getGameid(), uuid);
-                        Log.d(Constants.TAG, "home checked!");
                     }
                     else{
                         if(!homeTeamCheckbox.isChecked()) {
                             updatePrediction(2, expandedListItem.getGameid(), uuid);
-                            Log.d(Constants.TAG, "home unchecked!");
                         }
                     }
                 }
@@ -145,12 +143,10 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     if(isChecked) {
                         homeTeamCheckbox.setChecked(false);
                         updatePrediction(1, expandedListItem.getGameid(), uuid);
-                        Log.d(Constants.TAG, "away checked!");
                     }
                     else{
                         if(!awayTeamCheckbox.isChecked()) {
                             updatePrediction(2, expandedListItem.getGameid(), uuid);
-                            Log.d(Constants.TAG, "away unchecked!");
                         }
                     }
                 }
@@ -247,7 +243,6 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             public void onResponse(Call<UpdatePredictionResponse> call, retrofit2.Response<UpdatePredictionResponse> response) {
                 UpdatePredictionResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    Log.d(Constants.TAG, "prediction updated!");
                 }
                 else{
                     Log.d(Constants.TAG, resp.getMessage());
