@@ -24,6 +24,7 @@ import com.andre.nfltipapp.model.Prediction;
 import com.andre.nfltipapp.model.UpdatePredictionRequest;
 import com.andre.nfltipapp.model.UpdatePredictionResponse;
 import com.andre.nfltipapp.rest.RequestInterface;
+import static com.andre.nfltipapp.Constants.UPDATE_STATES;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,11 +78,9 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     public View getChildView(int listPosition, final int expandedListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
         final Game expandedListItem = (Game) getChild(listPosition, expandedListPosition);
-        if (convertView == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) this.context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.predictions_list_item, null);
-        }
+        LayoutInflater layoutInflater = (LayoutInflater) this.context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        convertView = layoutInflater.inflate(R.layout.predictions_list_item, null);
         final CheckBox homeTeamCheckbox = (CheckBox) convertView
                 .findViewById(R.id.home_team_checkbox);
         final CheckBox awayTeamCheckbox = (CheckBox) convertView
@@ -125,24 +124,25 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         homeTeamCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                CheckBox clickedBox = (CheckBox) buttonView;
+
                 if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime())){
                     if(isChecked){
-                        homeTeamCheckbox.setChecked(false);
+                        clickedBox.setChecked(false);
                     }
                     else {
-                        homeTeamCheckbox.setChecked(true);
+                        clickedBox.setChecked(true);
                     }
-                    homeTeamCheckbox.setEnabled(false);
+                    clickedBox.setEnabled(false);
                     awayTeamCheckbox.setEnabled(false);
                 }
                 else{
                     if(isChecked) {
-                        awayTeamCheckbox.setChecked(false);
-                        updatePrediction(0, expandedListItem.getGameid(), uuid);
+                        updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.HOME_TEAM_SELECTED, expandedListItem, uuid);
                     }
                     else{
-                        if(!homeTeamCheckbox.isChecked()) {
-                            updatePrediction(2, expandedListItem.getGameid(), uuid);
+                        if(!awayTeamCheckbox.isChecked()) {
+                            updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.UNPREDICTED, expandedListItem, uuid);
                         }
                     }
                 }
@@ -152,24 +152,25 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         awayTeamCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                CheckBox clickedBox = (CheckBox) buttonView;
+
                 if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime())){
                     if(isChecked){
-                        awayTeamCheckbox.setChecked(false);
+                        clickedBox.setChecked(false);
                     }
                     else {
-                        awayTeamCheckbox.setChecked(true);
+                        clickedBox.setChecked(true);
                     }
                     homeTeamCheckbox.setEnabled(false);
-                    awayTeamCheckbox.setEnabled(false);
+                    clickedBox.setEnabled(false);
                 }
                 else{
                     if(isChecked) {
-                        homeTeamCheckbox.setChecked(false);
-                        updatePrediction(1, expandedListItem.getGameid(), uuid);
+                        updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.AWAY_TEAM_SELECTED, expandedListItem, uuid);
                     }
                     else{
-                        if(!awayTeamCheckbox.isChecked()) {
-                            updatePrediction(2, expandedListItem.getGameid(), uuid);
+                        if(!homeTeamCheckbox.isChecked()) {
+                            updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.UNPREDICTED, expandedListItem, uuid);
                         }
                     }
                 }
@@ -213,6 +214,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
+
         return convertView;
     }
 
@@ -226,34 +228,34 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    private void updatePrediction(int prediction, String gameId, String uuid){
+    private void updatePrediction(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, UPDATE_STATES state, Game game, String uuid){
         UpdatePredictionRequest request = new UpdatePredictionRequest();
-        request.setGameid(gameId);
+        request.setGameid(game.getGameid());
         request.setUuid(uuid);
-        switch (prediction){
-            case 0:{
+        switch (state){
+            case HOME_TEAM_SELECTED:{
                 request.setHasPredicted(true);
                 request.setHasHomeTeamPredicted(true);
-                sendUpdateRequest(request);
+                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, game, state);
                 break;
             }
-            case 1: {
+            case AWAY_TEAM_SELECTED: {
                 request.setHasPredicted(true);
                 request.setHasHomeTeamPredicted(false);
-                sendUpdateRequest(request);
+                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, game, state);
                 break;
             }
-            case 2: {
+            case UNPREDICTED: {
                 request.setHasPredicted(false);
                 request.setHasHomeTeamPredicted(true);
-                sendUpdateRequest(request);
+                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, game, state);
                 break;
             }
             default: break;
         }
     }
 
-    private void sendUpdateRequest(UpdatePredictionRequest request){
+    private void sendUpdateRequest(UpdatePredictionRequest request, final CheckBox homeTeamCheckbox, final CheckBox awayTeamCheckbox, final Game game, final UPDATE_STATES state){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -266,9 +268,11 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             public void onResponse(Call<UpdatePredictionResponse> call, retrofit2.Response<UpdatePredictionResponse> response) {
                 UpdatePredictionResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
+                    updateModel(homeTeamCheckbox, awayTeamCheckbox, game, state);
                 }
                 else{
                     Log.d(Constants.TAG, resp.getMessage());
+
                 }
             }
 
@@ -277,5 +281,30 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 Log.d(Constants.TAG, t.getMessage());
             }
         });
+    }
+
+    private void updateModel(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, Game game, UPDATE_STATES state){
+        switch (state){
+            case HOME_TEAM_SELECTED:{
+                game.setHaspredicted(1);
+                game.setPredictedhometeam(1);
+                awayTeamCheckbox.setChecked(false);
+                break;
+            }
+            case AWAY_TEAM_SELECTED: {
+                game.setHaspredicted(1);
+                game.setPredictedhometeam(0);
+                homeTeamCheckbox.setChecked(false);
+                break;
+            }
+            case UNPREDICTED: {
+                game.setHaspredicted(0);
+                game.setPredictedhometeam(0);
+                homeTeamCheckbox.setChecked(false);
+                awayTeamCheckbox.setChecked(false);
+                break;
+            }
+            default: break;
+        }
     }
 }

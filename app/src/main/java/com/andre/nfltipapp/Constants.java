@@ -27,6 +27,7 @@ public class Constants {
         put("REG", "Regular Season");
         put("WC", "Wildcard");
         put("DIV", "Divisional Playoffs");
+        put("CON", "Conference Championships");
     }};
 
     public static final Map<String, TeamInfo> TEAM_INFO_MAP = new HashMap<String, TeamInfo>() {{
@@ -63,4 +64,10 @@ public class Constants {
         put("LA", new TeamInfo("Los Angeles Rams", R.drawable.la, "#022754"));
         put("SF", new TeamInfo("San Francisco 49ers", R.drawable.sf, "#B79C6D"));
     }};
+
+    public enum UPDATE_STATES {
+        HOME_TEAM_SELECTED,
+        AWAY_TEAM_SELECTED,
+        UNPREDICTED
+    }
 }

@@ -61,6 +61,14 @@ public class Game implements Parcelable{
         return predictedhometeam;
     }
 
+    public void setHaspredicted(int haspredicted) {
+        this.haspredicted = haspredicted;
+    }
+
+    public void setPredictedhometeam(int predictedhometeam) {
+        this.predictedhometeam = predictedhometeam;
+    }
+
     @Override
     public int describeContents() {
         return 0;
