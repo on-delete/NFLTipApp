@@ -1,22 +1,38 @@
 package com.andre.nfltipapp.tabview;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.StatisticForGameActivity;
+import com.andre.nfltipapp.model.AllPredictionsRequest;
+import com.andre.nfltipapp.model.AllPredictionsResponse;
 import com.andre.nfltipapp.model.Game;
 import com.andre.nfltipapp.model.Prediction;
+import com.andre.nfltipapp.rest.RequestInterface;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
@@ -42,6 +58,8 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                 this.expandableListDetail.put(title, tempGamesList);
             }
         }
+
+        Collections.reverse(expandableListTitle);
     }
 
     @Override
@@ -64,44 +82,44 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.statistics_list_item, null);
         }
-        LinearLayout homeBackground = (LinearLayout) convertView
-                .findViewById(R.id.background_home_team);
-        LinearLayout awayBackground = (LinearLayout) convertView
-                .findViewById(R.id.background_away_team);
-        TextView homePrefixTextView = (TextView) convertView
-                .findViewById(R.id.home_team_prefix_text);
+
         TextView homeScoreTextView = (TextView) convertView
                 .findViewById(R.id.home_team_score_text);
-        TextView awayPrefixTextView = (TextView) convertView
-                .findViewById(R.id.away_team_prefix_text);
         TextView awayScoreTextView = (TextView) convertView
                 .findViewById(R.id.away_team_score_text);
 
-        homePrefixTextView.setText(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamName());
+        TableRow statisticRow = (TableRow)  convertView.findViewById(R.id.statisticsRow);
+        ImageView awayTeamIcon = (ImageView) convertView.findViewById(R.id.icon_away_team);
+        ImageView homeTeamIcon = (ImageView) convertView.findViewById(R.id.icon_home_team);
+        RelativeLayout awayLogoBackground = (RelativeLayout) convertView.findViewById(R.id.away_team_logo_background);
+        RelativeLayout homeLogoBackground = (RelativeLayout) convertView.findViewById(R.id.home_team_logo_background);
+
+        statisticRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AllPredictionsRequest request = new AllPredictionsRequest();
+                request.setGameid(expandedListItem.getGameid());
+                getAllPredictionsForGameid(expandedListItem, request);
+            }
+        });
+
+        GradientDrawable gdAway = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()), Color.parseColor(Constants.WHITE_BACKGROUND)});
+        gdAway.setGradientCenter(0.5f, 0.0f);
+        awayLogoBackground.setBackground(gdAway);
+
+        GradientDrawable gdHome = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()), Color.parseColor(Constants.WHITE_BACKGROUND)});
+        gdHome.setGradientCenter(0.5f, 0.0f);
+        homeLogoBackground.setBackground(gdHome);
+
+        awayTeamIcon.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()));
+        homeTeamIcon.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()));
+
+        awayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamIcon());
+        homeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamIcon());
+
         homeScoreTextView.setText(String.valueOf(expandedListItem.getHomepoints()));
-        awayPrefixTextView.setText(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamName());
         awayScoreTextView.setText(String.valueOf(expandedListItem.getAwaypoints()));
 
-        homeBackground.setBackgroundResource(R.drawable.back);
-        awayBackground.setBackgroundResource(R.drawable.back);
-
-        if(expandedListItem.hasPredicted()==0){
-            homeBackground.setBackgroundResource(R.drawable.back_red);
-            awayBackground.setBackgroundResource(R.drawable.back_red);
-        }
-        else {
-            if (((expandedListItem.getHomepoints() > expandedListItem.getAwaypoints()) && expandedListItem.predictedHometeam() == 1) || ((expandedListItem.getHomepoints() < expandedListItem.getAwaypoints()) && expandedListItem.predictedHometeam() == 0)) {
-                homeBackground.setBackgroundResource(R.drawable.back_green);
-                awayBackground.setBackgroundResource(R.drawable.back_green);
-            } else if (expandedListItem.getHomepoints() == expandedListItem.getAwaypoints()){
-                homeBackground.setBackgroundResource(R.drawable.back_yellow);
-                awayBackground.setBackgroundResource(R.drawable.back_yellow);
-            }
-            else {
-                homeBackground.setBackgroundResource(R.drawable.back_red);
-                awayBackground.setBackgroundResource(R.drawable.back_red);
-            }
-        }
         return convertView;
     }
 
@@ -135,10 +153,12 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_view_group, null);
         }
+
         TextView listTitleTextView = (TextView) convertView
                 .findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
+
         return convertView;
     }
 
@@ -150,5 +170,35 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int listPosition, int expandedListPosition) {
         return true;
+    }
+
+    private void getAllPredictionsForGameid(final Game game, AllPredictionsRequest request){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+        Call<AllPredictionsResponse> response = requestInterface.allPredictions(request);
+
+        response.enqueue(new Callback<AllPredictionsResponse>() {
+            @Override
+            public void onResponse(Call<AllPredictionsResponse> call, retrofit2.Response<AllPredictionsResponse> response) {
+                AllPredictionsResponse resp = response.body();
+                if(resp.getResult().equals(Constants.SUCCESS)){
+                    Intent intent = new Intent(context, StatisticForGameActivity.class);
+                    intent.putParcelableArrayListExtra(Constants.PREDICTIONLIST, resp.getPredictionList());
+                    intent.putExtra(Constants.GAME, game);
+                    context.startActivity(intent);
+                }
+                else{
+                    Log.d(Constants.TAG, resp.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AllPredictionsResponse> call, Throwable t) {
+                Log.d(Constants.TAG, t.getMessage());
+            }
+        });
     }
 }

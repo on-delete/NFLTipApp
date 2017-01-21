@@ -553,6 +553,56 @@ app.post('/updatePrediction', function (req, res, next) {
     });
 });
 
+app.post('/getAllPredictionsForGame', function (req, res, next) {
+    console.log(req.body.gameid);
+    var resp = {
+        "result": "",
+        "message": "",
+        "predictionlist": ""
+    };
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+            resp.result = "failed";
+            resp.message = err.message;
+            sendResponse(res, resp, connection);
+        }
+        else {
+                var sql = "SELECT predictions.predicted as predicted, predictions.home_team_predicted as home_team_predicted, predictions.user_id as user_id, user.user_name as user_name " +
+                    "FROM predictions " +
+                    "RIGHT JOIN user ON predictions.user_id = user.user_id " +
+                    "WHERE predictions.game_id = ? " +
+                    "ORDER BY user.user_name ASC";
+                var inserts = [req.body.gameid];
+
+                sql = mysql.format(sql, inserts);
+                connection.query(sql, function (err, rows) {
+                    if (err) {
+                        winston.info("error in database query insertNewGame");
+                        winston.info(err.message);
+                        resp.result = "failed";
+                        resp.message = err.message;
+                        sendResponse(res, resp, connection);
+                    }
+                    else{
+                        if(rows!==undefined){
+                            var predictionsList = [];
+                            for(var i=0; i<rows.length; i++){
+                                var actualRow = rows[i];
+                                var tempObject = {"predicted": actualRow.predicted, "hometeampredicted": actualRow.home_team_predicted, "userid": actualRow.user_id, "username": actualRow.user_name};
+                                predictionsList.push(tempObject);
+                            }
+
+                            resp.result = "success";
+                            resp.predictionlist = predictionsList;
+                            sendResponse(res, resp, connection);
+                        }
+                    }
+                });
+        }
+    });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');

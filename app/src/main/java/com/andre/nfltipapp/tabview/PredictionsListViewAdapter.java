@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
@@ -24,7 +24,6 @@ import com.andre.nfltipapp.model.Prediction;
 import com.andre.nfltipapp.model.UpdatePredictionRequest;
 import com.andre.nfltipapp.model.UpdatePredictionResponse;
 import com.andre.nfltipapp.rest.RequestInterface;
-import static com.andre.nfltipapp.Constants.UPDATE_STATES;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +33,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.andre.nfltipapp.Constants.UPDATE_STATES;
 
 public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
 

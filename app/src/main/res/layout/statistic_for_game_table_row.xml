@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingTop="15dp"
+    android:paddingLeft="15dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_weight="5"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/player_name_statistic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:textSize="30dp"/>
+
+        <CheckBox
+            android:id="@+id/away_team_checkbox_statistic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="9"
+            android:scaleX="1.3"
+            android:scaleY="1.3"/>
+
+        <CheckBox
+            android:id="@+id/home_team_checkbox_statistic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="9"
+            android:scaleX="1.3"
+            android:scaleY="1.3"/>
+
+    </LinearLayout>
+
+</TableRow>

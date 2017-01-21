@@ -1,7 +1,6 @@
 package com.andre.nfltipapp;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -19,7 +18,7 @@ public class MainActivity extends FragmentActivity {
         String userName = intent.getStringExtra(Constants.NAME) == null ? "admin" : intent.getStringExtra(Constants.NAME);
         String uuid = intent.getStringExtra(Constants.UUID) == null ? "10" : intent.getStringExtra(Constants.UUID);
 
-        TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), userName, uuid);
+        TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(this, getSupportFragmentManager(), userName, uuid);
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(tabSectionsPagerAdapter);

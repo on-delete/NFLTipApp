@@ -1,5 +1,7 @@
 package com.andre.nfltipapp.tabview;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +16,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
+import com.andre.nfltipapp.MainActivity;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
 import com.andre.nfltipapp.model.Prediction;
@@ -29,10 +32,12 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
     private String userName;
     private String uuid;
     private Bundle bundle = new Bundle();
+    private MainActivity mainActivity;
 
-    public TabSectionsPagerAdapter(FragmentManager fm, String userName, String uuid) {
+    public TabSectionsPagerAdapter(MainActivity mainActivity, FragmentManager fm, String userName, String uuid) {
 
         super(fm);
+        this.mainActivity = mainActivity;
         this.userName = userName;
         this.uuid = uuid;
     }
@@ -127,6 +132,17 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
         ExpandableListView expandableListView;
         ExpandableListAdapter expandableListAdapter;
 
+        Activity activity;
+
+        @Override
+        public void onAttach(Context context){
+            super.onAttach(context);
+
+            if (context instanceof Activity){
+                activity=(Activity) context;
+            }
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -168,6 +184,17 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
         ExpandableListView expandableListView;
         ExpandableListAdapter expandableListAdapter;
 
+        Activity activity;
+
+        @Override
+        public void onAttach(Context context){
+            super.onAttach(context);
+
+            if (context instanceof Activity){
+                activity=(Activity) context;
+            }
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -178,7 +205,7 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
             Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
             List<Prediction> predictionList = data.getPredictions();
 
-            expandableListAdapter = new StatisticsListViewAdapter(getActivity().getApplicationContext(), predictionList);
+            expandableListAdapter = new StatisticsListViewAdapter(activity, predictionList);
             expandableListView.setAdapter(expandableListAdapter);
 
             expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {

@@ -48,6 +48,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         TextView tv_register = (TextView) view.findViewById(R.id.tv_register);
         et_name = (TextInputEditText)view.findViewById(R.id.et_name);
         et_password = (TextInputEditText)view.findViewById(R.id.et_password);
+        et_name.setText("juni");
+        et_password.setText("juni");
 
         progress = (ProgressBar)view.findViewById(R.id.progress);
 
