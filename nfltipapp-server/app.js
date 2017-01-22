@@ -8,6 +8,8 @@ var mysql = require('mysql');
 var parseString = require('xml2js').parseString;
 var limit = require("simple-rate-limiter");
 var request = limit(require("request")).to(1).per(1000);
+var requestWebsite = require("request");
+var cheerio = require("cheerio");
 var schedule = require('node-schedule');
 var winston = require('winston');
 
@@ -471,7 +473,7 @@ function getPredictions(rankingList, res, uuid){
                                 predictionListItem[0].games.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
                             }
                         }
-                        sendDataResponse(rankingList, predictionsList, res);
+                        getStandings(rankingList, predictionsList, res);
                     }
                 }
                 connection.release();
@@ -480,9 +482,43 @@ function getPredictions(rankingList, res, uuid){
     });
 }
 
-function sendDataResponse(rankingList, predictionsList, res){
+function getStandings(rankingList, predictionsList, res){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+        }
+        else {
+            var sql = "SELECT teams.team_prefix as team_prefix, standings.prefix as prefix, standings.games as games, standings.score as score, standings.div_games as div_games " +
+                "FROM standings " +
+                "RIGHT JOIN teams " +
+                "ON standings.team_id = teams.team_id " +
+                "ORDER BY standings.standing_id;";
+            connection.query(sql, function (err, rows) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
+                }
+                else{
+                    if(rows!==undefined){
+                        var standingsList = [];
+                        for(var i=0; i<rows.length; i++){
+                            var actualRow = rows[i];
+                            var tempItem = {"teamprefix": actualRow.team_prefix, "prefix": actualRow.prefix, "games": actualRow.games, "score": actualRow.score, "divgames": actualRow.div_games};
+                            standingsList.push(tempItem);
+                        }
+                        sendDataResponse(rankingList, predictionsList, standingsList, res);
+                    }
+                }
+                connection.release();
+            });
+        }
+    });
+}
+
+function sendDataResponse(rankingList, predictionsList, standingsList, res){
     var data = {"ranking" : rankingList,
-        "predictions": predictionsList};
+        "predictions": predictionsList,
+        "standings": standingsList};
 
     var resp = {
         "result": "success",
@@ -602,6 +638,98 @@ app.post('/getAllPredictionsForGame', function (req, res, next) {
         }
     });
 });
+
+app.get('/updateStandings', function (req, res, next) {
+    var standings = [];
+    var teamStanding;
+
+    requestWebsite('http://www.nfl.com/standings', function (error, response, html) {
+        if(!error && response.statusCode == 200){
+            var $ = cheerio.load(html);
+            $('tr.tbdy1').each(function () {
+
+                var prefix = "", teamname = "", games = "", score = "", div_games = "";
+
+                var tableColumns = $(this).find('td');
+                tableColumns.each(function (i, element) {
+                    if(i < 5 || i == 11){
+                        switch(i){
+                            case 0: {
+                                if($(this).text().trim().indexOf('-') != -1){
+                                    prefix = $(this).text().trim().charAt(0);
+                                }
+                                teamname = $(this).find('a').text().trim();
+                                break;
+                            }
+                            case 1: {
+                                games += $(this).text().trim();
+                                break;
+                            }
+                            case 2: {
+                                games += "-" + $(this).text().trim();
+                                break;
+                            }
+                            case 3: {
+                                if(parseInt($(this).text().trim())>0){
+                                    games += "-" + $(this).text().trim();
+                                }
+                                break;
+                            }
+                            case 4: {
+                                score = $(this).text().trim();
+                                break;
+                            }
+                            case 11: {
+                                div_games = $(this).text().trim();
+                                break;
+                            }
+                            default: break;
+                        }
+                    }
+                });
+
+                teamStanding = {"prefix" : prefix, "teamname": teamname, "games": games, "score": score, "div_games": div_games};
+                standings.push(teamStanding);
+            });
+
+            insertIntoStandingsTable(standings);
+        }
+    });
+
+    res.end("OK");
+});
+
+function insertIntoStandingsTable(standings) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+        }
+        else {
+            var i = -1;
+            (function insertNewStanding() {
+                i++;
+                if (i < standings.length) {
+                    var standing = standings[i];
+                    var sql = "INSERT INTO standings (standing_id, team_id, prefix, games, score, div_games) VALUES (?, (SELECT team_id FROM teams WHERE team_name=?), ?, ?, ?, ?);";
+                    var inserts = [i + 1, standing.teamname, (standing.prefix == '' ? null : standing.prefix), standing.games, standing.score, standing.div_games];
+                    sql = mysql.format(sql, inserts);
+                    connection.query(sql, function (err, result) {
+                        if (err) {
+                            winston.info("error in database query insertNewGame");
+                            winston.info(err.message);
+                        }
+                        else {
+                            insertNewStanding();
+                        }
+                    });
+                }
+                else {
+                    connection.release();
+                }
+            })();
+        }
+    });
+}
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

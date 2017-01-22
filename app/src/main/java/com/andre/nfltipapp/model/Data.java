@@ -10,6 +10,7 @@ public class Data implements Parcelable{
 
     private List<Ranking> ranking;
     private List<Prediction> predictions;
+    private ArrayList<Standing> standings;
 
     public Data(Parcel parcel){
         ranking = new ArrayList<>();
@@ -17,6 +18,9 @@ public class Data implements Parcelable{
 
         predictions = new ArrayList<>();
         parcel.readTypedList(predictions, Prediction.CREATOR);
+
+        standings = new ArrayList<>();
+        parcel.readTypedList(standings, Standing.CREATOR);
     }
 
     public List<Ranking> getRanking() {
@@ -25,6 +29,10 @@ public class Data implements Parcelable{
 
     public List<Prediction> getPredictions() {
         return predictions;
+    }
+
+    public ArrayList<Standing> getStandings() {
+        return standings;
     }
 
     @Override
@@ -36,6 +44,7 @@ public class Data implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeTypedList(ranking);
         dest.writeTypedList(predictions);
+        dest.writeTypedList(standings);
     }
 
     public static final Parcelable.Creator<Data> CREATOR =

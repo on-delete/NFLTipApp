@@ -11,4 +11,18 @@
 
     <string name="rank">Rang</string>
     <string name="points">Punkte</string>
+    <string name="afc">AFC</string>
+    <string name="nfc">NFC</string>
+    <string name="x_clinched_playoff">x - Clinched playoff</string>
+    <string name="y_clinched_wild_card">y - Clinched Wild Card</string>
+    <string name="z_clinched_division">z - Clinched Division</string>
+    <string name="clinched_division_and_homefield_advantage">* - Clinched Division and Homefield Advantage</string>
+    <string name="afc_east">AFC East</string>
+    <string name="afc_north">AFC North</string>
+    <string name="afc_south">AFC South</string>
+    <string name="afc_west">AFC West</string>
+    <string name="nfc_east">NFC East</string>
+    <string name="nfc_north">NFC North</string>
+    <string name="nfc_south">NFC South</string>
+    <string name="nfc_west">NFC West</string>
 </resources>

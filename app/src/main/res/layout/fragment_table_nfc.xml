@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableLayout
+        android:id="@+id/subtable_nfc_east"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="#D8D8D8">
+            <TextView
+                android:text="@string/nfc_east"
+                android:textSize="16dp"/>
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/subtable_nfc_north"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="#D8D8D8">
+            <TextView
+                android:text="@string/nfc_north"
+                android:textSize="16dp"/>
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/subtable_nfc_south"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="#D8D8D8">
+            <TextView
+                android:text="@string/nfc_south"
+                android:textSize="16dp"/>
+        </TableRow>
+    </TableLayout>
+
+    <TableLayout
+        android:id="@+id/subtable_nfc_west"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:background="#D8D8D8">
+            <TextView
+                android:text="@string/nfc_west"
+                android:textSize="16dp"/>
+        </TableRow>
+    </TableLayout>
+</LinearLayout>

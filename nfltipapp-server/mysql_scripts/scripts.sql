@@ -72,3 +72,14 @@ create table predictions (
 	FOREIGN KEY (user_id) REFERENCES user(user_id),
 	FOREIGN KEY (game_id) REFERENCES games(game_id)
 );
+
+create table standings (
+	standing_id int not null,
+	team_id int not null,
+	prefix VARCHAR(2),
+	games  VARCHAR(20) not null,
+	score VARCHAR(10) not null,
+	div_games VARCHAR(20) not null,
+	PRIMARY KEY (standing_id),
+	FOREIGN KEY (team_id) REFERENCES teams(team_id),
+);
