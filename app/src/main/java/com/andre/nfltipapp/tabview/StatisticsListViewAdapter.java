@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -91,8 +90,8 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         TableRow statisticRow = (TableRow)  convertView.findViewById(R.id.statisticsRow);
         ImageView awayTeamIcon = (ImageView) convertView.findViewById(R.id.icon_away_team);
         ImageView homeTeamIcon = (ImageView) convertView.findViewById(R.id.icon_home_team);
-        RelativeLayout awayLogoBackground = (RelativeLayout) convertView.findViewById(R.id.away_team_logo_background);
-        RelativeLayout homeLogoBackground = (RelativeLayout) convertView.findViewById(R.id.home_team_logo_background);
+        LinearLayout awayLogoBackground = (LinearLayout) convertView.findViewById(R.id.away_team_logo_background);
+        LinearLayout homeLogoBackground = (LinearLayout) convertView.findViewById(R.id.home_team_logo_background);
 
         statisticRow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,16 +102,8 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             }
         });
 
-        GradientDrawable gdAway = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()), Color.parseColor(Constants.WHITE_BACKGROUND)});
-        gdAway.setGradientCenter(0.5f, 0.0f);
-        awayLogoBackground.setBackground(gdAway);
-
-        GradientDrawable gdHome = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()), Color.parseColor(Constants.WHITE_BACKGROUND)});
-        gdHome.setGradientCenter(0.5f, 0.0f);
-        homeLogoBackground.setBackground(gdHome);
-
-        awayTeamIcon.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()));
-        homeTeamIcon.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()));
+        awayLogoBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()));
+        homeLogoBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()));
 
         awayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamIcon());
         homeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamIcon());

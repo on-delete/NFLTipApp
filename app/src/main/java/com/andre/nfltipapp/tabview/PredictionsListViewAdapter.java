@@ -13,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -88,19 +89,11 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.away_team_checkbox);
         ImageView awayTeamIcon = (ImageView) convertView.findViewById(R.id.icon_away_team);
         ImageView homeTeamIcon = (ImageView) convertView.findViewById(R.id.icon_home_team);
-        RelativeLayout awayLogoBackground = (RelativeLayout) convertView.findViewById(R.id.away_team_logo_background);
-        RelativeLayout homeLogoBackground = (RelativeLayout) convertView.findViewById(R.id.home_team_logo_background);
+        LinearLayout awayLogoBackground = (LinearLayout) convertView.findViewById(R.id.away_team_logo_background);
+        LinearLayout homeLogoBackground = (LinearLayout) convertView.findViewById(R.id.home_team_logo_background);
 
-        GradientDrawable gdAway = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()), Color.parseColor(Constants.WHITE_BACKGROUND)});
-        gdAway.setGradientCenter(0.5f, 0.0f);
-        awayLogoBackground.setBackground(gdAway);
-
-        GradientDrawable gdHome = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()), Color.parseColor(Constants.WHITE_BACKGROUND)});
-        gdHome.setGradientCenter(0.5f, 0.0f);
-        homeLogoBackground.setBackground(gdHome);
-
-        awayTeamIcon.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()));
-        homeTeamIcon.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()));
+        awayLogoBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()));
+        homeLogoBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()));
 
         awayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamIcon());
         homeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamIcon());

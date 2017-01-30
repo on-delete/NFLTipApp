@@ -11,6 +11,7 @@
         android:layout_marginBottom="2dp">
 
         <LinearLayout
+            android:id="@+id/away_team_logo_background"
             android:orientation="horizontal"
             android:layout_width="0dip"
             android:layout_height="match_parent"
@@ -24,11 +25,10 @@
                 android:scaleType="fitStart"/>
 
             <RelativeLayout
-                android:id="@+id/away_team_logo_background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0"
-                android:paddingEnd="15dp">
+                android:paddingEnd="20dp">
 
                 <TextView
                     android:id="@+id/away_team_score_text"
@@ -36,17 +36,35 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:textSize="30sp"
-                    android:textColor="@color/colorPrimaryDark"/>
+                    android:textSize="26sp"
+                    android:textColor="@android:color/white"/>
             </RelativeLayout>
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/home_team_logo_background"
             android:orientation="horizontal"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="1">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingStart="20dp">
+
+                <TextView
+                    android:id="@+id/home_team_score_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="false"
+                    android:layout_centerVertical="true"
+                    android:textSize="26sp"
+                    android:textColor="@android:color/white"/>
+
+            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/icon_home_team"
@@ -55,23 +73,6 @@
                 android:layout_weight="0"
                 android:scaleType="fitStart"/>
 
-            <RelativeLayout
-                android:id="@+id/home_team_logo_background"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0"
-                android:paddingEnd="15dp">
-
-                <TextView
-                    android:id="@+id/home_team_score_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:textSize="30sp"
-                    android:textColor="@color/colorPrimaryDark"/>
-
-            </RelativeLayout>
         </LinearLayout>
     </TableRow>
 

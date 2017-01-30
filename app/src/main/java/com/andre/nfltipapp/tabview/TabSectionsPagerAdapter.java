@@ -3,7 +3,6 @@ package com.andre.nfltipapp.tabview;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
@@ -19,7 +18,6 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
-import com.andre.nfltipapp.MainActivity;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
 import com.andre.nfltipapp.model.Prediction;
@@ -99,21 +97,10 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
             for(Ranking rankingEntry : rankingList){
                 View rowView = inflater.inflate(R.layout.table_row, container, false);
 
-                TextView textViewRanking = (TextView) rowView.findViewById(R.id.table_text_ranking) ;
-                textViewRanking.setText(String.valueOf(rankingList.indexOf(rankingEntry) + 1));
                 TextView textViewName = (TextView) rowView.findViewById(R.id.table_text_name) ;
                 textViewName.setText(rankingEntry.getName());
                 TextView textViewPoints = (TextView) rowView.findViewById(R.id.table_text_points) ;
                 textViewPoints.setText(rankingEntry.getPoints());
-
-                if(rankingEntry.getName().equals(userName)){
-                    textViewRanking.setTypeface(textViewRanking.getTypeface(), Typeface.BOLD);
-                    textViewRanking.setBackgroundResource(R.drawable.back_grey);
-                    textViewName.setTypeface(textViewRanking.getTypeface(), Typeface.BOLD);
-                    textViewName.setBackgroundResource(R.drawable.back_grey);
-                    textViewPoints.setTypeface(textViewRanking.getTypeface(), Typeface.BOLD);
-                    textViewPoints.setBackgroundResource(R.drawable.back_grey);
-                }
 
                 table.addView(rowView);
             }

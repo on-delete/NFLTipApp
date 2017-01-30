@@ -34,6 +34,7 @@ public class Constants {
         put("WC", "Wildcard");
         put("DIV", "Divisional Playoffs");
         put("CON", "Conference Championships");
+        put("SB", "Super Bowl");
     }};
 
     public static final Map<String, TeamInfo> TEAM_INFO_MAP = new HashMap<String, TeamInfo>() {{
