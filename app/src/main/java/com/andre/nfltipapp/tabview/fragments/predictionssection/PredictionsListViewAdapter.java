@@ -1,4 +1,4 @@
-package com.andre.nfltipapp.tabview;
+package com.andre.nfltipapp.tabview.fragments.predictionssection;
 
 import android.content.Context;
 import android.graphics.Color;

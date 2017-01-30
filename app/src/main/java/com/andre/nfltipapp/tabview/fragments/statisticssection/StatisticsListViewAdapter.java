@@ -1,4 +1,4 @@
-package com.andre.nfltipapp.tabview;
+package com.andre.nfltipapp.tabview.fragments.statisticssection;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
-import com.andre.nfltipapp.StatisticForGameActivity;
+import com.andre.nfltipapp.tabview.fragments.StatisticForGameActivity;
 import com.andre.nfltipapp.model.AllPredictionsRequest;
 import com.andre.nfltipapp.model.AllPredictionsResponse;
 import com.andre.nfltipapp.model.Game;

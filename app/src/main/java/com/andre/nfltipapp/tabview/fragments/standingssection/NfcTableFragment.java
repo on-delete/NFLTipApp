@@ -1,5 +1,4 @@
-package com.andre.nfltipapp.tabview;
-
+package com.andre.nfltipapp.tabview.fragments.standingssection;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,21 +21,21 @@ import java.util.List;
  * Created by Andre on 22.01.2017.
  */
 
-public class AfcTableFragment extends Fragment {
+public class NfcTableFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_table_afc,container,false);
+        View view = inflater.inflate(R.layout.fragment_table_nfc,container,false);
 
-        List<Standing> afcStandings = getArguments().getParcelableArrayList(Constants.AFC_STANDINGS);
+        List<Standing> nfcStandings = getArguments().getParcelableArrayList(Constants.NFC_STANDINGS);
 
-        TableLayout subtableAfcEast = (TableLayout) view.findViewById(R.id.subtable_afc_east);
-        TableLayout subtableAfcNorth = (TableLayout) view.findViewById(R.id.subtable_afc_north);
-        TableLayout subtableAfcSouth = (TableLayout) view.findViewById(R.id.subtable_afc_south);
-        TableLayout subtableAfcWest = (TableLayout) view.findViewById(R.id.subtable_afc_west);
+        TableLayout subtableNfcEast = (TableLayout) view.findViewById(R.id.subtable_nfc_east);
+        TableLayout subtableNfcNorth = (TableLayout) view.findViewById(R.id.subtable_nfc_north);
+        TableLayout subtableNfcSouth = (TableLayout) view.findViewById(R.id.subtable_nfc_south);
+        TableLayout subtableNfcWest = (TableLayout) view.findViewById(R.id.subtable_nfc_west);
 
-        for(int i=0; i< afcStandings.size(); i++){
-            Standing standing = afcStandings.get(i);
+        for(int i=0; i< nfcStandings.size(); i++){
+            Standing standing = nfcStandings.get(i);
 
             View rowView = inflater.inflate(R.layout.table_row_standings, container, false);
 
@@ -61,16 +60,16 @@ public class AfcTableFragment extends Fragment {
             teamScore.setText(standing.getScore());
 
             if(i<4){
-                subtableAfcEast.addView(rowView);
+                subtableNfcEast.addView(rowView);
             }
             else if (i<8){
-                subtableAfcNorth.addView(rowView);
+                subtableNfcNorth.addView(rowView);
             }
             else if (i<12){
-                subtableAfcSouth.addView(rowView);
+                subtableNfcSouth.addView(rowView);
             }
             else {
-                subtableAfcWest.addView(rowView);
+                subtableNfcWest.addView(rowView);
             }
         }
 
