@@ -816,6 +816,56 @@ function insertIntoStandingsTable(standings) {
     });
 }
 
+app.post('/updatePredictionPlus', function (req, res) {
+    var resp = {
+        "result": "",
+        "message": ""
+    };
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+            resp.result = "failed";
+            resp.message = err.message;
+            sendResponse(res, resp, connection);
+        }
+        else {
+            var sql;
+            var inserts;
+            var teamPrefix = req.body.teamprefix;
+
+            if(teamPrefix!=="") {
+                sql = "UPDATE predictions_plus " +
+                    "JOIN teams " +
+                    "ON ? = teams.team_prefix " +
+                    "SET ?? = teams.team_id " +
+                    "WHERE user_id = ?;";
+                inserts = [teamPrefix, req.body.state, req.body.uuid];
+            }
+            else {
+                sql = "UPDATE predictions_plus " +
+                    "SET ?? = NULL " +
+                    "WHERE user_id = ?;";
+                inserts = [req.body.state, req.body.uuid];
+            }
+            sql = mysql.format(sql, inserts);
+            connection.query(sql, function (err, result) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
+                    resp.result = "failed";
+                    resp.message = err.message;
+                    sendResponse(res, resp, connection);
+                }
+                else{
+                    resp.result = "success";
+                    resp.message = "predictionplus updated";
+                    sendResponse(res, resp, connection);
+                }
+            });
+        }
+    });
+});
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
