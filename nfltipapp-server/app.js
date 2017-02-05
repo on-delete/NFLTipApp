@@ -34,7 +34,7 @@ var pool = mysql.createPool({
 });
 
 var reg_saison_weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
-var post_saison_weeks = [18, 19, 20, 21, 22];
+var post_saison_weeks = [18, 19, 20, 22];
 var saison_parts = ['REG', 'POST'];
 var saison_years = [2016];
 var request_string = 'http://www.nfl.com/ajax/scorestrip?season=';
@@ -91,7 +91,7 @@ app.post('/nameExisting', function (req, res, next) {
                     sendResponse(res, resp, connection);
                 }
                 else {
-                    resp.result = "success"
+                    resp.result = "success";
                     if (rows.length > 0) {
                         resp.message = "username already used";
                     }
@@ -131,6 +131,7 @@ app.post('/registerUser', function (req, res, next) {
                     resp.result = "success";
                     resp.message = "user registered";
                     initPredictionsForNewUser(result.insertId);
+                    initPredictionsPlusForNewUser(result.insertId);
                     sendResponse(res, resp, connection);
                 }
             });
@@ -145,6 +146,26 @@ function initPredictionsForNewUser(userId){
         }
         else {
             var sql = "INSERT INTO predictions (game_id, predicted, home_team_predicted, user_id) select game_id, 'false', 'NULL', ? from games;";
+            var inserts = [userId];
+            sql = mysql.format(sql, inserts);
+            connection.query(sql, function (err, result) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
+                }
+            });
+        }
+        connection.release();
+    });
+}
+
+function initPredictionsPlusForNewUser(userId){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+        }
+        else {
+            var sql = "INSERT INTO predictions_plus (user_id, superbowl, afc_winner, nfc_winner, best_offense, best_defense) VALUES (?, 999, 999, 999, 999, 999);";
             var inserts = [userId];
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {
@@ -413,7 +434,7 @@ function calculateRanking(res, uuid){
                                                     var away_team_score = rows2[j].away_team_score;
                                                     var home_team_predicted = rows2[j].home_team_predicted;
                                                     if ((home_team_score > away_team_score && home_team_predicted === 1) || (home_team_score < away_team_score && home_team_predicted === 0)) {
-                                                        score += 3;
+                                                        score += 1;
                                                     }
                                                     calculateRankingForUser(score);
                                                 }
@@ -473,7 +494,7 @@ function getPredictions(rankingList, res, uuid){
                                 predictionListItem[0].games.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
                             }
                         }
-                        getStandings(rankingList, predictionsList, res);
+                        getStandings(rankingList, predictionsList, res, uuid);
                     }
                 }
                 connection.release();
@@ -482,7 +503,7 @@ function getPredictions(rankingList, res, uuid){
     });
 }
 
-function getStandings(rankingList, predictionsList, res){
+function getStandings(rankingList, predictionsList, res, uuid){
     pool.getConnection(function (err, connection) {
         if (err) {
             winston.info("error in database connection");
@@ -506,7 +527,7 @@ function getStandings(rankingList, predictionsList, res){
                             var tempItem = {"teamprefix": actualRow.team_prefix, "prefix": actualRow.prefix, "games": actualRow.games, "score": actualRow.score, "divgames": actualRow.div_games};
                             standingsList.push(tempItem);
                         }
-                        sendDataResponse(rankingList, predictionsList, standingsList, res);
+                        getPredictionPlus(rankingList, predictionsList, standingsList, res, uuid);
                     }
                 }
                 connection.release();
@@ -515,9 +536,73 @@ function getStandings(rankingList, predictionsList, res){
     });
 }
 
-function sendDataResponse(rankingList, predictionsList, standingsList, res){
+function getPredictionPlus(rankingList, predictionsList, standingsList, res, uuid){
+    getFirstGameDate(function (gameDate) {
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                winston.info("error in database connection");
+            }
+            else {
+                var sql = "SELECT superbowl_team.team_prefix as superbowl, afc_winner_team.team_prefix as afc_winner, nfc_winner_team.team_prefix as nfc_winner, best_offense_team.team_prefix as best_offense, best_defense_team.team_prefix as best_defense " +
+                            "FROM predictions_plus " +
+                            "LEFT OUTER JOIN teams as superbowl_team ON superbowl = superbowl_team.team_id " +
+                            "LEFT OUTER JOIN teams as afc_winner_team ON afc_winner = afc_winner_team.team_id " +
+                            "LEFT OUTER JOIN teams as nfc_winner_team ON nfc_winner = nfc_winner_team.team_id " +
+                            "LEFT OUTER JOIN teams as best_offense_team ON best_offense = best_offense_team.team_id " +
+                            "LEFT OUTER JOIN teams as best_defense_team ON best_defense = best_defense_team.team_id " +
+                            "WHERE predictions_plus.user_id = ?;";
+                var inserts = [uuid];
+                sql = mysql.format(sql, inserts);
+                connection.query(sql, function (err, rows) {
+                    if (err) {
+                        winston.info("error in database query insertNewGame");
+                        winston.info(err.message);
+                    }
+                    else{
+                        if(rows!==undefined){
+                            var actualRow = rows[0];
+                            var predictionsPlus = {"superbowl": actualRow.superbowl === null ? "" : actualRow.superbowl, "afcwinnerteam": actualRow.afc_winner === null ? "" : actualRow.afc_winner, "nfcwinnerteam": actualRow.nfc_winner === null ? "" : actualRow.nfc_winner, "bestoffenseteam": actualRow.best_offense === null ? "" : actualRow.best_offense, "bestdefenseteam": actualRow.best_defense === null ? "" : actualRow.best_defense, "firstgamedate": gameDate};
+                            sendDataResponse(rankingList, predictionsList, standingsList, predictionsPlus, res);
+                        }
+                    }
+                    connection.release();
+                });
+            }
+        });
+    })
+}
+
+function getFirstGameDate(callback) {
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+        }
+        else {
+            var sql = "SELECT DATE_FORMAT(game_datetime, \"%Y-%m-%d %T\") as game_datetime from games where week = 1 AND season_type = \"REG\" ORDER BY game_datetime";
+            connection.query(sql, function (err, rows) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
+                }
+                else{
+                    if(rows!==undefined){
+                        var gameDate = rows[0].game_datetime;
+                        callback(gameDate);
+                    }
+                    else {
+                        callback("");
+                    }
+                }
+                connection.release();
+            });
+        }
+    });
+}
+
+function sendDataResponse(rankingList, predictionsList, standingsList, predictionsPlus, res){
     var data = {"ranking" : rankingList,
         "predictions": predictionsList,
+        "predictionsplus": predictionsPlus,
         "standings": standingsList};
 
     var resp = {

@@ -83,3 +83,20 @@ create table standings (
 	PRIMARY KEY (standing_id),
 	FOREIGN KEY (team_id) REFERENCES teams(team_id),
 );
+
+create table predictions_plus (
+	predictions_p_id int not null auto_increment,
+	user_id int not null,
+	superbowl int,
+	afc_winner int,
+	nfc_winner int,
+	best_offense int,
+	best_defense int,
+	PRIMARY KEY (predictions_p_id),
+	FOREIGN KEY (user_id) REFERENCES user(user_id),
+	FOREIGN KEY (superbowl) REFERENCES teams(team_id),
+	FOREIGN KEY (afc_winner) REFERENCES teams(team_id),
+	FOREIGN KEY (nfc_winner) REFERENCES teams(team_id),
+	FOREIGN KEY (best_offense) REFERENCES teams(team_id),
+	FOREIGN KEY (best_defense) REFERENCES teams(team_id),
+);

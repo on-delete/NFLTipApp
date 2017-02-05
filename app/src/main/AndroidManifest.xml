@@ -9,7 +9,7 @@
         android:icon="@mipmap/football_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Material.Light.DarkActionBar">
+        android:theme="@style/AppTheme.ActionBar">
         <activity
             android:name=".loginregistryview.LoginActivity"
             android:screenOrientation="portrait"

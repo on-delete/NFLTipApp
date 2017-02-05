@@ -25,4 +25,9 @@
     <string name="nfc_north">NFC North</string>
     <string name="nfc_south">NFC South</string>
     <string name="nfc_west">NFC West</string>
+    <string name="superbowl">Superbowl</string>
+    <string name="afc_winner">AFC Winner</string>
+    <string name="nfc_winner">NFC Winner</string>
+    <string name="best_offense">Best Offense</string>
+    <string name="best_defense">Best Defense</string>
 </resources>

@@ -1,9 +1,11 @@
 package com.andre.nfltipapp.tabview.fragments.statisticssection;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
@@ -27,7 +28,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -35,12 +38,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
-    private Context context;
+    private Activity activity;
     private List<String> expandableListTitle = new ArrayList<>();
    private HashMap<String, List<Game>> expandableListDetail = new HashMap<>();
 
-    public StatisticsListViewAdapter(Context context, List<Prediction> predictionList) {
-        this.context = context;
+    public StatisticsListViewAdapter(Activity activity, List<Prediction> predictionList) {
+        this.activity = activity;
 
         for(Prediction predictionItem : predictionList){
             List<Game> tempGamesList = new ArrayList<>();
@@ -77,9 +80,9 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild, View convertView, ViewGroup parent) {
         final Game expandedListItem = (Game) getChild(listPosition, expandedListPosition);
         if (convertView == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) this.context
+            LayoutInflater layoutInflater = (LayoutInflater) this.activity
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.statistics_list_item, null);
+            convertView = layoutInflater.inflate(R.layout.statistics_list_item, parent, false);
         }
 
         TextView homeScoreTextView = (TextView) convertView
@@ -87,7 +90,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         TextView awayScoreTextView = (TextView) convertView
                 .findViewById(R.id.away_team_score_text);
 
-        TableRow statisticRow = (TableRow)  convertView.findViewById(R.id.statisticsRow);
+        LinearLayout statisticRow = (LinearLayout)  convertView.findViewById(R.id.statistics_row);
         ImageView awayTeamIcon = (ImageView) convertView.findViewById(R.id.icon_away_team);
         ImageView homeTeamIcon = (ImageView) convertView.findViewById(R.id.icon_home_team);
         LinearLayout awayLogoBackground = (LinearLayout) convertView.findViewById(R.id.away_team_logo_background);
@@ -140,9 +143,9 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                              View convertView, ViewGroup parent) {
         String listTitle = (String) getGroup(listPosition);
         if (convertView == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) this.context.
+            LayoutInflater layoutInflater = (LayoutInflater) this.activity.
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_view_group, null);
+            convertView = layoutInflater.inflate(R.layout.list_view_group, parent, false);
         }
 
         TextView listTitleTextView = (TextView) convertView
@@ -164,9 +167,11 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void getAllPredictionsForGameid(final Game game, AllPredictionsRequest request){
+        OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(3, TimeUnit.SECONDS).build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient)
                 .build();
         RequestInterface requestInterface = retrofit.create(RequestInterface.class);
         Call<AllPredictionsResponse> response = requestInterface.allPredictions(request);
@@ -176,10 +181,10 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             public void onResponse(Call<AllPredictionsResponse> call, retrofit2.Response<AllPredictionsResponse> response) {
                 AllPredictionsResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    Intent intent = new Intent(context, StatisticForGameActivity.class);
+                    Intent intent = new Intent(activity, StatisticForGameActivity.class);
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONLIST, resp.getPredictionList());
                     intent.putExtra(Constants.GAME, game);
-                    context.startActivity(intent);
+                    activity.startActivity(intent);
                 }
                 else{
                     Log.d(Constants.TAG, resp.getMessage());
@@ -188,6 +193,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
             @Override
             public void onFailure(Call<AllPredictionsResponse> call, Throwable t) {
+                Snackbar.make(activity.findViewById(R.id.statisticsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });

@@ -77,4 +77,12 @@ public class Constants {
         AWAY_TEAM_SELECTED,
         UNPREDICTED
     }
+
+    public enum PREDICTIONS_PLUS_STATES {
+        SUPERBOWL,
+        AFC_WINNER,
+        NFC_WINNER,
+        BEST_OFFENSE,
+        BEST_DEFENSE
+    }
 }

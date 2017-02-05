@@ -26,7 +26,6 @@ public class StatisticsSectionFragment extends Fragment {
     private int lastExpandedPosition = -1;
 
     private ExpandableListView expandableListView;
-    private ExpandableListAdapter expandableListAdapter;
 
     private Activity activity;
 
@@ -49,7 +48,7 @@ public class StatisticsSectionFragment extends Fragment {
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         List<Prediction> predictionList = data.getPredictions();
 
-        expandableListAdapter = new StatisticsListViewAdapter(activity, predictionList);
+        ExpandableListAdapter expandableListAdapter = new StatisticsListViewAdapter(activity, predictionList);
         expandableListView.setAdapter(expandableListAdapter);
 
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
