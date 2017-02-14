@@ -8,8 +8,9 @@ import com.andre.nfltipapp.model.AllPredictionsRequest;
 import com.andre.nfltipapp.model.AllPredictionsResponse;
 import com.andre.nfltipapp.model.DataRequest;
 import com.andre.nfltipapp.model.DataResponse;
+import com.andre.nfltipapp.model.UpdatePredictionPlusRequest;
 import com.andre.nfltipapp.model.UpdatePredictionRequest;
-import com.andre.nfltipapp.model.UpdatePredictionResponse;
+import com.andre.nfltipapp.model.UpdateResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -30,7 +31,10 @@ public interface RequestInterface {
     Call<DataResponse> getData(@Body DataRequest request);
 
     @POST("updatePrediction")
-    Call<UpdatePredictionResponse> updatePrediction(@Body UpdatePredictionRequest request);
+    Call<UpdateResponse> updatePrediction(@Body UpdatePredictionRequest request);
+
+    @POST("updatePredictionPlus")
+    Call<UpdateResponse> updatePredictionPlus(@Body UpdatePredictionPlusRequest request);
 
     @POST("getAllPredictionsForGame")
     Call<AllPredictionsResponse> allPredictions(@Body AllPredictionsRequest request);

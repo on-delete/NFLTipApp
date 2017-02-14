@@ -29,15 +29,18 @@ import com.andre.nfltipapp.model.AllPredictionsResponse;
 import com.andre.nfltipapp.model.Game;
 import com.andre.nfltipapp.model.Prediction;
 import com.andre.nfltipapp.model.PredictionPlus;
+import com.andre.nfltipapp.model.UpdatePredictionPlusRequest;
 import com.andre.nfltipapp.model.UpdatePredictionRequest;
-import com.andre.nfltipapp.model.UpdatePredictionResponse;
+import com.andre.nfltipapp.model.UpdateResponse;
 import com.andre.nfltipapp.rest.RequestInterface;
 import com.andre.nfltipapp.tabview.fragments.StatisticForGameActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -51,6 +54,25 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private List<String> expandableListTitle = new ArrayList<>();
     private HashMap<String, Object> expandableListDetail = new HashMap<>();
     private String uuid;
+    private OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(2, TimeUnit.SECONDS).build();
+    private Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient)
+            .build();
+    private RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+    private Object child;
+    private LayoutInflater layoutInflater;
+    private Object childView;
+    private ArrayList<String> teamPrefixList = new ArrayList<>();
+    private ArrayList<String> teamNameList = new ArrayList<>();
+
+    private int lastSuperbowlSpinnerPosition = 0;
+    private int lastAFCSpinnerPosition = 0;
+    private int lastNFCSpinnerPosition = 0;
+    private int lastOffenseSpinnerPosition = 0;
+    private int lastDefenseSpinnerPosition = 0;
+    private boolean userInteraction = true;
 
     public PredictionsListViewAdapter(Activity activity, List<Prediction> predictionList, PredictionPlus predictionPlus, String uuid) {
         this.activity = activity;
@@ -78,7 +100,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int listPosition, int expandedListPosition) {
-        Object child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
+        child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
         if (child instanceof List<?>){
             List<Game> tempChild = (List<Game>) child;
             return tempChild.get(expandedListPosition);
@@ -97,15 +119,15 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     public View getChildView(int listPosition, final int expandedListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-        LayoutInflater layoutInflater = (LayoutInflater) this.activity
+        layoutInflater = (LayoutInflater) this.activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        Object child = getChild(listPosition, expandedListPosition);
-        if(child instanceof Game){
-            return initPredictionView(convertView, layoutInflater, parent, (Game) child);
+        childView = getChild(listPosition, expandedListPosition);
+        if(childView instanceof Game){
+            return initPredictionView(convertView, layoutInflater, parent, (Game) childView);
         }
         else {
-            return initPredictionPlusView(convertView, layoutInflater, parent, (PredictionPlus) child);
+            return initPredictionPlusView(convertView, layoutInflater, parent, (PredictionPlus) childView);
         }
     }
 
@@ -240,55 +262,32 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private View initPredictionPlusView(View convertView, LayoutInflater layoutInflater, ViewGroup parent, PredictionPlus child) {
-        ArrayList<String> teamPrefixList = new ArrayList<>();
-        ArrayList<String> teamNameList = new ArrayList<>();
-        teamNameList.add("");
-        for(String key : Constants.TEAM_INFO_MAP.keySet()){
-            teamPrefixList.add(key);
-            teamNameList.add(Constants.TEAM_INFO_MAP.get(key).getTeamName());
+        if(teamNameList.isEmpty() && teamPrefixList.isEmpty()) {
+            teamNameList.add("");
+            for (String key : Constants.TEAM_INFO_MAP.keySet()) {
+                teamPrefixList.add(key);
+                teamNameList.add(Constants.TEAM_INFO_MAP.get(key).getTeamName());
+            }
         }
 
         convertView = layoutInflater.inflate(R.layout.predictions_plus_item, parent, false);
         LinearLayout container = (LinearLayout) convertView.findViewById(R.id.subitems_container);
 
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.SUPERBOWL, child.getSuperbowl(), teamPrefixList, teamNameList), 0);
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.AFC_WINNER, child.getAfcwinnerteam(), teamPrefixList, teamNameList), 1);
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.NFC_WINNER, child.getNfcwinnerteam(), teamPrefixList, teamNameList), 2);
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.BEST_OFFENSE, child.getBestoffenseteam(), teamPrefixList, teamNameList), 3);
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.BEST_DEFENSE, child.getBestdefenseteam(), teamPrefixList, teamNameList), 4);
+        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.SUPERBOWL, child.getSuperbowl(), child), 0);
+        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.AFC_WINNER, child.getAfcwinnerteam(), child), 1);
+        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.NFC_WINNER, child.getNfcwinnerteam(), child), 2);
+        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.BEST_OFFENSE, child.getBestoffenseteam(), child), 3);
+        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.BEST_DEFENSE, child.getBestdefenseteam(), child), 4);
 
         return convertView;
     }
 
-    private View initPredictionPlusSubView(ViewGroup parent, LayoutInflater layoutInflater, Constants.PREDICTIONS_PLUS_STATES state, String team, final ArrayList<String> teamPrefixList, ArrayList<String> teamNameList){
+    private View initPredictionPlusSubView(ViewGroup parent, LayoutInflater layoutInflater, final Constants.PREDICTIONS_PLUS_STATES state, String team, final PredictionPlus predictionPlus){
         View subView = layoutInflater.inflate(R.layout.predictions_plus_subitem, parent, false);
 
         final LinearLayout teamBackground = (LinearLayout) subView.findViewById(R.id.team_background);
 
         TextView teamText = (TextView) subView.findViewById(R.id.team_text);
-        switch (state) {
-            case SUPERBOWL: {
-                teamText.setText(R.string.superbowl);
-                break;
-            }
-            case AFC_WINNER: {
-                teamText.setText(R.string.afc_winner);
-                break;
-            }
-            case NFC_WINNER: {
-                teamText.setText(R.string.nfc_winner);
-                break;
-            }
-            case BEST_OFFENSE: {
-                teamText.setText(R.string.best_offense);
-                break;
-            }
-            case BEST_DEFENSE: {
-                teamText.setText(R.string.best_defense);
-                break;
-            }
-        }
-
         Spinner teamSpinner = (Spinner) subView.findViewById(R.id.team_spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this.activity, R.layout.spinner_item, teamNameList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -297,27 +296,51 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         final ImageView teamIcon = (ImageView) subView.findViewById(R.id.team_icon);
 
         if(!team.equals("")){
-            teamSpinner.setSelection(teamPrefixList.indexOf(team) + 1);
-            teamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(team).getTeamColor()));
-            teamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(team).getTeamIcon());
+            teamSpinner.setSelection(teamPrefixList.indexOf(team) + 1, false);
         }
         else{
-            teamSpinner.setSelection(0);
-            teamBackground.setBackgroundColor(Color.parseColor("#BFBFBF"));
-            teamIcon.setImageResource(R.drawable.default_icon);
+            teamSpinner.setSelection(0, false);
+        }
+        setTeamInfos(teamSpinner.getSelectedItemPosition(), teamBackground, teamIcon);
+
+        switch (state) {
+            case SUPERBOWL: {
+                teamText.setText(R.string.superbowl);
+                lastSuperbowlSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                break;
+            }
+            case AFC_WINNER: {
+                teamText.setText(R.string.afc_winner);
+                lastAFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                break;
+            }
+            case NFC_WINNER: {
+                teamText.setText(R.string.nfc_winner);
+                lastNFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                break;
+            }
+            case BEST_OFFENSE: {
+                teamText.setText(R.string.best_offense);
+                lastOffenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                break;
+            }
+            case BEST_DEFENSE: {
+                teamText.setText(R.string.best_defense);
+                lastDefenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                break;
+            }
+            default:
+                break;
         }
 
         teamSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 0){
-                    teamBackground.setBackgroundColor(Color.parseColor("#BFBFBF"));
-                    teamIcon.setImageResource(R.drawable.default_icon);
+                if(!userInteraction){
+                    userInteraction = true;
+                    return;
                 }
-                else {
-                    teamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position - 1)).getTeamColor()));
-                    teamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position - 1)).getTeamIcon());
-                }
+                sendUpdateRequest(state, position, (Spinner) parent, teamBackground, teamIcon, predictionPlus);
             }
 
             @Override
@@ -327,6 +350,17 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         });
 
         return subView;
+    }
+
+    private void setTeamInfos(int position, LinearLayout teamBackground, ImageView teamIcon){
+        if(position == 0){
+            teamBackground.setBackgroundColor(Color.parseColor("#BFBFBF"));
+            teamIcon.setImageResource(R.drawable.default_icon);
+        }
+        else {
+            teamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position - 1)).getTeamColor()));
+            teamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position - 1)).getTeamIcon());
+        }
     }
 
     @Override
@@ -411,17 +445,12 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void sendUpdateRequest(UpdatePredictionRequest request, final CheckBox homeTeamCheckbox, final CheckBox awayTeamCheckbox, final Game game, final UPDATE_STATES state){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
-        Call<UpdatePredictionResponse> response = requestInterface.updatePrediction(request);
+        Call<UpdateResponse> response = this.requestInterface.updatePrediction(request);
 
-        response.enqueue(new Callback<UpdatePredictionResponse>() {
+        response.enqueue(new Callback<UpdateResponse>() {
             @Override
-            public void onResponse(Call<UpdatePredictionResponse> call, retrofit2.Response<UpdatePredictionResponse> response) {
-                UpdatePredictionResponse resp = response.body();
+            public void onResponse(Call<UpdateResponse> call, retrofit2.Response<UpdateResponse> response) {
+                UpdateResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
                     updateModel(homeTeamCheckbox, awayTeamCheckbox, game, state);
                 }
@@ -431,7 +460,39 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
 
             @Override
-            public void onFailure(Call<UpdatePredictionResponse> call, Throwable t) {
+            public void onFailure(Call<UpdateResponse> call, Throwable t) {
+                Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
+                Log.d(Constants.TAG, t.getMessage());
+            }
+        });
+    }
+
+    private void sendUpdateRequest(final Constants.PREDICTIONS_PLUS_STATES state, final int position, final Spinner teamSpinner, final LinearLayout teamBackground, final ImageView teamIcon, final PredictionPlus predictionPlus){
+        final String teamPredicted = position == 0 ? "" : teamPrefixList.get(position - 1);
+        UpdatePredictionPlusRequest updatePredictionPlusRequest = new UpdatePredictionPlusRequest();
+        updatePredictionPlusRequest.setTeamprefix(teamPredicted);
+        updatePredictionPlusRequest.setState(state.toString().toLowerCase());
+        updatePredictionPlusRequest.setUuid(this.uuid);
+
+        Call<UpdateResponse> response = this.requestInterface.updatePredictionPlus(updatePredictionPlusRequest);
+
+        response.enqueue(new Callback<UpdateResponse>() {
+            @Override
+            public void onResponse(Call<UpdateResponse> call, retrofit2.Response<UpdateResponse> response) {
+                UpdateResponse resp = response.body();
+                if(resp.getResult().equals(Constants.SUCCESS)){
+                    updateModel(state, teamPredicted, teamSpinner, predictionPlus);
+                    setTeamInfos(teamSpinner.getSelectedItemPosition(), teamBackground, teamIcon);
+                }
+                else{
+                    Log.d(Constants.TAG, resp.getMessage());
+                    setSpinnerToLastValue(state, teamSpinner, teamBackground, teamIcon);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UpdateResponse> call, Throwable t) {
+                setSpinnerToLastValue(state, teamSpinner, teamBackground, teamIcon);
                 Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
@@ -463,13 +524,73 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         }
     }
 
+    private void updateModel(Constants.PREDICTIONS_PLUS_STATES state, String teamPredicted, Spinner teamSpinner, PredictionPlus predictionPlus){
+        switch (state) {
+            case SUPERBOWL: {
+                lastSuperbowlSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                predictionPlus.setSuperbowl(teamPredicted);
+                break;
+            }
+            case AFC_WINNER: {
+                lastAFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                predictionPlus.setAfcwinnerteam(teamPredicted);
+                break;
+            }
+            case NFC_WINNER: {
+                lastNFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                predictionPlus.setNfcwinnerteam(teamPredicted);
+                break;
+            }
+            case BEST_OFFENSE: {
+                lastOffenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                predictionPlus.setBestoffenseteam(teamPredicted);
+                break;
+            }
+            case BEST_DEFENSE: {
+                lastDefenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                predictionPlus.setBestdefenseteam(teamPredicted);
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    private void setSpinnerToLastValue(Constants.PREDICTIONS_PLUS_STATES state, Spinner teamSpinner, LinearLayout teamBackground, ImageView teamIcon){
+        userInteraction = false;
+        switch (state) {
+            case SUPERBOWL: {
+                teamSpinner.setSelection(lastSuperbowlSpinnerPosition, false);
+                setTeamInfos(lastSuperbowlSpinnerPosition, teamBackground, teamIcon);
+                break;
+            }
+            case AFC_WINNER: {
+                teamSpinner.setSelection(lastAFCSpinnerPosition, false);
+                setTeamInfos(lastAFCSpinnerPosition, teamBackground, teamIcon);
+                break;
+            }
+            case NFC_WINNER: {
+                teamSpinner.setSelection(lastNFCSpinnerPosition, false);
+                setTeamInfos(lastNFCSpinnerPosition, teamBackground, teamIcon);
+                break;
+            }
+            case BEST_OFFENSE: {
+                teamSpinner.setSelection(lastOffenseSpinnerPosition, false);
+                setTeamInfos(lastOffenseSpinnerPosition, teamBackground, teamIcon);
+                break;
+            }
+            case BEST_DEFENSE: {
+                teamSpinner.setSelection(lastDefenseSpinnerPosition, false);
+                setTeamInfos(lastDefenseSpinnerPosition, teamBackground, teamIcon);
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
     private void getAllPredictionsForGameid(final Game game, AllPredictionsRequest request){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
-        Call<AllPredictionsResponse> response = requestInterface.allPredictions(request);
+        Call<AllPredictionsResponse> response = this.requestInterface.allPredictions(request);
 
         response.enqueue(new Callback<AllPredictionsResponse>() {
             @Override

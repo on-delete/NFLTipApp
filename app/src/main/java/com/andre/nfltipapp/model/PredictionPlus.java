@@ -48,6 +48,26 @@ public class PredictionPlus implements Parcelable{
         return firstgamedate;
     }
 
+    public void setSuperbowl(String superbowl) {
+        this.superbowl = superbowl;
+    }
+
+    public void setAfcwinnerteam(String afcwinnerteam) {
+        this.afcwinnerteam = afcwinnerteam;
+    }
+
+    public void setBestoffenseteam(String bestoffenseteam) {
+        this.bestoffenseteam = bestoffenseteam;
+    }
+
+    public void setNfcwinnerteam(String nfcwinnerteam) {
+        this.nfcwinnerteam = nfcwinnerteam;
+    }
+
+    public void setBestdefenseteam(String bestdefenseteam) {
+        this.bestdefenseteam = bestdefenseteam;
+    }
+
     @Override
     public int describeContents() {
         return 0;
