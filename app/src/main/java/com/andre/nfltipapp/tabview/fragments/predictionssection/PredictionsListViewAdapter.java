@@ -52,7 +52,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
 
     private Activity activity;
     private List<String> expandableListTitle = new ArrayList<>();
-    private HashMap<String, Object> expandableListDetail = new HashMap<>();
+    private HashMap<String, List<?>> expandableListDetail = new HashMap<>();
     private String uuid;
     private OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(2, TimeUnit.SECONDS).build();
     private Retrofit retrofit = new Retrofit.Builder()
@@ -61,7 +61,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             .client(httpClient)
             .build();
     private RequestInterface requestInterface = retrofit.create(RequestInterface.class);
-    private Object child;
+    private List<?> child;
     private LayoutInflater layoutInflater;
     private Object childView;
     private ArrayList<String> teamPrefixList = new ArrayList<>();
@@ -74,7 +74,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private int lastDefenseSpinnerPosition = 0;
     private boolean userInteraction = true;
 
-    public PredictionsListViewAdapter(Activity activity, List<Prediction> predictionList, PredictionPlus predictionPlus, String uuid) {
+    public PredictionsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus, String uuid) {
         this.activity = activity;
         this.uuid = uuid;
 
@@ -101,12 +101,21 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     @Override
     public Object getChild(int listPosition, int expandedListPosition) {
         child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
-        if (child instanceof List<?>){
-            List<Game> tempChild = (List<Game>) child;
-            return tempChild.get(expandedListPosition);
+
+        if(child.get(0) instanceof Game){
+            return child.get(expandedListPosition);
         }
         else{
-            return child;
+            PredictionPlus returnPredictionPlus = null;
+
+            for(int i = 0; i < child.size(); i++){
+                PredictionPlus tempPrediction = (PredictionPlus) child.get(i);
+                if(tempPrediction.getUser().equals("user")){
+                    returnPredictionPlus = tempPrediction;
+                    break;
+                }
+            }
+            return returnPredictionPlus;
         }
     }
 
@@ -124,14 +133,14 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
 
         childView = getChild(listPosition, expandedListPosition);
         if(childView instanceof Game){
-            return initPredictionView(convertView, layoutInflater, parent, (Game) childView);
+            return initPredictionView(convertView, parent, (Game) childView);
         }
         else {
-            return initPredictionPlusView(convertView, layoutInflater, parent, (PredictionPlus) childView);
+            return initPredictionPlusView(convertView, parent, (PredictionPlus) childView);
         }
     }
 
-    private View initPredictionView(View convertView, LayoutInflater layoutInflater, ViewGroup parent, final Game expandedListItem){
+    private View initPredictionView(View convertView, ViewGroup parent, final Game expandedListItem){
         convertView = layoutInflater.inflate(R.layout.predictions_list_item, parent, false);
         final LinearLayout disableOverlay = (LinearLayout) convertView.findViewById(R.id.disable_overlay);
         final CheckBox homeTeamCheckbox = (CheckBox) convertView
@@ -261,7 +270,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    private View initPredictionPlusView(View convertView, LayoutInflater layoutInflater, ViewGroup parent, PredictionPlus child) {
+    private View initPredictionPlusView(View convertView, ViewGroup parent, PredictionPlus child) {
         if(teamNameList.isEmpty() && teamPrefixList.isEmpty()) {
             teamNameList.add("");
             for (String key : Constants.TEAM_INFO_MAP.keySet()) {
@@ -273,16 +282,16 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         convertView = layoutInflater.inflate(R.layout.predictions_plus_item, parent, false);
         LinearLayout container = (LinearLayout) convertView.findViewById(R.id.subitems_container);
 
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.SUPERBOWL, child.getSuperbowl(), child), 0);
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.AFC_WINNER, child.getAfcwinnerteam(), child), 1);
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.NFC_WINNER, child.getNfcwinnerteam(), child), 2);
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.BEST_OFFENSE, child.getBestoffenseteam(), child), 3);
-        container.addView(initPredictionPlusSubView(parent, layoutInflater, Constants.PREDICTIONS_PLUS_STATES.BEST_DEFENSE, child.getBestdefenseteam(), child), 4);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.SUPERBOWL, child.getSuperbowl(), child), 0);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.AFC_WINNER, child.getAfcwinnerteam(), child), 1);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.NFC_WINNER, child.getNfcwinnerteam(), child), 2);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.BEST_OFFENSE, child.getBestoffenseteam(), child), 3);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.BEST_DEFENSE, child.getBestdefenseteam(), child), 4);
 
         return convertView;
     }
 
-    private View initPredictionPlusSubView(ViewGroup parent, LayoutInflater layoutInflater, final Constants.PREDICTIONS_PLUS_STATES state, String team, final PredictionPlus predictionPlus){
+    private View initPredictionPlusSubView(ViewGroup parent, final Constants.PREDICTIONS_PLUS_STATES state, String team, final PredictionPlus predictionPlus){
         View subView = layoutInflater.inflate(R.layout.predictions_plus_subitem, parent, false);
 
         final LinearLayout teamBackground = (LinearLayout) subView.findViewById(R.id.team_background);
@@ -365,10 +374,10 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int listPosition) {
-        Object child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
-        if (child instanceof List<?>){
-            List<Game> tempChild = (List<Game>) child;
-            return tempChild.size();
+        child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
+
+        if(child.get(0) instanceof Game){
+            return child.size();
         }
         else{
             return 1;

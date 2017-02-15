@@ -644,14 +644,14 @@ function getPredictionPlus(rankingList, predictionsList, standingsList, res, uui
                 winston.info("error in database connection");
             }
             else {
-                var sql = "SELECT superbowl_team.team_prefix as superbowl, afc_winner_team.team_prefix as afc_winner, nfc_winner_team.team_prefix as nfc_winner, best_offense_team.team_prefix as best_offense, best_defense_team.team_prefix as best_defense " +
+                var sql = "SELECT predictions_plus.user_id as userid, superbowl_team.team_prefix as superbowl, afc_winner_team.team_prefix as afc_winner, nfc_winner_team.team_prefix as nfc_winner, best_offense_team.team_prefix as best_offense, best_defense_team.team_prefix as best_defense " +
                             "FROM predictions_plus " +
                             "LEFT OUTER JOIN teams as superbowl_team ON superbowl = superbowl_team.team_id " +
                             "LEFT OUTER JOIN teams as afc_winner_team ON afc_winner = afc_winner_team.team_id " +
                             "LEFT OUTER JOIN teams as nfc_winner_team ON nfc_winner = nfc_winner_team.team_id " +
                             "LEFT OUTER JOIN teams as best_offense_team ON best_offense = best_offense_team.team_id " +
                             "LEFT OUTER JOIN teams as best_defense_team ON best_defense = best_defense_team.team_id " +
-                            "WHERE predictions_plus.user_id = ?;";
+                            "WHERE predictions_plus.user_id = ? OR predictions_plus.user_id = 3;";
                 var inserts = [uuid];
                 sql = mysql.format(sql, inserts);
                 connection.query(sql, function (err, rows) {
@@ -661,8 +661,18 @@ function getPredictionPlus(rankingList, predictionsList, standingsList, res, uui
                     }
                     else{
                         if(rows!==undefined){
-                            var actualRow = rows[0];
-                            var predictionsPlus = {"superbowl": actualRow.superbowl === null ? "" : actualRow.superbowl, "afcwinnerteam": actualRow.afc_winner === null ? "" : actualRow.afc_winner, "nfcwinnerteam": actualRow.nfc_winner === null ? "" : actualRow.nfc_winner, "bestoffenseteam": actualRow.best_offense === null ? "" : actualRow.best_offense, "bestdefenseteam": actualRow.best_defense === null ? "" : actualRow.best_defense, "firstgamedate": gameDate};
+                            var predictionsPlus = [];
+                            if(rows[0].userid == 3){
+                                defaultRow = rows[0];
+                                userRow = rows[1];
+                            } else {
+                                defaultRow = rows[1];
+                                userRow = rows[0];
+                            }
+
+                            predictionsPlus.push({"user": "default", "superbowl": defaultRow.superbowl === null ? "" : defaultRow.superbowl, "afcwinnerteam": defaultRow.afc_winner === null ? "" : defaultRow.afc_winner, "nfcwinnerteam": defaultRow.nfc_winner === null ? "" : defaultRow.nfc_winner, "bestoffenseteam": defaultRow.best_offense === null ? "" : defaultRow.best_offense, "bestdefenseteam": defaultRow.best_defense === null ? "" : defaultRow.best_defense, "firstgamedate": gameDate});
+                            predictionsPlus.push({"user": "user", "superbowl": userRow.superbowl === null ? "" : userRow.superbowl, "afcwinnerteam": userRow.afc_winner === null ? "" : userRow.afc_winner, "nfcwinnerteam": userRow.nfc_winner === null ? "" : userRow.nfc_winner, "bestoffenseteam": userRow.best_offense === null ? "" : userRow.best_offense, "bestdefenseteam": userRow.best_defense === null ? "" : userRow.best_defense, "firstgamedate": gameDate});
+
                             sendDataResponse(rankingList, predictionsList, standingsList, predictionsPlus, res);
                         }
                     }

@@ -54,7 +54,7 @@ public class PredictionSectionFragment extends Fragment {
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         List<Prediction> predictionList = data.getPredictions();
-        PredictionPlus predictionPlus = data.getPredictionsplus();
+        List<PredictionPlus> predictionPlus = data.getPredictionsplus();
 
         ExpandableListAdapter expandableListAdapter = new PredictionsListViewAdapter(activity, predictionList, predictionPlus, uuid);
         expandableListView.setAdapter(expandableListAdapter);

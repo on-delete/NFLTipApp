@@ -14,6 +14,7 @@ import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
 import com.andre.nfltipapp.model.Prediction;
+import com.andre.nfltipapp.model.PredictionPlus;
 
 import java.util.List;
 
@@ -47,8 +48,9 @@ public class StatisticsSectionFragment extends Fragment {
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         List<Prediction> predictionList = data.getPredictions();
+        List<PredictionPlus> predictionPlus = data.getPredictionsplus();
 
-        ExpandableListAdapter expandableListAdapter = new StatisticsListViewAdapter(activity, predictionList);
+        ExpandableListAdapter expandableListAdapter = new StatisticsListViewAdapter(activity, predictionList, predictionPlus);
         expandableListView.setAdapter(expandableListAdapter);
 
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {

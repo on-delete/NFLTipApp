@@ -8,6 +8,7 @@ import android.os.Parcelable;
  */
 public class PredictionPlus implements Parcelable{
 
+    private String user;
     private String superbowl;
     private String afcwinnerteam;
     private String nfcwinnerteam;
@@ -16,12 +17,17 @@ public class PredictionPlus implements Parcelable{
     private String firstgamedate;
 
     public PredictionPlus (Parcel parcel){
+        user = parcel.readString();
         superbowl = parcel.readString();
         afcwinnerteam = parcel.readString();
         nfcwinnerteam = parcel.readString();
         bestoffenseteam = parcel.readString();
         bestdefenseteam = parcel.readString();
         firstgamedate = parcel.readString();
+    }
+
+    public String getUser() {
+        return user;
     }
 
     public String getSuperbowl() {
@@ -75,6 +81,7 @@ public class PredictionPlus implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(user);
         dest.writeString(superbowl);
         dest.writeString(afcwinnerteam);
         dest.writeString(nfcwinnerteam);

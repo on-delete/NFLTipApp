@@ -10,13 +10,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.model.PredictionPlus;
 import com.andre.nfltipapp.tabview.fragments.StatisticForGameActivity;
 import com.andre.nfltipapp.model.AllPredictionsRequest;
 import com.andre.nfltipapp.model.AllPredictionsResponse;
@@ -40,10 +44,16 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
     private Activity activity;
     private List<String> expandableListTitle = new ArrayList<>();
-   private HashMap<String, List<Game>> expandableListDetail = new HashMap<>();
+    private HashMap<String, List<?>> expandableListDetail = new HashMap<>();
+    private List<?> child;
+    private LayoutInflater layoutInflater;
+    private Object childView;
 
-    public StatisticsListViewAdapter(Activity activity, List<Prediction> predictionList) {
+    public StatisticsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus) {
         this.activity = activity;
+
+        this.expandableListTitle.add("Tips vor der Saison");
+        expandableListDetail.put("Tips vor der Saison", predictionPlus);
 
         for(Prediction predictionItem : predictionList){
             List<Game> tempGamesList = new ArrayList<>();
@@ -66,8 +76,20 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int listPosition, int expandedListPosition) {
-        return this.expandableListDetail.get(this.expandableListTitle.get(listPosition))
-                .get(expandedListPosition);
+        child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
+
+        if(child.get(0) instanceof Game){
+            return child.get(expandedListPosition);
+        }
+        else{
+            for(int i = 0; i < child.size(); i++){
+                PredictionPlus tempPrediction = (PredictionPlus) child.get(i);
+                if(tempPrediction.getUser().equals("default")){
+                    return tempPrediction;
+                }
+            }
+            return null;
+        }
     }
 
     @Override
@@ -78,12 +100,21 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int listPosition, final int expandedListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
-        final Game expandedListItem = (Game) getChild(listPosition, expandedListPosition);
-        if (convertView == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) this.activity
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.statistics_list_item, parent, false);
+
+        layoutInflater = (LayoutInflater) this.activity
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        childView = getChild(listPosition, expandedListPosition);
+        if(childView instanceof Game){
+            return initPredictionView(convertView, parent, (Game) childView);
         }
+        else {
+            return initPredictionPlusView(convertView, parent, (PredictionPlus) childView);
+        }
+    }
+
+    private View initPredictionView(View convertView, ViewGroup parent, final Game expandedListItem){
+        convertView = layoutInflater.inflate(R.layout.statistics_list_item, parent, false);
 
         TextView homeScoreTextView = (TextView) convertView
                 .findViewById(R.id.home_team_score_text);
@@ -117,10 +148,81 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
+    private View initPredictionPlusView(View convertView, ViewGroup parent, PredictionPlus child) {
+        convertView = layoutInflater.inflate(R.layout.predictions_plus_item, parent, false);
+        LinearLayout container = (LinearLayout) convertView.findViewById(R.id.subitems_container);
+
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.SUPERBOWL, child.getSuperbowl()), 0);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.AFC_WINNER, child.getAfcwinnerteam()), 1);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.NFC_WINNER, child.getNfcwinnerteam()), 2);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.BEST_OFFENSE, child.getBestoffenseteam()), 3);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.BEST_DEFENSE, child.getBestdefenseteam()), 4);
+
+        return convertView;
+    }
+
+    private View initPredictionPlusSubView(ViewGroup parent, final Constants.PREDICTIONS_PLUS_STATES state, String team){
+        View subView = layoutInflater.inflate(R.layout.predictions_plus_statistic_subitem, parent, false);
+
+        final LinearLayout teamBackground = (LinearLayout) subView.findViewById(R.id.team_background);
+
+        TextView stateText = (TextView) subView.findViewById(R.id.state_text);
+        TextView teamText = (TextView) subView.findViewById(R.id.team_text);
+        ImageView teamIcon = (ImageView) subView.findViewById(R.id.team_icon);
+
+        setTeamInfos(team, teamBackground, teamIcon, teamText);
+
+        switch (state) {
+            case SUPERBOWL: {
+                stateText.setText(R.string.superbowl);
+                break;
+            }
+            case AFC_WINNER: {
+                stateText.setText(R.string.afc_winner);
+                break;
+            }
+            case NFC_WINNER: {
+                stateText.setText(R.string.nfc_winner);
+                break;
+            }
+            case BEST_OFFENSE: {
+                stateText.setText(R.string.best_offense);
+                break;
+            }
+            case BEST_DEFENSE: {
+                stateText.setText(R.string.best_defense);
+                break;
+            }
+            default:
+                break;
+        }
+
+        return subView;
+    }
+
+    private void setTeamInfos(String team, LinearLayout teamBackground, ImageView teamIcon, TextView teamText){
+        if(team.equals("")){
+            teamBackground.setBackgroundColor(Color.parseColor("#BFBFBF"));
+            teamIcon.setImageResource(R.drawable.default_icon);
+            teamText.setText("-");
+        }
+        else {
+            teamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(team).getTeamColor()));
+            teamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(team).getTeamIcon());
+            teamText.setText(Constants.TEAM_INFO_MAP.get(team).getTeamName());
+        }
+    }
+
     @Override
     public int getChildrenCount(int listPosition) {
-        return this.expandableListDetail.get(this.expandableListTitle.get(listPosition))
-                .size();
+        child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
+
+        if(child.get(0) instanceof Game){
+            return child.size();
+        }
+        else{
+            return 1;
+        }
     }
 
     @Override
