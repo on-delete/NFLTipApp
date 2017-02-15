@@ -65,6 +65,8 @@ function startUpdateTask(){
         var d = new Date();
         winston.info('new update is started at ' + d);
         updateSchedule();
+        updateStandings();
+        updatePredictionsPlus();
     });
 }
 
@@ -296,6 +298,14 @@ function checkIfGameAlreadyPresent(game, week){
                     else{
                         insertNewGame(game, week);
                     }
+
+                    if(week == 20){
+                        updateAFCNFCWinner(game);
+                    }
+
+                    if(week == 22){
+                        updateSuperBowlWinner(game);
+                    }
                 }
             });
         }
@@ -372,6 +382,97 @@ function insertNewPrediction(gameid){
         }
         connection.release();
     });
+}
+
+function updateAFCNFCWinner(game) {
+    if(game.$.q !== 'P'){
+        var team;
+
+        if(game.$.hs > game.$.vs){
+            team = game.$.h;
+        }
+        else{
+            team = game.$.v;
+        }
+
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                winston.info("error in database connection");
+            }
+            else {
+                var sql = "SELECT team_id, team_division FROM teams WHERE team_prefix = ?;";
+                var inserts = [team];
+                sql = mysql.format(sql, inserts);
+                connection.query(sql, function (err, result) {
+                    if (err) {
+                        winston.info("error in database query updateAFCNFCWinner");
+                        winston.info(err.message);
+                    }
+                    else{
+                        if(result[0] !== undefined){
+                            var teamId = result[0].team_id;
+                            var teamDivision = result[0].team_division;
+                            var inserts;
+
+                            if(teamDivision == 'afc'){
+                                inserts = ['afc_winner', teamId];
+                            }
+                            else{
+                                inserts = ['nfc_winner', teamId];
+                            }
+
+                            sql = "UPDATE predictions_plus " +
+                                "SET ?? = ? " +
+                                "WHERE user_id = 3;";
+                            sql = mysql.format(sql, inserts);
+                            connection.query(sql, function (err) {
+                                if (err) {
+                                    winston.info("error in database query updateAFCNFCWinner");
+                                    winston.info(err.message);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+            connection.release();
+        });
+    }
+}
+
+function updateSuperBowlWinner(game) {
+    if(game.$.q !== 'P'){
+        var team;
+
+        if(game.$.hs > game.$.vs){
+            team = game.$.h;
+        }
+        else{
+            team = game.$.v;
+        }
+
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                winston.info("error in database connection");
+            }
+            else {
+                var sql = "UPDATE predictions_plus " +
+                    "JOIN teams " +
+                    "ON ? = teams.team_prefix " +
+                    "SET superbowl = teams.team_id " +
+                    "WHERE user_id = 3;";
+                var inserts = [team];
+                sql = mysql.format(sql, inserts);
+                connection.query(sql, function (err, result) {
+                    if (err) {
+                        winston.info("error in database query updateAFCNFCWinner");
+                        winston.info(err.message);
+                    }
+                });
+            }
+            connection.release();
+        });
+    }
 }
 
 app.post('/getData', function (req, res, next) {
@@ -724,7 +825,7 @@ app.post('/getAllPredictionsForGame', function (req, res, next) {
     });
 });
 
-app.get('/updateStandings', function (req, res, next) {
+function updateStandings(){
     var standings = [];
     var teamStanding;
 
@@ -780,9 +881,7 @@ app.get('/updateStandings', function (req, res, next) {
             insertIntoStandingsTable(standings);
         }
     });
-
-    res.end("OK");
-});
+}
 
 function insertIntoStandingsTable(standings) {
     pool.getConnection(function (err, connection) {
@@ -790,28 +889,81 @@ function insertIntoStandingsTable(standings) {
             winston.info("error in database connection");
         }
         else {
-            var i = -1;
-            (function insertNewStanding() {
-                i++;
-                if (i < standings.length) {
-                    var standing = standings[i];
-                    var sql = "INSERT INTO standings (standing_id, team_id, prefix, games, score, div_games) VALUES (?, (SELECT team_id FROM teams WHERE team_name=?), ?, ?, ?, ?);";
-                    var inserts = [i + 1, standing.teamname, (standing.prefix == '' ? null : standing.prefix), standing.games, standing.score, standing.div_games];
-                    sql = mysql.format(sql, inserts);
-                    connection.query(sql, function (err, result) {
-                        if (err) {
-                            winston.info("error in database query insertNewGame");
-                            winston.info(err.message);
-                        }
-                        else {
-                            insertNewStanding();
-                        }
-                    });
+            var sql = 'DELETE FROM standings';
+            connection.query(sql, function (err, result) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
                 }
                 else {
-                    connection.release();
+                    var i = -1;
+                    (function insertNewStanding() {
+                        i++;
+                        if (i < standings.length) {
+                            var standing = standings[i];
+                            var sql = "INSERT INTO standings (standing_id, team_id, prefix, games, score, div_games) VALUES (?, (SELECT team_id FROM teams WHERE team_name=?), ?, ?, ?, ?);";
+                            var inserts = [i + 1, standing.teamname, (standing.prefix == '' ? null : standing.prefix), standing.games, standing.score, standing.div_games];
+                            sql = mysql.format(sql, inserts);
+                            connection.query(sql, function (err, result) {
+                                if (err) {
+                                    winston.info("error in database query insertNewGame");
+                                    winston.info(err.message);
+                                }
+                                else {
+                                    insertNewStanding();
+                                }
+                            });
+                        }
+                        else {
+                            connection.release();
+                        }
+                    })();
                 }
-            })();
+            });
+        }
+    });
+}
+
+function updatePredictionsPlus(){
+    requestWebsite('http://www.nfl.com/stats/team?seasonId='+saison_years+'&seasonType='+saison_parts[0], function (error, response, html) {
+        if(!error && response.statusCode == 200){
+            var $ = cheerio.load(html);
+
+            var bestOffenseRow = $('#r1c1_1');
+            var bestOffenseTeamName = bestOffenseRow.find('a').text().trim();
+
+            var bestDefenseRow = $('#r1c2_1');
+            var bestDefenseTeamName = bestDefenseRow.find('a').text().trim();
+
+            updatePredictionsPlusInDatabase(bestOffenseTeamName, bestDefenseTeamName);
+        }
+    });
+}
+
+function updatePredictionsPlusInDatabase(bestOffenseTeamName, bestDefenseTeamName){
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+        }
+        else {
+            var sql = sql = "UPDATE predictions_plus " +
+                "JOIN teams AS teams_offense " +
+                "ON ? = teams_offense.team_name " +
+                "JOIN teams AS teams_defense " +
+                "ON ? = teams_defense.team_name " +
+                "SET ?? = teams_offense.team_id, ?? =  teams_defense.team_id " +
+                "WHERE user_id = 3;";
+            inserts = [bestOffenseTeamName, bestDefenseTeamName, 'best_offense', 'best_defense'];
+            sql = mysql.format(sql, inserts);
+            connection.query(sql, function (err, result) {
+                if (err) {
+                    winston.info("error in database query updatePredictionsPlusInDatabase");
+                    winston.info(err.message);
+                }
+                else{
+                    winston.info('Best offense and defence were updated');
+                }
+            });
         }
     });
 }
