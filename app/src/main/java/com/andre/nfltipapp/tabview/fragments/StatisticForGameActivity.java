@@ -58,10 +58,11 @@ public class StatisticForGameActivity extends AppCompatActivity {
             homeTeamCheckbox.setEnabled(false);
 
             if(prediction.getPredicted()==1) {
-                if (game.getAwaypoints() > game.getHomepoints() && prediction.getHometeampredicted() == 0) {
-                    awayTeamCheckbox.setChecked(true);
-                } else if (game.getAwaypoints() < game.getHomepoints() && prediction.getHometeampredicted() == 1) {
+                if(prediction.getHometeampredicted() == 1){
                     homeTeamCheckbox.setChecked(true);
+                }
+                else {
+                    awayTeamCheckbox.setChecked(true);
                 }
             }
 
