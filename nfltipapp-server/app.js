@@ -485,7 +485,7 @@ function calculateRanking(res, uuid){
             winston.info("error in database connection");
         }
         else {
-            var sql = "SELECT user_name, user_id FROM user;";
+            var sql = "SELECT user_name, user_id FROM user WHERE user_id <> 3;";
             connection.query(sql, function (err, rows) {
                 if (err) {
                     winston.info("error in database query insertNewGame");
@@ -527,8 +527,56 @@ function calculateRanking(res, uuid){
                                             (function calculateRankingForUser(score) {
                                                 j++;
                                                 if(j >= rows2.length){
-                                                    rankingList.push({"name": user_name, "points": score});
-                                                    calculateForEveryUser(rankingList);
+                                                    //rankingList.push({"name": user_name, "points": score});
+                                                    //calculateForEveryUser(rankingList);
+                                                    (function () {
+                                                                var sql = "SELECT predictions_plus.user_id as userid, superbowl_team.team_prefix as superbowl, afc_winner_team.team_prefix as afc_winner, nfc_winner_team.team_prefix as nfc_winner, best_offense_team.team_prefix as best_offense, best_defense_team.team_prefix as best_defense " +
+                                                                    "FROM predictions_plus " +
+                                                                    "LEFT OUTER JOIN teams as superbowl_team ON superbowl = superbowl_team.team_id " +
+                                                                    "LEFT OUTER JOIN teams as afc_winner_team ON afc_winner = afc_winner_team.team_id " +
+                                                                    "LEFT OUTER JOIN teams as nfc_winner_team ON nfc_winner = nfc_winner_team.team_id " +
+                                                                    "LEFT OUTER JOIN teams as best_offense_team ON best_offense = best_offense_team.team_id " +
+                                                                    "LEFT OUTER JOIN teams as best_defense_team ON best_defense = best_defense_team.team_id " +
+                                                                    "WHERE predictions_plus.user_id = ? OR predictions_plus.user_id = 3;";
+                                                                var inserts = [rows[i].user_id];
+                                                                sql = mysql.format(sql, inserts);
+                                                                connection.query(sql, function (err, result) {
+                                                                    if (err) {
+                                                                        winston.info("error in database query insertNewGame");
+                                                                        winston.info(err.message);
+                                                                    }
+                                                                    else{
+                                                                        if(result!==undefined){
+                                                                            var predictionsPlus = [];
+                                                                            if(result[0].userid == 3){
+                                                                                defaultRow = result[0];
+                                                                                userRow = result[1];
+                                                                            } else {
+                                                                                defaultRow = result[1];
+                                                                                userRow = result[0];
+                                                                            }
+
+                                                                            if(userRow.superbowl !== null && defaultRow.superbowl !== null && userRow.superbowl === defaultRow.superbowl){
+                                                                                score += 2;
+                                                                            }
+                                                                            if(userRow.afc_winner !== null && defaultRow.afc_winner !== null && userRow.afc_winner === defaultRow.afc_winner){
+                                                                                score += 2;
+                                                                            }
+                                                                            if(userRow.nfc_winner !== null && defaultRow.nfc_winner !== null && userRow.nfc_winner === defaultRow.nfc_winner){
+                                                                                score += 2;
+                                                                            }
+                                                                            if(userRow.best_offense !== null && defaultRow.best_offense !== null && userRow.best_offense === defaultRow.best_offense){
+                                                                                score += 2;
+                                                                            }
+                                                                            if(userRow.best_defense !== null && defaultRow.best_defense !== null && userRow.best_defense === defaultRow.best_defense){
+                                                                                score += 2;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    rankingList.push({"name": user_name, "points": score});
+                                                                    calculateForEveryUser(rankingList);
+                                                                });
+                                                    })();
                                                 }
                                                 else{
                                                     var home_team_score = rows2[j].home_team_score;
@@ -549,7 +597,6 @@ function calculateRanking(res, uuid){
                     }
                     else{
                         connection.release();
-                        getPredictions([]);
                     }
                 }
             });
@@ -629,6 +676,9 @@ function getStandings(rankingList, predictionsList, res, uuid){
                             standingsList.push(tempItem);
                         }
                         getPredictionPlus(rankingList, predictionsList, standingsList, res, uuid);
+                    }
+                    else{
+                        getPredictionPlus(rankingList, predictionsList, [], res, uuid);
                     }
                 }
                 connection.release();
