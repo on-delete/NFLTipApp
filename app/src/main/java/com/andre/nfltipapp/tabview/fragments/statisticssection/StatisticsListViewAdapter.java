@@ -20,6 +20,8 @@ import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.model.AllPredictionsPlusRequest;
+import com.andre.nfltipapp.model.AllPredictionsPlusResponse;
 import com.andre.nfltipapp.model.PredictionPlus;
 import com.andre.nfltipapp.tabview.fragments.StatisticForGameActivity;
 import com.andre.nfltipapp.model.AllPredictionsRequest;
@@ -27,6 +29,7 @@ import com.andre.nfltipapp.model.AllPredictionsResponse;
 import com.andre.nfltipapp.model.Game;
 import com.andre.nfltipapp.model.Prediction;
 import com.andre.nfltipapp.rest.RequestInterface;
+import com.andre.nfltipapp.tabview.fragments.StatisticForPredictionsPlusActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -161,7 +164,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    private View initPredictionPlusSubView(ViewGroup parent, final Constants.PREDICTIONS_PLUS_STATES state, String team){
+    private View initPredictionPlusSubView(ViewGroup parent, final Constants.PREDICTIONS_PLUS_STATES state, final String team){
         View subView = layoutInflater.inflate(R.layout.predictions_plus_statistic_subitem, parent, false);
 
         final LinearLayout teamBackground = (LinearLayout) subView.findViewById(R.id.team_background);
@@ -196,6 +199,15 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             default:
                 break;
         }
+
+        teamBackground.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AllPredictionsPlusRequest request = new AllPredictionsPlusRequest();
+                request.setState(state.toString());
+                getAllPredictionsPlusForState(state, team, request);
+            }
+        });
 
         return subView;
     }
@@ -295,6 +307,40 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
             @Override
             public void onFailure(Call<AllPredictionsResponse> call, Throwable t) {
+                Snackbar.make(activity.findViewById(R.id.statisticsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
+                Log.d(Constants.TAG, t.getMessage());
+            }
+        });
+    }
+
+    private void getAllPredictionsPlusForState(final Constants.PREDICTIONS_PLUS_STATES state, final String teamName, AllPredictionsPlusRequest request){
+        OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(3, TimeUnit.SECONDS).build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient)
+                .build();
+        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+        Call<AllPredictionsPlusResponse> response = requestInterface.allPredictionsPlus(request);
+
+        response.enqueue(new Callback<AllPredictionsPlusResponse>() {
+            @Override
+            public void onResponse(Call<AllPredictionsPlusResponse> call, retrofit2.Response<AllPredictionsPlusResponse> response) {
+                AllPredictionsPlusResponse resp = response.body();
+                if(resp.getResult().equals(Constants.SUCCESS)){
+                    Intent intent = new Intent(activity, StatisticForPredictionsPlusActivity.class);
+                    intent.putParcelableArrayListExtra(Constants.PREDICTIONSPLUSLIST, resp.getPredictionList());
+                    intent.putExtra(Constants.TEAMNAME, teamName);
+                    intent.putExtra(Constants.STATE, state.toString());
+                    activity.startActivity(intent);
+                }
+                else{
+                    Log.d(Constants.TAG, resp.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AllPredictionsPlusResponse> call, Throwable t) {
                 Snackbar.make(activity.findViewById(R.id.statisticsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }

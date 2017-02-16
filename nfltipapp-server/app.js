@@ -786,7 +786,6 @@ app.post('/updatePrediction', function (req, res, next) {
 });
 
 app.post('/getAllPredictionsForGame', function (req, res, next) {
-    console.log(req.body.gameid);
     var resp = {
         "result": "",
         "message": "",
@@ -949,6 +948,56 @@ function updatePredictionsPlus(){
         }
     });
 }
+
+app.post('/getAllPredictionsPlusForState', function (req, res, next) {
+    var resp = {
+        "result": "",
+        "message": "",
+        "predictionlist": ""
+    };
+    pool.getConnection(function (err, connection) {
+        if (err) {
+            winston.info("error in database connection");
+            resp.result = "failed";
+            resp.message = err.message;
+            sendResponse(res, resp, connection);
+        }
+        else {
+            var sql = "SELECT user.user_name as username, teams.team_prefix as teamprefix " +
+                "FROM predictions_plus " +
+                "JOIN user ON predictions_plus.user_id = user.user_id " +
+                "LEFT JOIN teams ON predictions_plus.?? = teams.team_id " +
+                "WHERE predictions_plus.user_id <> 3 " +
+                "ORDER BY user.user_name ASC";
+            var inserts = [req.body.state];
+
+            sql = mysql.format(sql, inserts);
+            connection.query(sql, function (err, rows) {
+                if (err) {
+                    winston.info("error in database query getAllPredictionsPlusForState");
+                    winston.info(err.message);
+                    resp.result = "failed";
+                    resp.message = err.message;
+                    sendResponse(res, resp, connection);
+                }
+                else{
+                    if(rows!==undefined){
+                        var predictionsList = [];
+                        for(var i=0; i<rows.length; i++){
+                            var actualRow = rows[i];
+                            var tempObject = {"username": actualRow.username, "teamprefix": actualRow.teamprefix == null ? "" : actualRow.teamprefix};
+                            predictionsList.push(tempObject);
+                        }
+
+                        resp.result = "success";
+                        resp.predictionlist = predictionsList;
+                        sendResponse(res, resp, connection);
+                    }
+                }
+            });
+        }
+    });
+});
 
 function updatePredictionsPlusInDatabase(bestOffenseTeamName, bestDefenseTeamName){
     pool.getConnection(function (err, connection) {

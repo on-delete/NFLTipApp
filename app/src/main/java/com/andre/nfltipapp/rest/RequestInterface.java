@@ -4,6 +4,8 @@ import com.andre.nfltipapp.loginregistryview.model.NameExistRequest;
 import com.andre.nfltipapp.loginregistryview.model.NameExistResponse;
 import com.andre.nfltipapp.loginregistryview.model.RegisterLoginRequest;
 import com.andre.nfltipapp.loginregistryview.model.RegisterLoginResponse;
+import com.andre.nfltipapp.model.AllPredictionsPlusRequest;
+import com.andre.nfltipapp.model.AllPredictionsPlusResponse;
 import com.andre.nfltipapp.model.AllPredictionsRequest;
 import com.andre.nfltipapp.model.AllPredictionsResponse;
 import com.andre.nfltipapp.model.DataRequest;
@@ -35,6 +37,9 @@ public interface RequestInterface {
 
     @POST("updatePredictionPlus")
     Call<UpdateResponse> updatePredictionPlus(@Body UpdatePredictionPlusRequest request);
+
+    @POST("getAllPredictionsPlusForState")
+    Call<AllPredictionsPlusResponse> allPredictionsPlus(@Body AllPredictionsPlusRequest request);
 
     @POST("getAllPredictionsForGame")
     Call<AllPredictionsResponse> allPredictions(@Body AllPredictionsRequest request);

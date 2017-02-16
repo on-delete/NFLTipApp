@@ -29,6 +29,11 @@
             android:screenOrientation="portrait"
             android:label=""
             android:theme="@style/AppTheme.ActionBar"/>
+        <activity
+            android:name=".tabview.fragments.StatisticForPredictionsPlusActivity"
+            android:screenOrientation="portrait"
+            android:label=""
+            android:theme="@style/AppTheme.ActionBar"/>
     </application>
 
 </manifest>
