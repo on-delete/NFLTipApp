@@ -51,7 +51,7 @@ public class PredictionPlus implements Parcelable{
     }
 
     public String getFirstgamedate() {
-        return firstgamedate;
+        return firstgamedate + " PM";
     }
 
     public void setSuperbowl(String superbowl) {

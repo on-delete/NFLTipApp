@@ -30,11 +30,11 @@ public class Utils {
         }
     }
 
-    public static boolean isPredictionTimeOver(String gameTime){
+    public static boolean isPredictionTimeOver(String gameTime, int offset){
         Calendar gameTimeCal = getActualGameTime(gameTime);
         Calendar rightNow = Calendar.getInstance();
         if(gameTimeCal != null){
-            gameTimeCal.add(Calendar.MINUTE, -30);
+            gameTimeCal.add(Calendar.MINUTE, offset);
             return rightNow.getTimeInMillis() > gameTimeCal.getTimeInMillis();
         }
         else{

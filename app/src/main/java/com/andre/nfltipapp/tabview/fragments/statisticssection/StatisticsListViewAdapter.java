@@ -10,16 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.Utils;
 import com.andre.nfltipapp.model.AllPredictionsPlusRequest;
 import com.andre.nfltipapp.model.AllPredictionsPlusResponse;
 import com.andre.nfltipapp.model.PredictionPlus;
@@ -55,8 +53,10 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     public StatisticsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus) {
         this.activity = activity;
 
-        this.expandableListTitle.add("Tips vor der Saison");
-        expandableListDetail.put("Tips vor der Saison", predictionPlus);
+        if(Utils.isPredictionTimeOver(predictionPlus.get(0).getFirstgamedate(), 0)){
+            this.expandableListTitle.add("Tips vor der Saison");
+            expandableListDetail.put("Tips vor der Saison", predictionPlus);
+        }
 
         for(Prediction predictionItem : predictionList){
             List<Game> tempGamesList = new ArrayList<>();

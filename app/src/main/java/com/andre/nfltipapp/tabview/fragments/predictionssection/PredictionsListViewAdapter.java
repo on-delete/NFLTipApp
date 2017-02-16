@@ -72,14 +72,18 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private int lastNFCSpinnerPosition = 0;
     private int lastOffenseSpinnerPosition = 0;
     private int lastDefenseSpinnerPosition = 0;
+    private int offsetPredictionTime = -30;
+    private int offsetPredictionPlusTime = 0;
     private boolean userInteraction = true;
 
     public PredictionsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus, String uuid) {
         this.activity = activity;
         this.uuid = uuid;
 
-        this.expandableListTitle.add("Tips vor der Saison");
-        expandableListDetail.put("Tips vor der Saison", predictionPlus);
+        if(!Utils.isPredictionTimeOver(predictionPlus.get(0).getFirstgamedate(), 0)){
+            this.expandableListTitle.add("Tips vor der Saison");
+            expandableListDetail.put("Tips vor der Saison", predictionPlus);
+        }
 
         for(Prediction predictionItem : predictionList){
             List<Game> tempGamesList = new ArrayList<>();
@@ -170,7 +174,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime())){
+        if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime(), offsetPredictionTime)){
             homeTeamCheckbox.setEnabled(false);
             awayTeamCheckbox.setEnabled(false);
 
@@ -192,7 +196,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 CheckBox clickedBox = (CheckBox) buttonView;
 
-                if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime())){
+                if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime(), offsetPredictionTime)){
                     if(isChecked){
                         clickedBox.setChecked(false);
                     }
@@ -232,7 +236,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 CheckBox clickedBox = (CheckBox) buttonView;
 
-                if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime())){
+                if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime(), offsetPredictionTime)){
                     if(isChecked){
                         clickedBox.setChecked(false);
                     }
@@ -349,7 +353,37 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     userInteraction = true;
                     return;
                 }
-                sendUpdateRequest(state, position, (Spinner) parent, teamBackground, teamIcon, predictionPlus);
+                if(Utils.isPredictionTimeOver(predictionPlus.getFirstgamedate(), offsetPredictionPlusTime)){
+                    Spinner spinner = (Spinner) parent;
+                    switch (state) {
+                        case SUPERBOWL: {
+                            spinner.setSelection(lastSuperbowlSpinnerPosition);
+                            break;
+                        }
+                        case AFC_WINNER: {
+                            spinner.setSelection(lastAFCSpinnerPosition);
+                            break;
+                        }
+                        case NFC_WINNER: {
+                            spinner.setSelection(lastNFCSpinnerPosition);
+                            break;
+                        }
+                        case BEST_OFFENSE: {
+                            spinner.setSelection(lastOffenseSpinnerPosition);
+                            break;
+                        }
+                        case BEST_DEFENSE: {
+                            spinner.setSelection(lastDefenseSpinnerPosition);
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                    Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Zusatztips sind jetzt gesperrt!", Snackbar.LENGTH_LONG).show();
+                }
+                else {
+                    sendUpdateRequest(state, position, (Spinner) parent, teamBackground, teamIcon, predictionPlus);
+                }
             }
 
             @Override
