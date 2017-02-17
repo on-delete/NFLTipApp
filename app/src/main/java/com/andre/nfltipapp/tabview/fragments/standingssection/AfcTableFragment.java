@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
-import com.andre.nfltipapp.model.Standing;
+import com.andre.nfltipapp.tabview.fragments.standingssection.model.Standing;
 
 import java.util.List;
 
@@ -30,10 +30,10 @@ public class AfcTableFragment extends Fragment {
 
         List<Standing> afcStandings = getArguments().getParcelableArrayList(Constants.AFC_STANDINGS);
 
-        TableLayout subtableAfcEast = (TableLayout) view.findViewById(R.id.subtable_afc_east);
-        TableLayout subtableAfcNorth = (TableLayout) view.findViewById(R.id.subtable_afc_north);
-        TableLayout subtableAfcSouth = (TableLayout) view.findViewById(R.id.subtable_afc_south);
-        TableLayout subtableAfcWest = (TableLayout) view.findViewById(R.id.subtable_afc_west);
+        LinearLayout subtableAfcEast = (LinearLayout) view.findViewById(R.id.subtable_afc_east);
+        LinearLayout subtableAfcNorth = (LinearLayout) view.findViewById(R.id.subtable_afc_north);
+        LinearLayout subtableAfcSouth = (LinearLayout) view.findViewById(R.id.subtable_afc_south);
+        LinearLayout subtableAfcWest = (LinearLayout) view.findViewById(R.id.subtable_afc_west);
 
         for(int i=0; i< afcStandings.size(); i++){
             Standing standing = afcStandings.get(i);

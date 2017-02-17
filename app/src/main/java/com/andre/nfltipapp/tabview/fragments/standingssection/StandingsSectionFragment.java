@@ -11,7 +11,7 @@ import android.widget.Button;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
-import com.andre.nfltipapp.model.Standing;
+import com.andre.nfltipapp.tabview.fragments.standingssection.model.Standing;
 
 import java.util.ArrayList;
 

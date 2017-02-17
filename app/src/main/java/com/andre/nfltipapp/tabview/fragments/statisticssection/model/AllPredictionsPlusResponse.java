@@ -1,4 +1,4 @@
-package com.andre.nfltipapp.model;
+package com.andre.nfltipapp.tabview.fragments.statisticssection.model;
 
 import java.util.ArrayList;
 

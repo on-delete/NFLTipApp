@@ -1,4 +1,4 @@
-package com.andre.nfltipapp.model;
+package com.andre.nfltipapp.tabview.fragments.predictionssection.model;
 
 /**
  * Created by Andre on 14.02.2017.
@@ -6,9 +6,9 @@ package com.andre.nfltipapp.model;
 
 public class UpdatePredictionPlusRequest {
 
-    String uuid;
-    String state;
-    String teamprefix;
+    private String uuid;
+    private String state;
+    private String teamprefix;
 
     public void setUuid(String uuid) {
         this.uuid = uuid;

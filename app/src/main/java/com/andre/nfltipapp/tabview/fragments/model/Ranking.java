@@ -1,4 +1,4 @@
-package com.andre.nfltipapp.model;
+package com.andre.nfltipapp.tabview.fragments.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -8,7 +8,7 @@ public class Ranking implements Parcelable{
     private String name;
     private String points;
 
-    public Ranking(String place, String name, String points) {
+    public Ranking(String name, String points) {
         this.name = name;
         this.points = points;
     }

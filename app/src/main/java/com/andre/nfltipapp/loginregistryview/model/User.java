@@ -3,14 +3,14 @@ package com.andre.nfltipapp.loginregistryview.model;
 public class User {
 
     public User (String name, String email, String password){
-        setUuid("");
+        setUuid();
         setName(name);
         setEmail(email);
         setPassword(password);
     }
 
     public User (String name, String password){
-        setUuid("");
+        setUuid();
         setName(name);
         setEmail("");
         setPassword(password);
@@ -25,8 +25,8 @@ public class User {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUuid() {
+        this.uuid = "";
     }
 
     public String getEmail() {

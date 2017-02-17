@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
-import com.andre.nfltipapp.model.PredictionsPlusStatistic;
+import com.andre.nfltipapp.tabview.fragments.statisticssection.model.PredictionsPlusStatistic;
 
 import java.util.ArrayList;
 

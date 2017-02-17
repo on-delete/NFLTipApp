@@ -6,13 +6,12 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
-import com.andre.nfltipapp.model.Game;
-import com.andre.nfltipapp.model.GamePredictions;
+import com.andre.nfltipapp.tabview.fragments.model.Game;
+import com.andre.nfltipapp.tabview.fragments.model.GamePredictions;
 
 import java.util.ArrayList;
 

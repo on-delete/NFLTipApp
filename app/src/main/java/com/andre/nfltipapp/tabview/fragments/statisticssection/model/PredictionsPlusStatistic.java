@@ -1,4 +1,4 @@
-package com.andre.nfltipapp.model;
+package com.andre.nfltipapp.tabview.fragments.statisticssection.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

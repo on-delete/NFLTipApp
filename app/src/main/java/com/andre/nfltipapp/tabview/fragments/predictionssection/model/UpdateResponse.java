@@ -1,4 +1,4 @@
-package com.andre.nfltipapp.model;
+package com.andre.nfltipapp.tabview.fragments.predictionssection.model;
 
 /**
  * Created by Andre on 06.01.2017.

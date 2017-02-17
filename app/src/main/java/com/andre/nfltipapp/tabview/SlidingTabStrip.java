@@ -1,10 +1,10 @@
 package com.andre.nfltipapp.tabview;
 
-import android.R;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -44,7 +44,6 @@ public class SlidingTabStrip extends LinearLayout {
         final float density = getResources().getDisplayMetrics().density;
 
         TypedValue outValue = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.colorForeground, outValue, true);
         final int themeForegroundColor =  outValue.data;
 
         int mDefaultBottomBorderColor = setColorAlpha(themeForegroundColor,
@@ -101,7 +100,7 @@ public class SlidingTabStrip extends LinearLayout {
                         (1.0f - mSelectionOffset) * right);
             }
 
-            mSelectedIndicatorPaint.setColor(getResources().getColor(com.andre.nfltipapp.R.color.colorAccent));
+            mSelectedIndicatorPaint.setColor(ContextCompat.getColor(this.getContext(), com.andre.nfltipapp.R.color.colorAccent));
 
             canvas.drawRect(left, height - mSelectedIndicatorThickness, right,
                     height, mSelectedIndicatorPaint);

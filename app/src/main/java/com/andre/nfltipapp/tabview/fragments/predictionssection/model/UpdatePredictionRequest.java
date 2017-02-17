@@ -1,4 +1,4 @@
-package com.andre.nfltipapp.model;
+package com.andre.nfltipapp.tabview.fragments.predictionssection.model;
 
 /**
  * Created by Andre on 06.01.2017.
@@ -6,10 +6,10 @@ package com.andre.nfltipapp.model;
 
 public class UpdatePredictionRequest {
 
-    String uuid;
-    String gameid;
-    boolean hasPredicted;
-    boolean hasHomeTeamPredicted;
+    private String uuid;
+    private String gameid;
+    private boolean hasPredicted;
+    private boolean hasHomeTeamPredicted;
 
     public void setUuid(String uuid) {
         this.uuid = uuid;

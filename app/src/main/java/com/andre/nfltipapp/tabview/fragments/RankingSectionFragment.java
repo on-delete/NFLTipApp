@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
-import com.andre.nfltipapp.model.Ranking;
+import com.andre.nfltipapp.tabview.fragments.model.Ranking;
 
 import java.util.List;
 

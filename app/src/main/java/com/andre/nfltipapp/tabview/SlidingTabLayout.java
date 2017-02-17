@@ -16,8 +16,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.andre.nfltipapp.R;
-
 /**
  * Created by Andre on 15.01.2017.
  */

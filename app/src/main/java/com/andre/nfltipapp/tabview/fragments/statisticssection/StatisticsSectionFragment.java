@@ -13,8 +13,8 @@ import android.widget.ExpandableListView;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
-import com.andre.nfltipapp.model.Prediction;
-import com.andre.nfltipapp.model.PredictionPlus;
+import com.andre.nfltipapp.tabview.fragments.model.Prediction;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionPlus;
 
 import java.util.List;
 

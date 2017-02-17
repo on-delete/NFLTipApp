@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
-import com.andre.nfltipapp.model.Standing;
+import com.andre.nfltipapp.tabview.fragments.standingssection.model.Standing;
 
 import java.util.List;
 
@@ -29,10 +29,10 @@ public class NfcTableFragment extends Fragment {
 
         List<Standing> nfcStandings = getArguments().getParcelableArrayList(Constants.NFC_STANDINGS);
 
-        TableLayout subtableNfcEast = (TableLayout) view.findViewById(R.id.subtable_nfc_east);
-        TableLayout subtableNfcNorth = (TableLayout) view.findViewById(R.id.subtable_nfc_north);
-        TableLayout subtableNfcSouth = (TableLayout) view.findViewById(R.id.subtable_nfc_south);
-        TableLayout subtableNfcWest = (TableLayout) view.findViewById(R.id.subtable_nfc_west);
+        LinearLayout subtableNfcEast = (LinearLayout) view.findViewById(R.id.subtable_nfc_east);
+        LinearLayout subtableNfcNorth = (LinearLayout) view.findViewById(R.id.subtable_nfc_north);
+        LinearLayout subtableNfcSouth = (LinearLayout) view.findViewById(R.id.subtable_nfc_south);
+        LinearLayout subtableNfcWest = (LinearLayout) view.findViewById(R.id.subtable_nfc_west);
 
         for(int i=0; i< nfcStandings.size(); i++){
             Standing standing = nfcStandings.get(i);
