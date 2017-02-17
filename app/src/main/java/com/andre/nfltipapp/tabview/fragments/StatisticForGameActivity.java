@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -27,7 +28,7 @@ public class StatisticForGameActivity extends AppCompatActivity {
 
         ImageView awayTeamIcon = (ImageView) findViewById(R.id.away_team_icon_statistic);
         ImageView homeTeamIcon = (ImageView) findViewById(R.id.home_team_icon_statistic);
-        TableLayout statisticGameTable = (TableLayout) findViewById(R.id.statistics_game_table_layout);
+        LinearLayout statisticGameTable = (LinearLayout) findViewById(R.id.statistics_game_table_layout);
 
         setTitle(game.getAwayteam() + " vs " + game.getHometeam());
 

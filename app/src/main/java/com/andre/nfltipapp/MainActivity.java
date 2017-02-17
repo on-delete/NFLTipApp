@@ -25,13 +25,6 @@ public class MainActivity extends FragmentActivity {
         SlidingTabLayout tabs = (SlidingTabLayout) findViewById(R.id.tabs);
         tabs.setDistributeEvenly(true);
 
-        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return R.color.colorAccent;
-            }
-        });
-
         tabs.setViewPager(pager);
     }
 }

@@ -16,6 +16,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.andre.nfltipapp.R;
+
 /**
  * Created by Andre on 15.01.2017.
  */
@@ -30,8 +32,8 @@ public class SlidingTabLayout extends HorizontalScrollView {
         int getIndicatorColor(int position);
     }
 
-    private static final int TITLE_OFFSET_DIPS = 24;
-    private static final int TAB_VIEW_PADDING_DIPS = 16;
+    private static final int TITLE_OFFSET_DIPS = 10;
+    private static final int TAB_VIEW_PADDING_DIPS = 8;
     private static final int TAB_VIEW_TEXT_SIZE_SP = 12;
 
     private int mTitleOffset;

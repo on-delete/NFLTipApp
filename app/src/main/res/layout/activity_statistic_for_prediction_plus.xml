@@ -13,20 +13,19 @@
 
         <TextView
             android:id="@+id/state_text"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_marginStart="15dp"
             android:gravity="center_vertical"
-            android:textSize="25sp"
+            android:textSize="@dimen/font_size"
             android:textColor="@android:color/black"/>
 
         <ImageView
             android:id="@+id/team_icon_statistic"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:layout_marginEnd="20dp"
+            android:layout_width="82dp"
+            android:layout_height="55dp"
+            android:layout_marginEnd="15dp"
             android:layout_gravity="center"/>
 
     </LinearLayout>

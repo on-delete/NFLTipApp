@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="font_size">26sp</dimen>
+    <dimen name="font_size_tabs">12sp</dimen>
+</resources>

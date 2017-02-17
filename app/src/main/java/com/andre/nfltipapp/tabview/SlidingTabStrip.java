@@ -101,7 +101,7 @@ public class SlidingTabStrip extends LinearLayout {
                         (1.0f - mSelectionOffset) * right);
             }
 
-            mSelectedIndicatorPaint.setColor(color);
+            mSelectedIndicatorPaint.setColor(getResources().getColor(com.andre.nfltipapp.R.color.colorAccent));
 
             canvas.drawRect(left, height - mSelectedIndicatorThickness, right,
                     height, mSelectedIndicatorPaint);

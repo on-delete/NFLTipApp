@@ -1,5 +1,6 @@
 package com.andre.nfltipapp.tabview.fragments;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,8 +22,6 @@ import java.util.List;
 
 public class RankingSectionFragment extends Fragment {
 
-    private TableLayout table;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -34,7 +33,7 @@ public class RankingSectionFragment extends Fragment {
             userName = bundle.getString("username");
         }
 
-        table = (TableLayout) rootView.findViewById(R.id.rankingTable);
+        TableLayout table = (TableLayout) rootView.findViewById(R.id.rankingTable);
         table.removeViews(1, table.getChildCount() - 1);
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
@@ -45,6 +44,9 @@ public class RankingSectionFragment extends Fragment {
 
             TextView textViewName = (TextView) rowView.findViewById(R.id.table_text_name) ;
             textViewName.setText(rankingEntry.getName());
+            if(userName != null && userName.equals(rankingEntry.getName())){
+                textViewName.setTypeface(null, Typeface.BOLD);
+            }
             TextView textViewPoints = (TextView) rowView.findViewById(R.id.table_text_points) ;
             textViewPoints.setText(rankingEntry.getPoints());
 
