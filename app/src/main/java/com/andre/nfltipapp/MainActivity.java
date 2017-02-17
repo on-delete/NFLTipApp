@@ -14,9 +14,8 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = getIntent();
-        String userName = intent.getStringExtra(Constants.NAME) == null ? "admin" : intent.getStringExtra(Constants.NAME);
-        String uuid = intent.getStringExtra(Constants.UUID) == null ? "10" : intent.getStringExtra(Constants.UUID);
+        String userName = getIntent().getStringExtra(Constants.NAME);
+        String uuid = getIntent().getStringExtra(Constants.UUID);
 
         TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), userName, uuid);
 

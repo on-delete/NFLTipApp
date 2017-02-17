@@ -28,8 +28,6 @@ public class Constants {
     public static final String AFC_STANDINGS = "afcstandings";
     public static final String NFC_STANDINGS = "nfcstandings";
 
-    public static final String WHITE_BACKGROUND = "#FFFFFF";
-
     public static final String[] TAB_NAME_LIST = {"Ranking", "Prognosen", "Statistik", "Tabelle"};
 
     public static final Map<String, String> WEEK_TYPE_MAP = new HashMap<String, String>() {{

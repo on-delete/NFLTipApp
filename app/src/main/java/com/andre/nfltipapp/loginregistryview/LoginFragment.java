@@ -96,7 +96,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 RegisterLoginResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
                     if(resp.getMessage().equals(Constants.LOGIN_SUCCESSFULL)){
-                        //Snackbar.make(getView(),"Login Successfull!", Snackbar.LENGTH_LONG).show();
                         getDataProcess(resp.getUser().getName(), resp.getUser().getUuid());
                     } else {
                         Snackbar.make(getView(),"Login Failed!", Snackbar.LENGTH_LONG).show();
@@ -126,7 +125,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
                 progress.setVisibility(View.INVISIBLE);
                 if(resp.getResult().equals(Constants.SUCCESS)){
                     if(resp.getMessage().equals(Constants.GET_DATA_SUCCESSFULL)){
-                        Snackbar.make(getView(),"Login Successfull!", Snackbar.LENGTH_LONG).show();
                         goToMainActivity(name, uuid, resp.getData());
                     } else {
                         Snackbar.make(getView(),"Login Failed!", Snackbar.LENGTH_LONG).show();

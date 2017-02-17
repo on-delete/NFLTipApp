@@ -1,41 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rankingTable"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:stretchColumns="*">
+    android:layout_height="match_parent">
 
-    <TableRow
+    <TextView
+        android:id="@+id/table_text_name"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:id="@+id/tableRow">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/table_text_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2.5"
-                android:textSize="18sp"
-                android:textColor="@android:color/black"
-                android:paddingTop="15dp"
-                android:paddingStart="20dp">
-            </TextView>
-            <TextView
-                android:id="@+id/table_text_points"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:textColor="@android:color/black"
-                android:paddingTop="15dp"
-                android:paddingStart="20dp">
-            </TextView>
-        </LinearLayout>
-    </TableRow>
-</TableLayout>
+        android:layout_height="wrap_content"
+        android:layout_weight="2.5"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingStart="20dp">
+    </TextView>
+    <TextView
+        android:id="@+id/table_text_points"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingStart="20dp">
+    </TextView>
+</LinearLayout>

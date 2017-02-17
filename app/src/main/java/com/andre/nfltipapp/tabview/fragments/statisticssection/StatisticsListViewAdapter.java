@@ -43,12 +43,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
+    private OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(3, TimeUnit.SECONDS).build();
+    private Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient)
+            .build();
+    private RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+
     private Activity activity;
     private List<String> expandableListTitle = new ArrayList<>();
     private HashMap<String, List<?>> expandableListDetail = new HashMap<>();
     private List<?> child;
     private LayoutInflater layoutInflater;
-    private Object childView;
 
     public StatisticsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus) {
         this.activity = activity;
@@ -107,7 +114,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         layoutInflater = (LayoutInflater) this.activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        childView = getChild(listPosition, expandedListPosition);
+        Object childView = getChild(listPosition, expandedListPosition);
         if(childView instanceof Game){
             return initPredictionView(convertView, parent, (Game) childView);
         }
@@ -281,13 +288,6 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void getAllPredictionsForGameid(final Game game, AllPredictionsRequest request){
-        OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(3, TimeUnit.SECONDS).build();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient)
-                .build();
-        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
         Call<AllPredictionsResponse> response = requestInterface.allPredictions(request);
 
         response.enqueue(new Callback<AllPredictionsResponse>() {
@@ -314,13 +314,6 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void getAllPredictionsPlusForState(final Constants.PREDICTIONS_PLUS_STATES state, final String teamName, AllPredictionsPlusRequest request){
-        OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(3, TimeUnit.SECONDS).build();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient)
-                .build();
-        RequestInterface requestInterface = retrofit.create(RequestInterface.class);
         Call<AllPredictionsPlusResponse> response = requestInterface.allPredictionsPlus(request);
 
         response.enqueue(new Callback<AllPredictionsPlusResponse>() {

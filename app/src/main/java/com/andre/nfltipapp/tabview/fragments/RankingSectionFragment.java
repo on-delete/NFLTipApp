@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
@@ -33,8 +33,7 @@ public class RankingSectionFragment extends Fragment {
             userName = bundle.getString("username");
         }
 
-        TableLayout table = (TableLayout) rootView.findViewById(R.id.rankingTable);
-        table.removeViews(1, table.getChildCount() - 1);
+        LinearLayout table = (LinearLayout) rootView.findViewById(R.id.rankingTable);
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         List<Ranking> rankingList = data.getRanking();

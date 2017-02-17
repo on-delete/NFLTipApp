@@ -22,7 +22,6 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
     private Bundle bundle = new Bundle();
 
     public TabSectionsPagerAdapter(FragmentManager fm, String userName, String uuid) {
-
         super(fm);
         this.userName = userName;
         this.uuid = uuid;
