@@ -44,13 +44,19 @@ public class StatisticsSectionFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_section_statistics, container, false);
 
+        Bundle bundle = this.getArguments();
+        String userId = "";
+        if (bundle != null) {
+            userId = bundle.getString(Constants.UUID);
+        }
+
         expandableListView = (ExpandableListView) rootView.findViewById(R.id.statisticsListView);
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         List<Prediction> predictionList = data.getPredictions();
         List<PredictionPlus> predictionPlus = data.getPredictionsplus();
 
-        ExpandableListAdapter expandableListAdapter = new StatisticsListViewAdapter(activity, predictionList, predictionPlus);
+        ExpandableListAdapter expandableListAdapter = new StatisticsListViewAdapter(activity, predictionList, predictionPlus, userId);
         expandableListView.setAdapter(expandableListAdapter);
 
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {

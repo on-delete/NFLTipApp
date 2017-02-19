@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Ranking");
         }
 
-        TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), userName, uuid);
+        TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), uuid);
 
         ViewPager pager = (ViewPager) findViewById(R.id.viewpager);
         pager.setAdapter(tabSectionsPagerAdapter);

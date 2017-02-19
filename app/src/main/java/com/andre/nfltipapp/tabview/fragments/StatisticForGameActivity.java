@@ -1,5 +1,6 @@
 package com.andre.nfltipapp.tabview.fragments;
 
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,8 +15,11 @@ import com.andre.nfltipapp.tabview.fragments.model.Game;
 import com.andre.nfltipapp.tabview.fragments.model.GamePredictions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StatisticForGameActivity extends AppCompatActivity {
+
+    private LinearLayout statisticGameTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,10 +28,11 @@ public class StatisticForGameActivity extends AppCompatActivity {
 
         ArrayList<GamePredictions> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONLIST);
         Game game = getIntent().getParcelableExtra(Constants.GAME);
+        String userId = getIntent().getStringExtra(Constants.UUID);
 
         ImageView awayTeamIcon = (ImageView) findViewById(R.id.away_team_icon_statistic);
         ImageView homeTeamIcon = (ImageView) findViewById(R.id.home_team_icon_statistic);
-        LinearLayout statisticGameTable = (LinearLayout) findViewById(R.id.statistics_game_table_layout);
+        this.statisticGameTable = (LinearLayout) findViewById(R.id.statistics_game_table_layout);
 
         setTitle(game.getAwayteam() + " vs " + game.getHometeam());
 
@@ -47,26 +52,46 @@ public class StatisticForGameActivity extends AppCompatActivity {
             homeTeamIcon.setBackground(getDrawable(R.drawable.back_yellow));
         }
 
-        for(GamePredictions prediction : predictionList){
-            View rowView = getLayoutInflater().inflate(R.layout.statistic_for_game_table_row, null);
+        List<GamePredictions> predictionListCopy = new ArrayList<>(predictionList);
 
-            TextView textViewName = (TextView) rowView.findViewById(R.id.player_name_statistic) ;
-            textViewName.setText(prediction.getUsername());
-            CheckBox awayTeamCheckbox = (CheckBox) rowView.findViewById(R.id.away_team_checkbox_statistic);
-            awayTeamCheckbox.setEnabled(false);
-            CheckBox homeTeamCheckbox = (CheckBox) rowView.findViewById(R.id.home_team_checkbox_statistic);
-            homeTeamCheckbox.setEnabled(false);
+        for(int i = 0; i < predictionList.size(); i++){
+            GamePredictions predictionTemp = predictionList.get(i);
+            if(predictionTemp.getUserid().equals(userId)){
+                View view = initView(predictionTemp);
+                view.setBackgroundResource(R.drawable.bottom_border);
+                TextView textViewName = (TextView) view.findViewById(R.id.player_name_statistic) ;
+                textViewName.setTypeface(null, Typeface.BOLD);
 
-            if(prediction.getPredicted()==1) {
-                if(prediction.getHometeampredicted() == 1){
-                    homeTeamCheckbox.setChecked(true);
-                }
-                else {
-                    awayTeamCheckbox.setChecked(true);
-                }
+                predictionListCopy.remove(i);
             }
-
-            statisticGameTable.addView(rowView);
         }
+
+        for(GamePredictions prediction : predictionListCopy){
+            initView(prediction);
+        }
+    }
+
+    private View initView (GamePredictions prediction){
+        View rowView = getLayoutInflater().inflate(R.layout.statistic_for_game_table_row, null);
+
+        TextView textViewName = (TextView) rowView.findViewById(R.id.player_name_statistic) ;
+        textViewName.setText(prediction.getUsername());
+        CheckBox awayTeamCheckbox = (CheckBox) rowView.findViewById(R.id.away_team_checkbox_statistic);
+        awayTeamCheckbox.setEnabled(false);
+        CheckBox homeTeamCheckbox = (CheckBox) rowView.findViewById(R.id.home_team_checkbox_statistic);
+        homeTeamCheckbox.setEnabled(false);
+
+        if(prediction.getPredicted()==1) {
+            if(prediction.getHometeampredicted() == 1){
+                homeTeamCheckbox.setChecked(true);
+            }
+            else {
+                awayTeamCheckbox.setChecked(true);
+            }
+        }
+
+        this.statisticGameTable.addView(rowView);
+
+        return rowView;
     }
 }

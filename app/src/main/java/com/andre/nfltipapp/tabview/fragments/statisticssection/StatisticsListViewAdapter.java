@@ -43,6 +43,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
+    private String userId;
+
     private OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(3, TimeUnit.SECONDS).build();
     private Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
@@ -57,8 +59,10 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     private List<?> child;
     private LayoutInflater layoutInflater;
 
-    public StatisticsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus) {
+    public StatisticsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus, String userId) {
         this.activity = activity;
+
+        this.userId = userId;
 
         if(Utils.isPredictionTimeOver(predictionPlus.get(0).getFirstgamedate(), 0)){
             this.expandableListTitle.add("Tips vor der Saison");
@@ -298,6 +302,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                     Intent intent = new Intent(activity, StatisticForGameActivity.class);
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONLIST, resp.getPredictionList());
                     intent.putExtra(Constants.GAME, game);
+                    intent.putExtra(Constants.UUID, userId);
                     activity.startActivity(intent);
                 }
                 else{
@@ -325,6 +330,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONSPLUSLIST, resp.getPredictionList());
                     intent.putExtra(Constants.TEAMNAME, teamName);
                     intent.putExtra(Constants.STATE, state.toString());
+                    intent.putExtra(Constants.UUID, userId);
                     activity.startActivity(intent);
                 }
                 else{

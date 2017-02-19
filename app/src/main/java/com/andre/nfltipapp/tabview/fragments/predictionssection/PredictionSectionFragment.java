@@ -45,9 +45,9 @@ public class PredictionSectionFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_section_prediction, container, false);
 
         Bundle bundle = this.getArguments();
-        String uuid = "";
+        String userId = "";
         if (bundle != null) {
-            uuid = bundle.getString("uuid");
+            userId = bundle.getString(Constants.UUID);
         }
 
         expandableListView = (ExpandableListView) rootView.findViewById(R.id.predictionsListView);
@@ -56,7 +56,7 @@ public class PredictionSectionFragment extends Fragment {
         List<Prediction> predictionList = data.getPredictions();
         List<PredictionPlus> predictionPlus = data.getPredictionsplus();
 
-        ExpandableListAdapter expandableListAdapter = new PredictionsListViewAdapter(activity, predictionList, predictionPlus, uuid);
+        ExpandableListAdapter expandableListAdapter = new PredictionsListViewAdapter(activity, predictionList, predictionPlus, userId);
         expandableListView.setAdapter(expandableListAdapter);
 
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {

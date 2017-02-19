@@ -17,13 +17,11 @@ import com.andre.nfltipapp.tabview.fragments.standingssection.StandingsSectionFr
  */
 
 public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
-    private String userName;
     private String uuid;
     private Bundle bundle = new Bundle();
 
-    public TabSectionsPagerAdapter(FragmentManager fm, String userName, String uuid) {
+    public TabSectionsPagerAdapter(FragmentManager fm, String uuid) {
         super(fm);
-        this.userName = userName;
         this.uuid = uuid;
     }
 
@@ -31,17 +29,20 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         switch (i) {
             case 0:
-                bundle.putString("username", this.userName);
+                bundle.putString(Constants.UUID, this.uuid);
                 RankingSectionFragment rankingSectionFragment = new RankingSectionFragment();
                 rankingSectionFragment.setArguments(bundle);
                 return rankingSectionFragment;
             case 1:
-                bundle.putString("uuid", this.uuid);
+                bundle.putString(Constants.UUID, this.uuid);
                 PredictionSectionFragment predictionSectionFragment = new PredictionSectionFragment();
                 predictionSectionFragment.setArguments(bundle);
                 return predictionSectionFragment;
             case 2:
-                return new StatisticsSectionFragment();
+                bundle.putString(Constants.UUID, this.uuid);
+                StatisticsSectionFragment statisticsSectionFragment = new StatisticsSectionFragment();
+                statisticsSectionFragment.setArguments(bundle);
+                return statisticsSectionFragment;
             case 3:
                 return new StandingsSectionFragment();
             default:

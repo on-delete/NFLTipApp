@@ -10,15 +10,21 @@ import android.os.Parcelable;
 public class PredictionsPlusStatistic implements Parcelable{
 
     private String username;
+    private String userid;
     private String teamprefix;
 
     public PredictionsPlusStatistic (Parcel parcel){
         username = parcel.readString();
+        userid = parcel.readString();
         teamprefix = parcel.readString();
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public String getUserid() {
+        return userid;
     }
 
     public String getTeamprefix() {
@@ -33,6 +39,7 @@ public class PredictionsPlusStatistic implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(username);
+        dest.writeString(userid);
         dest.writeString(teamprefix);
     }
 

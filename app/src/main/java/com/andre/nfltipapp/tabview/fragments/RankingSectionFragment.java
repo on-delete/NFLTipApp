@@ -28,9 +28,9 @@ public class RankingSectionFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_section_ranking, container, false);
 
         Bundle bundle = this.getArguments();
-        String userName = "";
+        String userId = "";
         if (bundle != null) {
-            userName = bundle.getString("username");
+            userId = bundle.getString(Constants.UUID);
         }
 
         LinearLayout table = (LinearLayout) rootView.findViewById(R.id.rankingTable);
@@ -43,7 +43,7 @@ public class RankingSectionFragment extends Fragment {
 
             TextView textViewName = (TextView) rowView.findViewById(R.id.table_text_name) ;
             textViewName.setText(rankingEntry.getName());
-            if(userName != null && userName.equals(rankingEntry.getName())){
+            if(userId != null && userId.equals(rankingEntry.getUserid())){
                 textViewName.setTypeface(null, Typeface.BOLD);
             }
             TextView textViewPoints = (TextView) rowView.findViewById(R.id.table_text_points) ;

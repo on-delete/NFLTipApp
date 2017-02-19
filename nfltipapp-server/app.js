@@ -506,6 +506,7 @@ function calculateRanking(res, uuid){
                             }
                             else{
                                 var user_name = rows[i].user_name;
+                                var user_id = rows[i].user_id;
                                 var sql = "SELECT predictions.home_team_predicted as home_team_predicted, games.home_team_score as home_team_score, games.away_team_score as away_team_score, games.game_finished as finished, predictions.predicted as predicted " +
                                     "FROM predictions " +
                                     "RIGHT JOIN user " +
@@ -513,7 +514,7 @@ function calculateRanking(res, uuid){
                                     "RIGHT JOIN games " +
                                     "ON predictions.game_id = games.game_id " +
                                     "WHERE predictions.user_id = ? AND games.game_finished = true AND predicted = true;";
-                                var inserts = [rows[i].user_id];
+                                var inserts = [user_id];
                                 sql = mysql.format(sql, inserts);
                                 connection.query(sql, function (err, rows2) {
                                     if (err) {
@@ -527,8 +528,6 @@ function calculateRanking(res, uuid){
                                             (function calculateRankingForUser(score) {
                                                 j++;
                                                 if(j >= rows2.length){
-                                                    //rankingList.push({"name": user_name, "points": score});
-                                                    //calculateForEveryUser(rankingList);
                                                     (function () {
                                                                 var sql = "SELECT predictions_plus.user_id as userid, superbowl_team.team_prefix as superbowl, afc_winner_team.team_prefix as afc_winner, nfc_winner_team.team_prefix as nfc_winner, best_offense_team.team_prefix as best_offense, best_defense_team.team_prefix as best_defense " +
                                                                     "FROM predictions_plus " +
@@ -547,7 +546,6 @@ function calculateRanking(res, uuid){
                                                                     }
                                                                     else{
                                                                         if(result!==undefined){
-                                                                            var predictionsPlus = [];
                                                                             if(result[0].userid == 3){
                                                                                 defaultRow = result[0];
                                                                                 userRow = result[1];
@@ -573,7 +571,7 @@ function calculateRanking(res, uuid){
                                                                             }
                                                                         }
                                                                     }
-                                                                    rankingList.push({"name": user_name, "points": score});
+                                                                    rankingList.push({"name": user_name, "userid" : user_id, "points": score});
                                                                     calculateForEveryUser(rankingList);
                                                                 });
                                                     })();
@@ -1013,7 +1011,7 @@ app.post('/getAllPredictionsPlusForState', function (req, res, next) {
             sendResponse(res, resp, connection);
         }
         else {
-            var sql = "SELECT user.user_name as username, teams.team_prefix as teamprefix " +
+            var sql = "SELECT user.user_name as username, user.user_id as userid, teams.team_prefix as teamprefix " +
                 "FROM predictions_plus " +
                 "JOIN user ON predictions_plus.user_id = user.user_id " +
                 "LEFT JOIN teams ON predictions_plus.?? = teams.team_id " +
@@ -1035,7 +1033,7 @@ app.post('/getAllPredictionsPlusForState', function (req, res, next) {
                         var predictionsList = [];
                         for(var i=0; i<rows.length; i++){
                             var actualRow = rows[i];
-                            var tempObject = {"username": actualRow.username, "teamprefix": actualRow.teamprefix == null ? "" : actualRow.teamprefix};
+                            var tempObject = {"username": actualRow.username, "userid": actualRow.userid, "teamprefix": actualRow.teamprefix == null ? "" : actualRow.teamprefix};
                             predictionsList.push(tempObject);
                         }
 

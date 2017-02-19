@@ -53,7 +53,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private Activity activity;
     private List<String> expandableListTitle = new ArrayList<>();
     private HashMap<String, List<?>> expandableListDetail = new HashMap<>();
-    private String uuid;
+    private String userId;
     private OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(2, TimeUnit.SECONDS).build();
     private Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
@@ -63,7 +63,6 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private RequestInterface requestInterface = retrofit.create(RequestInterface.class);
     private List<?> child;
     private LayoutInflater layoutInflater;
-    private Object childView;
     private ArrayList<String> teamPrefixList = new ArrayList<>();
     private ArrayList<String> teamNameList = new ArrayList<>();
 
@@ -76,9 +75,9 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private int offsetPredictionPlusTime = 0;
     private boolean userInteraction = true;
 
-    public PredictionsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus, String uuid) {
+    public PredictionsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus, String userId) {
         this.activity = activity;
-        this.uuid = uuid;
+        this.userId = userId;
 
         if(!Utils.isPredictionTimeOver(predictionPlus.get(0).getFirstgamedate(), 0)){
             this.expandableListTitle.add("Tips vor der Saison");
@@ -135,7 +134,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         layoutInflater = (LayoutInflater) this.activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        childView = getChild(listPosition, expandedListPosition);
+        Object childView = getChild(listPosition, expandedListPosition);
         if(childView instanceof Game){
             return initPredictionView(convertView, parent, (Game) childView);
         }
@@ -220,11 +219,11 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 }
                 else{
                     if(isChecked) {
-                        updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.HOME_TEAM_SELECTED, expandedListItem, uuid);
+                        updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.HOME_TEAM_SELECTED, expandedListItem, userId);
                     }
                     else{
                         if(!awayTeamCheckbox.isChecked()) {
-                            updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.UNPREDICTED, expandedListItem, uuid);
+                            updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.UNPREDICTED, expandedListItem, userId);
                         }
                     }
                 }
@@ -260,11 +259,11 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 }
                 else{
                     if(isChecked) {
-                        updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.AWAY_TEAM_SELECTED, expandedListItem, uuid);
+                        updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.AWAY_TEAM_SELECTED, expandedListItem, userId);
                     }
                     else{
                         if(!homeTeamCheckbox.isChecked()) {
-                            updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.UNPREDICTED, expandedListItem, uuid);
+                            updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.UNPREDICTED, expandedListItem, userId);
                         }
                     }
                 }
@@ -515,7 +514,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         UpdatePredictionPlusRequest updatePredictionPlusRequest = new UpdatePredictionPlusRequest();
         updatePredictionPlusRequest.setTeamprefix(teamPredicted);
         updatePredictionPlusRequest.setState(state.toString().toLowerCase());
-        updatePredictionPlusRequest.setUuid(this.uuid);
+        updatePredictionPlusRequest.setUuid(this.userId);
 
         Call<UpdateResponse> response = this.requestInterface.updatePredictionPlus(updatePredictionPlusRequest);
 
@@ -643,6 +642,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     Intent intent = new Intent(activity, StatisticForGameActivity.class);
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONLIST, resp.getPredictionList());
                     intent.putExtra(Constants.GAME, game);
+                    intent.putExtra(Constants.UUID, userId);
                     activity.startActivity(intent);
                 }
                 else{
