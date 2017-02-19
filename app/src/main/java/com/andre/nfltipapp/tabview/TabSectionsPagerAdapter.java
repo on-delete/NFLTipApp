@@ -42,8 +42,10 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
                 return predictionSectionFragment;
             case 2:
                 return new StatisticsSectionFragment();
-            default:
+            case 3:
                 return new StandingsSectionFragment();
+            default:
+                return null;
         }
     }
 
@@ -54,6 +56,6 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return Constants.TAB_NAME_LIST[position];
+        return null;
     }
 }
