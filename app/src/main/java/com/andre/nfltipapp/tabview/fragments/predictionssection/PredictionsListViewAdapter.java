@@ -29,6 +29,7 @@ import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsResponse;
 import com.andre.nfltipapp.tabview.fragments.model.Game;
 import com.andre.nfltipapp.tabview.fragments.model.Prediction;
 import com.andre.nfltipapp.tabview.fragments.model.PredictionPlus;
+import com.andre.nfltipapp.tabview.fragments.predictionssection.model.TeamInfoSpinnerObject;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionPlusRequest;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionRequest;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdateResponse;
@@ -36,6 +37,7 @@ import com.andre.nfltipapp.rest.RequestInterface;
 import com.andre.nfltipapp.tabview.fragments.StatisticForGameActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -63,8 +65,8 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private RequestInterface requestInterface = retrofit.create(RequestInterface.class);
     private List<?> child;
     private LayoutInflater layoutInflater;
+    private ArrayList<TeamInfoSpinnerObject> teamInfoList = new ArrayList<>();
     private ArrayList<String> teamPrefixList = new ArrayList<>();
-    private ArrayList<String> teamNameList = new ArrayList<>();
 
     private int lastSuperbowlSpinnerPosition = 0;
     private int lastAFCSpinnerPosition = 0;
@@ -274,11 +276,17 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private View initPredictionPlusView(View convertView, ViewGroup parent, PredictionPlus child) {
-        if(teamNameList.isEmpty() && teamPrefixList.isEmpty()) {
-            teamNameList.add("");
+        if(teamInfoList.isEmpty() && teamPrefixList.isEmpty()){
             for (String key : Constants.TEAM_INFO_MAP.keySet()) {
-                teamPrefixList.add(key);
-                teamNameList.add(Constants.TEAM_INFO_MAP.get(key).getTeamName());
+                teamInfoList.add(new TeamInfoSpinnerObject(Constants.TEAM_INFO_MAP.get(key).getTeamName(), key));
+            }
+
+            Collections.sort(teamInfoList);
+
+            teamInfoList.add(0, new TeamInfoSpinnerObject("", ""));
+
+            for(TeamInfoSpinnerObject object : teamInfoList){
+                teamPrefixList.add(object.getTeamPrefix());
             }
         }
 
@@ -301,14 +309,14 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
 
         TextView teamText = (TextView) subView.findViewById(R.id.team_text);
         Spinner teamSpinner = (Spinner) subView.findViewById(R.id.team_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.activity, R.layout.spinner_item, teamNameList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        TeamPickSpinnerAdapter adapter = new TeamPickSpinnerAdapter(this.activity, R.layout.spinner_item, teamInfoList);
         teamSpinner.setAdapter(adapter);
 
         final ImageView teamIcon = (ImageView) subView.findViewById(R.id.team_icon);
 
         if(!team.equals("")){
-            teamSpinner.setSelection(teamPrefixList.indexOf(team) + 1, false);
+            teamSpinner.setSelection(teamPrefixList.indexOf(team), false);
         }
         else{
             teamSpinner.setSelection(0, false);
@@ -400,8 +408,8 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             teamIcon.setImageResource(R.drawable.default_icon);
         }
         else {
-            teamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position - 1)).getTeamColor()));
-            teamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position - 1)).getTeamIcon());
+            teamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position)).getTeamColor()));
+            teamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position)).getTeamIcon());
         }
     }
 
@@ -510,7 +518,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void sendUpdateRequest(final Constants.PREDICTIONS_PLUS_STATES state, final int position, final Spinner teamSpinner, final LinearLayout teamBackground, final ImageView teamIcon, final PredictionPlus predictionPlus){
-        final String teamPredicted = position == 0 ? "" : teamPrefixList.get(position - 1);
+        final String teamPredicted = position == 0 ? "" : teamInfoList.get(position).getTeamPrefix();
         UpdatePredictionPlusRequest updatePredictionPlusRequest = new UpdatePredictionPlusRequest();
         updatePredictionPlusRequest.setTeamprefix(teamPredicted);
         updatePredictionPlusRequest.setState(state.toString().toLowerCase());
