@@ -45,13 +45,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
     private String userId;
 
-    private OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(3, TimeUnit.SECONDS).build();
-    private Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(httpClient)
-            .build();
-    private RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+    private RequestInterface requestInterface;
 
     private Activity activity;
     private List<String> expandableListTitle = new ArrayList<>();
@@ -86,6 +80,20 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         }
 
         Collections.reverse(expandableListTitle);
+
+        initRequestInterface();
+    }
+
+    private void initRequestInterface(){
+        OkHttpClient httpClient = Utils.getHttpClient(this.activity);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient)
+                .build();
+
+        requestInterface = retrofit.create(RequestInterface.class);
     }
 
     @Override

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.MainActivity;
 import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.Utils;
 import com.andre.nfltipapp.model.Data;
 import com.andre.nfltipapp.model.DataRequest;
 import com.andre.nfltipapp.model.DataResponse;
@@ -25,6 +26,7 @@ import com.andre.nfltipapp.loginregistryview.model.RegisterLoginRequest;
 import com.andre.nfltipapp.loginregistryview.model.RegisterLoginResponse;
 import com.andre.nfltipapp.loginregistryview.model.User;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -58,9 +60,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
     }
 
     private void initRequestInterface(){
+        OkHttpClient httpClient = Utils.getHttpClient(getActivity());
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient)
                 .build();
 
         requestInterface = retrofit.create(RequestInterface.class);

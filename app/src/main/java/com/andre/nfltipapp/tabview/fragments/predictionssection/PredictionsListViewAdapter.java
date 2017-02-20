@@ -56,13 +56,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private List<String> expandableListTitle = new ArrayList<>();
     private HashMap<String, List<?>> expandableListDetail = new HashMap<>();
     private String userId;
-    private OkHttpClient httpClient = new OkHttpClient.Builder().connectTimeout(2, TimeUnit.SECONDS).build();
-    private Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(httpClient)
-            .build();
-    private RequestInterface requestInterface = retrofit.create(RequestInterface.class);
+    private RequestInterface requestInterface;
     private List<?> child;
     private LayoutInflater layoutInflater;
     private ArrayList<TeamInfoSpinnerObject> teamInfoList = new ArrayList<>();
@@ -81,10 +75,10 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         this.activity = activity;
         this.userId = userId;
 
-        if(!Utils.isPredictionTimeOver(predictionPlus.get(0).getFirstgamedate(), 0)){
+        //if(!Utils.isPredictionTimeOver(predictionPlus.get(0).getFirstgamedate(), 0)){
             this.expandableListTitle.add("Tips vor der Saison");
             expandableListDetail.put("Tips vor der Saison", predictionPlus);
-        }
+        //}
 
         for(Prediction predictionItem : predictionList){
             List<Game> tempGamesList = new ArrayList<>();
@@ -101,6 +95,20 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 this.expandableListDetail.put(title, tempGamesList);
             }
         }
+
+        initRequestInterface();
+    }
+
+    private void initRequestInterface(){
+        OkHttpClient httpClient = Utils.getHttpClient(this.activity);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient)
+                .build();
+
+        requestInterface = retrofit.create(RequestInterface.class);
     }
 
     @Override
@@ -360,7 +368,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     userInteraction = true;
                     return;
                 }
-                if(Utils.isPredictionTimeOver(predictionPlus.getFirstgamedate(), offsetPredictionPlusTime)){
+                /*if(Utils.isPredictionTimeOver(predictionPlus.getFirstgamedate(), offsetPredictionPlusTime)){
                     Spinner spinner = (Spinner) parent;
                     switch (state) {
                         case SUPERBOWL: {
@@ -388,9 +396,9 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     }
                     Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Zusatztips sind jetzt gesperrt!", Snackbar.LENGTH_LONG).show();
                 }
-                else {
+                else {*/
                     sendUpdateRequest(state, position, (Spinner) parent, teamBackground, teamIcon, predictionPlus);
-                }
+                //}
             }
 
             @Override

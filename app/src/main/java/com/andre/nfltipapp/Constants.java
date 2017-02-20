@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Constants {
 
-    public static final String BASE_URL = "http://rocciberge.de:3000/";
+    public static final String BASE_URL = "https://rocciberge.de:3000/";
 
     public static final String TAG = "nfltipapp";
 
