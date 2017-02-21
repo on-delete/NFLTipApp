@@ -297,11 +297,11 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         convertView = layoutInflater.inflate(R.layout.predictions_plus_item, parent, false);
         LinearLayout container = (LinearLayout) convertView.findViewById(R.id.subitems_container);
 
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.SUPERBOWL, child.getSuperbowl(), child), 0);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.AFC_WINNER, child.getAfcwinnerteam(), child), 1);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.NFC_WINNER, child.getNfcwinnerteam(), child), 2);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.BEST_OFFENSE, child.getBestoffenseteam(), child), 3);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.BEST_DEFENSE, child.getBestdefenseteam(), child), 4);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.SUPERBOWL, child.getSuperbowl(), child), 0);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.AFC_WINNER, child.getAfcwinnerteam(), child), 1);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.NFC_WINNER, child.getNfcwinnerteam(), child), 2);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.BEST_OFFENSE, child.getBestoffenseteam(), child), 3);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.BEST_DEFENSE, child.getBestdefenseteam(), child), 4);
 
         return convertView;
     }
