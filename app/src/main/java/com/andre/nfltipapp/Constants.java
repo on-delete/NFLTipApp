@@ -19,13 +19,19 @@ public class Constants {
 
     public static final String USERID = "userId";
     public static final String DATA = "data";
-    public static final String PREDICTIONLIST = "predictionlist";
-    public static final String PREDICTIONSPLUSLIST = "predictionspluslist";
+    public static final String PREDICTIONS = "PREDICTIONS";
+    public static final String PREDICTIONS_BEFORE_SEASON = "predictionsbeforeseason";
     public static final String GAME = "game";
     public static final String TEAMNAME = "teamname";
-    public static final String STATE = "state";
+    public static final String PREDICTION_TYPE_STRING = "predictiontype";
     public static final String AFC_STANDINGS = "afcstandings";
     public static final String NFC_STANDINGS = "nfcstandings";
+
+    public static final String AFC_BACKGROUND_COLOR = "#B50023";
+    public static final String NFC_BACKGROUND_COLOR = "#004079";
+    public static final String DEFAULT_BACKGROUND_COLOR = "#E6E6E6";
+    public static final String TABLE_SELECTED_TEXT_COLOR = "#FAFAFA";
+    public static final String TABLE_DEFAULT_TEXT_COLOR = "#151515";
 
     public static final String[] TAB_NAME_LIST = {"Ranking", "Prognosen", "Statistik", "Tabelle"};
 
@@ -78,7 +84,7 @@ public class Constants {
         UNPREDICTED
     }
 
-    public enum PREDICTIONS_PLUS_STATES {
+    public enum PREDICTION_TYPE {
         SUPERBOWL,
         AFC_WINNER,
         NFC_WINNER,

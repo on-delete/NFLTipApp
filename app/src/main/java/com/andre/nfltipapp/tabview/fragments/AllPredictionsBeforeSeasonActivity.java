@@ -19,45 +19,45 @@ import java.util.List;
  * Created by Andre on 16.02.2017.
  */
 
-public class StatisticForPredictionsPlusActivity extends AppCompatActivity {
+public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
 
     private String teamName;
-    private LinearLayout statisticsPlusTable;
+    private LinearLayout llAllPredictionsTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_for_prediction_plus);
 
-        ArrayList<PredictionsPlusStatistic> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONSPLUSLIST);
+        ArrayList<PredictionsPlusStatistic> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONS_BEFORE_SEASON);
         this.teamName = getIntent().getStringExtra(Constants.TEAMNAME);
         String userId = getIntent().getStringExtra(Constants.USERID);
-        String stateParcel = getIntent().getStringExtra(Constants.STATE);
-        Constants.PREDICTIONS_PLUS_STATES state = Constants.PREDICTIONS_PLUS_STATES.valueOf(stateParcel);
+        String predictionTypeParcel = getIntent().getStringExtra(Constants.PREDICTION_TYPE_STRING);
+        Constants.PREDICTION_TYPE predictionType = Constants.PREDICTION_TYPE.valueOf(predictionTypeParcel);
 
-        TextView stateText = (TextView) findViewById(R.id.state_text);
-        ImageView teamIconDefault = (ImageView) findViewById(R.id.team_icon_statistic);
-        this.statisticsPlusTable = (LinearLayout) findViewById(R.id.statistics_plus_table_layout);
+        TextView tvPredictionType = (TextView) findViewById(R.id.state_text);
+        ImageView ivTeamIcon = (ImageView) findViewById(R.id.team_icon_statistic);
+        this.llAllPredictionsTable = (LinearLayout) findViewById(R.id.statistics_plus_table_layout);
 
-        switch (state) {
+        switch (predictionType) {
             case SUPERBOWL: {
-                stateText.setText(R.string.superbowl);
+                tvPredictionType.setText(R.string.superbowl);
                 break;
             }
             case AFC_WINNER: {
-                stateText.setText(R.string.afc_winner);
+                tvPredictionType.setText(R.string.afc_winner);
                 break;
             }
             case NFC_WINNER: {
-                stateText.setText(R.string.nfc_winner);
+                tvPredictionType.setText(R.string.nfc_winner);
                 break;
             }
             case BEST_OFFENSE: {
-                stateText.setText(R.string.best_offense);
+                tvPredictionType.setText(R.string.best_offense);
                 break;
             }
             case BEST_DEFENSE: {
-                stateText.setText(R.string.best_defense);
+                tvPredictionType.setText(R.string.best_defense);
                 break;
             }
             default:
@@ -65,10 +65,10 @@ public class StatisticForPredictionsPlusActivity extends AppCompatActivity {
         }
 
         if(teamName.equals("")){
-            teamIconDefault.setImageResource(R.drawable.default_icon);
+            ivTeamIcon.setImageResource(R.drawable.default_icon);
         }
         else {
-            teamIconDefault.setImageResource(Constants.TEAM_INFO_MAP.get(teamName).getTeamIcon());
+            ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(teamName).getTeamIcon());
         }
 
         List<PredictionsPlusStatistic> predictionListCopy = new ArrayList<>(predictionList);
@@ -78,8 +78,8 @@ public class StatisticForPredictionsPlusActivity extends AppCompatActivity {
             if(predictionTemp.getUserid().equals(userId)){
                 View view = initView(predictionTemp);
                 view.setBackgroundResource(R.drawable.bottom_border);
-                TextView textViewName = (TextView) view.findViewById(R.id.player_name_statistic);
-                textViewName.setTypeface(null, Typeface.BOLD);
+                TextView tvName = (TextView) view.findViewById(R.id.player_name_statistic);
+                tvName.setTypeface(null, Typeface.BOLD);
 
                 predictionListCopy.remove(i);
             }
@@ -93,28 +93,28 @@ public class StatisticForPredictionsPlusActivity extends AppCompatActivity {
     private View initView (PredictionsPlusStatistic prediction){
         View rowView = getLayoutInflater().inflate(R.layout.statistic_for_plus_table_row, null);
 
-        TextView textViewName = (TextView) rowView.findViewById(R.id.player_name_statistic);
-        textViewName.setText(prediction.getUsername());
+        TextView tvName = (TextView) rowView.findViewById(R.id.player_name_statistic);
+        tvName.setText(prediction.getUsername());
 
-        ImageView teamIconPredicted = (ImageView) rowView.findViewById(R.id.player_pred_team_icon);
+        ImageView ivTeamIconPredicted = (ImageView) rowView.findViewById(R.id.player_pred_team_icon);
 
         if(!teamName.equals("")){
             if(teamName.equals(prediction.getTeamprefix())){
-                teamIconPredicted.setBackground(getDrawable(R.drawable.back_green));
+                ivTeamIconPredicted.setBackground(getDrawable(R.drawable.back_green));
             }
             else{
-                teamIconPredicted.setBackground(getDrawable(R.drawable.back_red));
+                ivTeamIconPredicted.setBackground(getDrawable(R.drawable.back_red));
             }
         }
 
         if(prediction.getTeamprefix().equals("")){
-            teamIconPredicted.setImageResource(R.drawable.default_icon);
+            ivTeamIconPredicted.setImageResource(R.drawable.default_icon);
         }
         else {
-            teamIconPredicted.setImageResource(Constants.TEAM_INFO_MAP.get(prediction.getTeamprefix()).getTeamIcon());
+            ivTeamIconPredicted.setImageResource(Constants.TEAM_INFO_MAP.get(prediction.getTeamprefix()).getTeamIcon());
         }
 
-        statisticsPlusTable.addView(rowView);
+        llAllPredictionsTable.addView(rowView);
 
         return rowView;
     }

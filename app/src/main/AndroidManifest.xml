@@ -26,12 +26,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme"/>
         <activity
-            android:name=".tabview.fragments.StatisticForGameActivity"
+            android:name=".tabview.fragments.AllPredictionsForGameActivity"
             android:screenOrientation="portrait"
             android:label=""
             android:theme="@style/AppTheme.ActionBar"/>
         <activity
-            android:name=".tabview.fragments.StatisticForPredictionsPlusActivity"
+            android:name=".tabview.fragments.AllPredictionsBeforeSeasonActivity"
             android:screenOrientation="portrait"
             android:label=""
             android:theme="@style/AppTheme.ActionBar"/>

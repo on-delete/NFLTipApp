@@ -26,7 +26,7 @@ public class PredictionSectionFragment extends Fragment {
 
     private int lastExpandedPosition = -1;
 
-    private ExpandableListView expandableListView;
+    private ExpandableListView elvPredictions;
 
     private Activity activity;
 
@@ -50,22 +50,22 @@ public class PredictionSectionFragment extends Fragment {
             userId = bundle.getString(Constants.USERID);
         }
 
-        expandableListView = (ExpandableListView) rootView.findViewById(R.id.predictionsListView);
+        elvPredictions = (ExpandableListView) rootView.findViewById(R.id.predictionsListView);
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         List<Prediction> predictionList = data.getPredictions();
-        List<PredictionPlus> predictionPlus = data.getPredictionsplus();
+        List<PredictionPlus> predictionBeforeSeasonList = data.getPredictionsplus();
 
-        ExpandableListAdapter expandableListAdapter = new PredictionsListViewAdapter(activity, predictionList, predictionPlus, userId);
-        expandableListView.setAdapter(expandableListAdapter);
+        ExpandableListAdapter elvPredictionsAdapter = new PredictionsListViewAdapter(activity, predictionList, predictionBeforeSeasonList, userId);
+        elvPredictions.setAdapter(elvPredictionsAdapter);
 
-        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+        elvPredictions.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
             @Override
             public void onGroupExpand(int groupPosition) {
                 if (lastExpandedPosition != -1
                         && groupPosition != lastExpandedPosition) {
-                    expandableListView.collapseGroup(lastExpandedPosition);
+                    elvPredictions.collapseGroup(lastExpandedPosition);
                 }
                 lastExpandedPosition = groupPosition;
             }

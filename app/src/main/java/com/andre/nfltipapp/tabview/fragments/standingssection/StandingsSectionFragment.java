@@ -21,42 +21,46 @@ import java.util.ArrayList;
 
 public class StandingsSectionFragment extends Fragment {
 
-    private Button afcButton;
-    private Button nfcButton;
+    private Button btAfc;
+    private Button btNfc;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        final int bottomAfcRange = 0;
+        final int upperAfcRange = 16;
+        final int upperNfcRange = 32;
+
         View rootView = inflater.inflate(R.layout.fragment_section_standings, container, false);
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         final ArrayList<Standing> standingsList = data.getStandings();
 
-        afcButton = (Button) rootView.findViewById(R.id.afc_button);
-        afcButton.setOnClickListener(new View.OnClickListener() {
+        btAfc = (Button) rootView.findViewById(R.id.afc_button);
+        btAfc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeTableToAFC(new ArrayList<>(standingsList.subList(0, 16)));
+                changeTableToAfc(new ArrayList<>(standingsList.subList(bottomAfcRange, upperAfcRange)));
             }
         });
-        nfcButton = (Button) rootView.findViewById(R.id.nfc_button);
-        nfcButton.setOnClickListener(new View.OnClickListener() {
+        btNfc = (Button) rootView.findViewById(R.id.nfc_button);
+        btNfc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeTableToNFC(new ArrayList<>(standingsList.subList(16,32)));
+                changeTableToNfc(new ArrayList<>(standingsList.subList(upperAfcRange, upperNfcRange)));
             }
         });
 
-        changeTableToAFC(new ArrayList<>(standingsList.subList(0,16)));
+        changeTableToAfc(new ArrayList<>(standingsList.subList(0,16)));
 
         return rootView;
     }
 
-    private void changeTableToAFC(ArrayList<Standing> afcStanding){
-        afcButton.setBackgroundColor(Color.parseColor("#B50023"));
-        afcButton.setTextColor(Color.parseColor("#FAFAFA"));
-        nfcButton.setBackgroundColor(Color.parseColor("#E6E6E6"));
-        nfcButton.setTextColor(Color.parseColor("#151515"));
+    private void changeTableToAfc(ArrayList<Standing> afcStanding){
+        btAfc.setBackgroundColor(Color.parseColor(Constants.AFC_BACKGROUND_COLOR));
+        btAfc.setTextColor(Color.parseColor(Constants.TABLE_SELECTED_TEXT_COLOR));
+        btNfc.setBackgroundColor(Color.parseColor(Constants.DEFAULT_BACKGROUND_COLOR));
+        btNfc.setTextColor(Color.parseColor(Constants.TABLE_DEFAULT_TEXT_COLOR));
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(Constants.AFC_STANDINGS, afcStanding);
@@ -66,11 +70,11 @@ public class StandingsSectionFragment extends Fragment {
         getFragmentManager().beginTransaction().replace(R.id.table_fragment, afcTableFragment).commit();
     }
 
-    private void changeTableToNFC(ArrayList<Standing> nfcStanding){
-        afcButton.setBackgroundColor(Color.parseColor("#E6E6E6"));
-        afcButton.setTextColor(Color.parseColor("#151515"));
-        nfcButton.setBackgroundColor(Color.parseColor("#004079"));
-        nfcButton.setTextColor(Color.parseColor("#FAFAFA"));
+    private void changeTableToNfc(ArrayList<Standing> nfcStanding){
+        btAfc.setBackgroundColor(Color.parseColor(Constants.DEFAULT_BACKGROUND_COLOR));
+        btAfc.setTextColor(Color.parseColor(Constants.TABLE_DEFAULT_TEXT_COLOR));
+        btNfc.setBackgroundColor(Color.parseColor(Constants.NFC_BACKGROUND_COLOR));
+        btNfc.setTextColor(Color.parseColor(Constants.TABLE_SELECTED_TEXT_COLOR));
 
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(Constants.NFC_STANDINGS, nfcStanding);

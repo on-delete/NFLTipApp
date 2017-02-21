@@ -22,13 +22,13 @@ import com.andre.nfltipapp.rest.Api;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusRequest;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusResponse;
 import com.andre.nfltipapp.tabview.fragments.model.PredictionPlus;
-import com.andre.nfltipapp.tabview.fragments.StatisticForGameActivity;
+import com.andre.nfltipapp.tabview.fragments.AllPredictionsForGameActivity;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsResponse;
 import com.andre.nfltipapp.tabview.fragments.model.Game;
 import com.andre.nfltipapp.tabview.fragments.model.Prediction;
 import com.andre.nfltipapp.rest.ApiInterface;
-import com.andre.nfltipapp.tabview.fragments.StatisticForPredictionsPlusActivity;
+import com.andre.nfltipapp.tabview.fragments.AllPredictionsBeforeSeasonActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -159,16 +159,16 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         convertView = layoutInflater.inflate(R.layout.predictions_plus_item, parent, false);
         LinearLayout container = (LinearLayout) convertView.findViewById(R.id.subitems_container);
 
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.SUPERBOWL, child.getSuperbowl()), 0);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.AFC_WINNER, child.getAfcwinnerteam()), 1);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.NFC_WINNER, child.getNfcwinnerteam()), 2);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.BEST_OFFENSE, child.getBestoffenseteam()), 3);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTIONS_PLUS_STATES.BEST_DEFENSE, child.getBestdefenseteam()), 4);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.SUPERBOWL, child.getSuperbowl()), 0);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.AFC_WINNER, child.getAfcwinnerteam()), 1);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.NFC_WINNER, child.getNfcwinnerteam()), 2);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.BEST_OFFENSE, child.getBestoffenseteam()), 3);
+        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE_STRING.BEST_DEFENSE, child.getBestdefenseteam()), 4);
 
         return convertView;
     }
 
-    private View initPredictionPlusSubView(ViewGroup parent, final Constants.PREDICTIONS_PLUS_STATES state, final String team){
+    private View initPredictionPlusSubView(ViewGroup parent, final Constants.PREDICTION_TYPE state, final String team){
         View subView = layoutInflater.inflate(R.layout.predictions_plus_statistic_subitem, parent, false);
 
         final LinearLayout teamBackground = (LinearLayout) subView.findViewById(R.id.team_background);
@@ -292,8 +292,8 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             public void onResponse(Call<AllPredictionsResponse> call, retrofit2.Response<AllPredictionsResponse> response) {
                 AllPredictionsResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    Intent intent = new Intent(activity, StatisticForGameActivity.class);
-                    intent.putParcelableArrayListExtra(Constants.PREDICTIONLIST, resp.getPredictionList());
+                    Intent intent = new Intent(activity, AllPredictionsForGameActivity.class);
+                    intent.putParcelableArrayListExtra(Constants.PREDICTIONS, resp.getPredictionList());
                     intent.putExtra(Constants.GAME, game);
                     intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
@@ -311,7 +311,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    private void getAllPredictionsPlusForState(final Constants.PREDICTIONS_PLUS_STATES state, final String teamName, AllPredictionsPlusRequest request){
+    private void getAllPredictionsPlusForState(final Constants.PREDICTION_TYPE state, final String teamName, AllPredictionsPlusRequest request){
         Call<AllPredictionsPlusResponse> response = apiInterface.allPredictionsPlus(request);
 
         response.enqueue(new Callback<AllPredictionsPlusResponse>() {
@@ -319,10 +319,10 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             public void onResponse(Call<AllPredictionsPlusResponse> call, retrofit2.Response<AllPredictionsPlusResponse> response) {
                 AllPredictionsPlusResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    Intent intent = new Intent(activity, StatisticForPredictionsPlusActivity.class);
-                    intent.putParcelableArrayListExtra(Constants.PREDICTIONSPLUSLIST, resp.getPredictionList());
+                    Intent intent = new Intent(activity, AllPredictionsBeforeSeasonActivity.class);
+                    intent.putParcelableArrayListExtra(Constants.PREDICTIONS_BEFORE_SEASON, resp.getPredictionList());
                     intent.putExtra(Constants.TEAMNAME, teamName);
-                    intent.putExtra(Constants.STATE, state.toString());
+                    intent.putExtra(Constants.PREDICTION_TYPE_STRING, state.toString());
                     intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
                 }

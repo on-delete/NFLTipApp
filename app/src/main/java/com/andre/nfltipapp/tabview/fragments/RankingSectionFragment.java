@@ -33,7 +33,7 @@ public class RankingSectionFragment extends Fragment {
             userId = bundle.getString(Constants.USERID);
         }
 
-        LinearLayout table = (LinearLayout) rootView.findViewById(R.id.rankingTable);
+        LinearLayout llTable = (LinearLayout) rootView.findViewById(R.id.rankingTable);
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         List<Ranking> rankingList = data.getRanking();
@@ -41,15 +41,15 @@ public class RankingSectionFragment extends Fragment {
         for(Ranking rankingEntry : rankingList){
             View rowView = inflater.inflate(R.layout.table_row, container, false);
 
-            TextView textViewName = (TextView) rowView.findViewById(R.id.table_text_name) ;
-            textViewName.setText(rankingEntry.getName());
+            TextView tvName = (TextView) rowView.findViewById(R.id.table_text_name);
+            tvName.setText(rankingEntry.getName());
             if(userId != null && userId.equals(rankingEntry.getUserid())){
-                textViewName.setTypeface(null, Typeface.BOLD);
+                tvName.setTypeface(null, Typeface.BOLD);
             }
-            TextView textViewPoints = (TextView) rowView.findViewById(R.id.table_text_points) ;
-            textViewPoints.setText(rankingEntry.getPoints());
+            TextView tvPoints = (TextView) rowView.findViewById(R.id.table_text_points) ;
+            tvPoints.setText(rankingEntry.getPoints());
 
-            table.addView(rowView);
+            llTable.addView(rowView);
         }
 
         return rootView;
