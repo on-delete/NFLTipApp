@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -67,18 +65,22 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private int lastNFCSpinnerPosition = 0;
     private int lastOffenseSpinnerPosition = 0;
     private int lastDefenseSpinnerPosition = 0;
+    private boolean lastHomeTeamCheckboxStatus = false;
+    private boolean lastAwayTeamCheckboxStatus = false;
     private int offsetPredictionTime = -30;
     private int offsetPredictionPlusTime = 0;
     private boolean userInteraction = true;
+    private boolean userInteractionHomeCheckbox = true;
+    private boolean userInteractionAwayCheckbox = true;
 
     public PredictionsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus, String userId) {
         this.activity = activity;
         this.userId = userId;
 
-        //if(!Utils.isPredictionTimeOver(predictionPlus.get(0).getFirstgamedate(), 0)){
+        if(!Utils.isPredictionTimeOver(predictionPlus.get(0).getFirstgamedate(), 0)){
             this.expandableListTitle.add("Tips vor der Saison");
             expandableListDetail.put("Tips vor der Saison", predictionPlus);
-        //}
+        }
 
         for(Prediction predictionItem : predictionList){
             List<Game> tempGamesList = new ArrayList<>();
@@ -183,6 +185,9 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
         }
 
+        lastHomeTeamCheckboxStatus = homeTeamCheckbox.isChecked();
+        lastAwayTeamCheckboxStatus = awayTeamCheckbox.isChecked();
+
         if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime(), offsetPredictionTime)){
             homeTeamCheckbox.setEnabled(false);
             awayTeamCheckbox.setEnabled(false);
@@ -228,14 +233,17 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     });
                 }
                 else{
-                    if(isChecked) {
-                        updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.HOME_TEAM_SELECTED, expandedListItem, userId);
-                    }
-                    else{
-                        if(!awayTeamCheckbox.isChecked()) {
+                    if(userInteractionHomeCheckbox){
+                        userInteractionAwayCheckbox = false;
+                        if(isChecked) {
+                            awayTeamCheckbox.setChecked(false);
+                            updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.HOME_TEAM_SELECTED, expandedListItem, userId);
+                        }
+                        else{
                             updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.UNPREDICTED, expandedListItem, userId);
                         }
                     }
+                    userInteractionAwayCheckbox = true;
                 }
             }
         });
@@ -268,14 +276,16 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     });
                 }
                 else{
-                    if(isChecked) {
-                        updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.AWAY_TEAM_SELECTED, expandedListItem, userId);
-                    }
-                    else{
-                        if(!homeTeamCheckbox.isChecked()) {
+                    if(userInteractionAwayCheckbox){
+                        userInteractionHomeCheckbox = false;
+                        if (isChecked) {
+                            homeTeamCheckbox.setChecked(false);
+                            updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.AWAY_TEAM_SELECTED, expandedListItem, userId);
+                        } else {
                             updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.UNPREDICTED, expandedListItem, userId);
                         }
                     }
+                    userInteractionHomeCheckbox = true;
                 }
             }
         });
@@ -368,7 +378,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     userInteraction = true;
                     return;
                 }
-                /*if(Utils.isPredictionTimeOver(predictionPlus.getFirstgamedate(), offsetPredictionPlusTime)){
+                if(Utils.isPredictionTimeOver(predictionPlus.getFirstgamedate(), offsetPredictionPlusTime)){
                     Spinner spinner = (Spinner) parent;
                     switch (state) {
                         case SUPERBOWL: {
@@ -396,9 +406,9 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     }
                     Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Zusatztips sind jetzt gesperrt!", Snackbar.LENGTH_LONG).show();
                 }
-                else {*/
+                else {
                     sendUpdateRequest(state, position, (Spinner) parent, teamBackground, teamIcon, predictionPlus);
-                //}
+                }
             }
 
             @Override
@@ -513,12 +523,14 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     updateModel(homeTeamCheckbox, awayTeamCheckbox, game, state);
                 }
                 else{
+                    setCheckboxesToLastValue(homeTeamCheckbox, awayTeamCheckbox, state);
                     Log.d(Constants.TAG, resp.getMessage());
                 }
             }
 
             @Override
             public void onFailure(Call<UpdateResponse> call, Throwable t) {
+                setCheckboxesToLastValue(homeTeamCheckbox, awayTeamCheckbox, state);
                 Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
@@ -562,24 +574,22 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             case HOME_TEAM_SELECTED:{
                 game.setHaspredicted(1);
                 game.setPredictedhometeam(1);
-                awayTeamCheckbox.setChecked(false);
                 break;
             }
             case AWAY_TEAM_SELECTED: {
                 game.setHaspredicted(1);
                 game.setPredictedhometeam(0);
-                homeTeamCheckbox.setChecked(false);
                 break;
             }
             case UNPREDICTED: {
                 game.setHaspredicted(0);
                 game.setPredictedhometeam(0);
-                homeTeamCheckbox.setChecked(false);
-                awayTeamCheckbox.setChecked(false);
                 break;
             }
             default: break;
         }
+        lastHomeTeamCheckboxStatus = homeTeamCheckbox.isChecked();
+        lastAwayTeamCheckboxStatus = awayTeamCheckbox.isChecked();
     }
 
     private void updateModel(Constants.PREDICTIONS_PLUS_STATES state, String teamPredicted, Spinner teamSpinner, PredictionPlus predictionPlus){
@@ -611,6 +621,41 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
             default:
                 break;
+        }
+    }
+
+    private void setCheckboxesToLastValue(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, UPDATE_STATES state){
+        switch (state){
+            case HOME_TEAM_SELECTED:{
+                userInteractionHomeCheckbox = false;
+                homeTeamCheckbox.setChecked(false);
+                if(lastAwayTeamCheckboxStatus){
+                    userInteractionAwayCheckbox = false;
+                    awayTeamCheckbox.setChecked(true);
+                }
+                break;
+            }
+            case AWAY_TEAM_SELECTED: {
+                userInteractionAwayCheckbox = false;
+                awayTeamCheckbox.setChecked(false);
+                if(lastHomeTeamCheckboxStatus){
+                    userInteractionHomeCheckbox = false;
+                    homeTeamCheckbox.setChecked(true);
+                }
+                break;
+            }
+            case UNPREDICTED: {
+                if(lastHomeTeamCheckboxStatus){
+                    userInteractionHomeCheckbox = false;
+                    homeTeamCheckbox.setChecked(true);
+                }
+                if(lastAwayTeamCheckboxStatus){
+                    userInteractionAwayCheckbox = false;
+                    awayTeamCheckbox.setChecked(true);
+                }
+                break;
+            }
+            default: break;
         }
     }
 
