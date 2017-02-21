@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.Utils;
+import com.andre.nfltipapp.rest.Api;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsResponse;
 import com.andre.nfltipapp.tabview.fragments.model.Game;
@@ -32,7 +33,7 @@ import com.andre.nfltipapp.tabview.fragments.predictionssection.model.TeamInfoSp
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionPlusRequest;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionRequest;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdateResponse;
-import com.andre.nfltipapp.rest.RequestInterface;
+import com.andre.nfltipapp.rest.ApiInterface;
 import com.andre.nfltipapp.tabview.fragments.StatisticForGameActivity;
 
 import java.util.ArrayList;
@@ -40,11 +41,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.andre.nfltipapp.Constants.UPDATE_STATES;
 
@@ -54,7 +52,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private List<String> expandableListTitle = new ArrayList<>();
     private HashMap<String, List<?>> expandableListDetail = new HashMap<>();
     private String userId;
-    private RequestInterface requestInterface;
+    private ApiInterface apiInterface;
     private List<?> child;
     private LayoutInflater layoutInflater;
     private ArrayList<TeamInfoSpinnerObject> teamInfoList = new ArrayList<>();
@@ -98,19 +96,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        initRequestInterface();
-    }
-
-    private void initRequestInterface(){
-        OkHttpClient httpClient = Utils.getHttpClient(this.activity);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient)
-                .build();
-
-        requestInterface = retrofit.create(RequestInterface.class);
+        apiInterface = Api.getInstance(activity).getApiInterface();
     }
 
     @Override
@@ -513,7 +499,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void sendUpdateRequest(UpdatePredictionRequest request, final CheckBox homeTeamCheckbox, final CheckBox awayTeamCheckbox, final Game game, final UPDATE_STATES state){
-        Call<UpdateResponse> response = this.requestInterface.updatePrediction(request);
+        Call<UpdateResponse> response = this.apiInterface.updatePrediction(request);
 
         response.enqueue(new Callback<UpdateResponse>() {
             @Override
@@ -544,7 +530,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         updatePredictionPlusRequest.setState(state.toString().toLowerCase());
         updatePredictionPlusRequest.setUuid(this.userId);
 
-        Call<UpdateResponse> response = this.requestInterface.updatePredictionPlus(updatePredictionPlusRequest);
+        Call<UpdateResponse> response = this.apiInterface.updatePredictionPlus(updatePredictionPlusRequest);
 
         response.enqueue(new Callback<UpdateResponse>() {
             @Override
@@ -693,7 +679,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void getAllPredictionsForGameid(final Game game, AllPredictionsRequest request){
-        Call<AllPredictionsResponse> response = this.requestInterface.allPredictions(request);
+        Call<AllPredictionsResponse> response = this.apiInterface.allPredictions(request);
 
         response.enqueue(new Callback<AllPredictionsResponse>() {
             @Override
@@ -703,7 +689,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     Intent intent = new Intent(activity, StatisticForGameActivity.class);
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONLIST, resp.getPredictionList());
                     intent.putExtra(Constants.GAME, game);
-                    intent.putExtra(Constants.UUID, userId);
+                    intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
                 }
                 else{

@@ -31,7 +31,7 @@ public class StatisticForPredictionsPlusActivity extends AppCompatActivity {
 
         ArrayList<PredictionsPlusStatistic> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONSPLUSLIST);
         this.teamName = getIntent().getStringExtra(Constants.TEAMNAME);
-        String userId = getIntent().getStringExtra(Constants.UUID);
+        String userId = getIntent().getStringExtra(Constants.USERID);
         String stateParcel = getIntent().getStringExtra(Constants.STATE);
         Constants.PREDICTIONS_PLUS_STATES state = Constants.PREDICTIONS_PLUS_STATES.valueOf(stateParcel);
 

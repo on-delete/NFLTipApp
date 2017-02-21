@@ -47,7 +47,7 @@ public class StatisticsSectionFragment extends Fragment {
         Bundle bundle = this.getArguments();
         String userId = "";
         if (bundle != null) {
-            userId = bundle.getString(Constants.UUID);
+            userId = bundle.getString(Constants.USERID);
         }
 
         expandableListView = (ExpandableListView) rootView.findViewById(R.id.statisticsListView);

@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:activity="com.andre.nfltipapp.loginregistryview.LoginActivity">
+    android:fitsSystemWindows="true">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <FrameLayout
+        android:id="@+id/fragment_host"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:activity="com.andre.nfltipapp.loginregistryview.LoginActivity">
+        android:layout_height="match_parent"/>
 
-        <FrameLayout
-            android:id="@+id/fragment_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

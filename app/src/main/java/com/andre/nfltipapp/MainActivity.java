@@ -10,34 +10,32 @@ import com.andre.nfltipapp.tabview.TabSectionsPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
+    private TabLayout tblMain;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String userName = getIntent().getStringExtra(Constants.NAME);
-        String uuid = getIntent().getStringExtra(Constants.UUID);
+        String userId = getIntent().getStringExtra(Constants.USERID);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar tbMain = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(tbMain);
 
         if(getSupportActionBar()!=null){
-            getSupportActionBar().setTitle("Ranking");
+            getSupportActionBar().setTitle(Constants.TAB_NAME_LIST[0]);
         }
 
-        TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), uuid);
+        TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), userId);
 
-        ViewPager pager = (ViewPager) findViewById(R.id.viewpager);
-        pager.setAdapter(tabSectionsPagerAdapter);
+        ViewPager vpMain = (ViewPager) findViewById(R.id.viewpager);
+        vpMain.setAdapter(tabSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(pager);
+        tblMain = (TabLayout) findViewById(R.id.tabs);
+        tblMain.setupWithViewPager(vpMain);
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.ranking_tab_icon_white);
-        tabLayout.getTabAt(1).setIcon(R.drawable.prognosen_tab_icon_white);
-        tabLayout.getTabAt(2).setIcon(R.drawable.statistic_tab_icon_white);
-        tabLayout.getTabAt(3).setIcon(R.drawable.tabelle_tab_icon_white);
+        initTabIcons();
 
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        vpMain.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -55,5 +53,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void initTabIcons(){
+        tblMain.getTabAt(0).setIcon(R.drawable.ranking_tab_icon_white);
+        tblMain.getTabAt(1).setIcon(R.drawable.prognosen_tab_icon_white);
+        tblMain.getTabAt(2).setIcon(R.drawable.statistic_tab_icon_white);
+        tblMain.getTabAt(3).setIcon(R.drawable.tabelle_tab_icon_white);
     }
 }

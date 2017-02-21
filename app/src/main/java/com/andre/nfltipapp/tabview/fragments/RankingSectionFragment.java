@@ -30,7 +30,7 @@ public class RankingSectionFragment extends Fragment {
         Bundle bundle = this.getArguments();
         String userId = "";
         if (bundle != null) {
-            userId = bundle.getString(Constants.UUID);
+            userId = bundle.getString(Constants.USERID);
         }
 
         LinearLayout table = (LinearLayout) rootView.findViewById(R.id.rankingTable);

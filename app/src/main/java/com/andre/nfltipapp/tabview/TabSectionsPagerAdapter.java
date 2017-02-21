@@ -29,17 +29,17 @@ public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         switch (i) {
             case 0:
-                bundle.putString(Constants.UUID, this.uuid);
+                bundle.putString(Constants.USERID, this.uuid);
                 RankingSectionFragment rankingSectionFragment = new RankingSectionFragment();
                 rankingSectionFragment.setArguments(bundle);
                 return rankingSectionFragment;
             case 1:
-                bundle.putString(Constants.UUID, this.uuid);
+                bundle.putString(Constants.USERID, this.uuid);
                 PredictionSectionFragment predictionSectionFragment = new PredictionSectionFragment();
                 predictionSectionFragment.setArguments(bundle);
                 return predictionSectionFragment;
             case 2:
-                bundle.putString(Constants.UUID, this.uuid);
+                bundle.putString(Constants.USERID, this.uuid);
                 StatisticsSectionFragment statisticsSectionFragment = new StatisticsSectionFragment();
                 statisticsSectionFragment.setArguments(bundle);
                 return statisticsSectionFragment;

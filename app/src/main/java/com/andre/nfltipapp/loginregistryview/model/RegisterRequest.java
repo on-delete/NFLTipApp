@@ -1,6 +1,6 @@
 package com.andre.nfltipapp.loginregistryview.model;
 
-public class RegisterLoginRequest {
+public class RegisterRequest {
 
     private User user;
 

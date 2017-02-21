@@ -28,7 +28,7 @@ public class StatisticForGameActivity extends AppCompatActivity {
 
         ArrayList<GamePredictions> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONLIST);
         Game game = getIntent().getParcelableExtra(Constants.GAME);
-        String userId = getIntent().getStringExtra(Constants.UUID);
+        String userId = getIntent().getStringExtra(Constants.USERID);
 
         ImageView awayTeamIcon = (ImageView) findViewById(R.id.away_team_icon_statistic);
         ImageView homeTeamIcon = (ImageView) findViewById(R.id.home_team_icon_statistic);

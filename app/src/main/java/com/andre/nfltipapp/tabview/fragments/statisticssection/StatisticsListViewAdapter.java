@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.Utils;
+import com.andre.nfltipapp.rest.Api;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusRequest;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusResponse;
 import com.andre.nfltipapp.tabview.fragments.model.PredictionPlus;
@@ -26,26 +27,22 @@ import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsResponse;
 import com.andre.nfltipapp.tabview.fragments.model.Game;
 import com.andre.nfltipapp.tabview.fragments.model.Prediction;
-import com.andre.nfltipapp.rest.RequestInterface;
+import com.andre.nfltipapp.rest.ApiInterface;
 import com.andre.nfltipapp.tabview.fragments.StatisticForPredictionsPlusActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
     private String userId;
 
-    private RequestInterface requestInterface;
+    private ApiInterface apiInterface;
 
     private Activity activity;
     private List<String> expandableListTitle = new ArrayList<>();
@@ -81,19 +78,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
         Collections.reverse(expandableListTitle);
 
-        initRequestInterface();
-    }
-
-    private void initRequestInterface(){
-        OkHttpClient httpClient = Utils.getHttpClient(this.activity);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient)
-                .build();
-
-        requestInterface = retrofit.create(RequestInterface.class);
+        apiInterface = Api.getInstance(activity).getApiInterface();
     }
 
     @Override
@@ -300,7 +285,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void getAllPredictionsForGameid(final Game game, AllPredictionsRequest request){
-        Call<AllPredictionsResponse> response = requestInterface.allPredictions(request);
+        Call<AllPredictionsResponse> response = apiInterface.allPredictions(request);
 
         response.enqueue(new Callback<AllPredictionsResponse>() {
             @Override
@@ -310,7 +295,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                     Intent intent = new Intent(activity, StatisticForGameActivity.class);
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONLIST, resp.getPredictionList());
                     intent.putExtra(Constants.GAME, game);
-                    intent.putExtra(Constants.UUID, userId);
+                    intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
                 }
                 else{
@@ -327,7 +312,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void getAllPredictionsPlusForState(final Constants.PREDICTIONS_PLUS_STATES state, final String teamName, AllPredictionsPlusRequest request){
-        Call<AllPredictionsPlusResponse> response = requestInterface.allPredictionsPlus(request);
+        Call<AllPredictionsPlusResponse> response = apiInterface.allPredictionsPlus(request);
 
         response.enqueue(new Callback<AllPredictionsPlusResponse>() {
             @Override
@@ -338,7 +323,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONSPLUSLIST, resp.getPredictionList());
                     intent.putExtra(Constants.TEAMNAME, teamName);
                     intent.putExtra(Constants.STATE, state.toString());
-                    intent.putExtra(Constants.UUID, userId);
+                    intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
                 }
                 else{

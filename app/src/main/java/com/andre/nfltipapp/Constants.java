@@ -17,8 +17,7 @@ public class Constants {
     public static final String LOGIN_SUCCESSFULL = "login successfull";
     public static final String GET_DATA_SUCCESSFULL = "data successfull";
 
-    public static final String UUID = "uuid";
-    public static final String NAME = "name";
+    public static final String USERID = "userId";
     public static final String DATA = "data";
     public static final String PREDICTIONLIST = "predictionlist";
     public static final String PREDICTIONSPLUSLIST = "predictionspluslist";

@@ -1,9 +1,11 @@
 package com.andre.nfltipapp.rest;
 
+import com.andre.nfltipapp.loginregistryview.model.LoginRequest;
+import com.andre.nfltipapp.loginregistryview.model.LoginResponse;
 import com.andre.nfltipapp.loginregistryview.model.NameExistRequest;
 import com.andre.nfltipapp.loginregistryview.model.NameExistResponse;
-import com.andre.nfltipapp.loginregistryview.model.RegisterLoginRequest;
-import com.andre.nfltipapp.loginregistryview.model.RegisterLoginResponse;
+import com.andre.nfltipapp.loginregistryview.model.RegisterRequest;
+import com.andre.nfltipapp.loginregistryview.model.RegisterResponse;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusRequest;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusResponse;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
@@ -18,16 +20,16 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 
-public interface RequestInterface {
+public interface ApiInterface {
 
     @POST("nameExisting/")
     Call<NameExistResponse> nameExist(@Body NameExistRequest request);
 
-    @POST("registerLogin/")
-    Call<RegisterLoginResponse> loginUser(@Body RegisterLoginRequest request);
+    @POST("loginUser/")
+    Call<LoginResponse> loginUser(@Body LoginRequest request);
 
     @POST("registerUser/")
-    Call<RegisterLoginResponse> registerUser(@Body RegisterLoginRequest request);
+    Call<RegisterResponse> registerUser(@Body RegisterRequest request);
 
     @POST("getData/")
     Call<DataResponse> getData(@Body DataRequest request);

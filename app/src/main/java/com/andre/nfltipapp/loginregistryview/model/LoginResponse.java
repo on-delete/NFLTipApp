@@ -1,10 +1,14 @@
 package com.andre.nfltipapp.loginregistryview.model;
 
-public class RegisterLoginResponse {
+/**
+ * Created by Andre on 21.02.2017.
+ */
+
+public class LoginResponse {
 
     private String result;
     private String message;
-    private User user;
+    private String userid;
 
     public String getResult() {
         return result;
@@ -14,7 +18,7 @@ public class RegisterLoginResponse {
         return message;
     }
 
-    public User getUser() {
-        return user;
+    public String getUserId() {
+        return userid;
     }
 }

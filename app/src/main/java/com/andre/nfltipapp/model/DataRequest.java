@@ -2,9 +2,9 @@ package com.andre.nfltipapp.model;
 
 public class DataRequest {
 
-   private String uuid;
+   private String userId;
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

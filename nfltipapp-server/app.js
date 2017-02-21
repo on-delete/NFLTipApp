@@ -115,7 +115,7 @@ app.post('/registerUser', function (req, res, next) {
     };
 
     bcrypt.hash(req.body.user.password, null, null, function (err, hash) {
-        if (err) sendError(resp, err.message, res);
+        if (err) sendError(resp, err.message, res, null);
         else {
             var passwordHash = hash;
 
@@ -138,9 +138,7 @@ app.post('/registerUser', function (req, res, next) {
                         else {
                             resp.result = "success";
                             resp.message = "user registered";
-                            initPredictionsForNewUser(result.insertId);
-                            initPredictionsPlusForNewUser(result.insertId);
-                            sendResponse(res, resp, connection);
+                            initPredictionsForNewUser(res, resp, result.insertId, connection);
                         }
                     });
                 }
@@ -149,60 +147,49 @@ app.post('/registerUser', function (req, res, next) {
     });
 });
 
-function sendError(resp, errMsg, res){
+function sendError(resp, errMsg, res, connection){
     resp.result = "failed";
     resp.message = errMsg;
-    sendResponse(res, resp, null);
+    sendResponse(res, resp, connection);
 }
 
-function initPredictionsForNewUser(userId){
-    pool.getConnection(function (err, connection) {
+function initPredictionsForNewUser(res, resp, userId, connection){
+    var sql = "INSERT INTO predictions (game_id, predicted, home_team_predicted, user_id) select game_id, 'false', 'NULL', ? from games;";
+    var inserts = [userId];
+    sql = mysql.format(sql, inserts);
+    connection.query(sql, function (err) {
         if (err) {
-            winston.info("error in database connection");
+            winston.info("error in database query insertNewGame");
+            winston.info(err.message);
+            sendError(resp, err.message, res, connection);
         }
-        else {
-            var sql = "INSERT INTO predictions (game_id, predicted, home_team_predicted, user_id) select game_id, 'false', 'NULL', ? from games;";
-            var inserts = [userId];
-            sql = mysql.format(sql, inserts);
-            connection.query(sql, function (err, result) {
-                if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
-                }
-            });
+        else{
+            initPredictionsPlusForNewUser(res, resp, userId, connection);
         }
-        connection.release();
     });
 }
 
-function initPredictionsPlusForNewUser(userId){
-    pool.getConnection(function (err, connection) {
+function initPredictionsPlusForNewUser(res, resp, userId, connection){
+    var sql = "INSERT INTO predictions_plus (user_id, superbowl, afc_winner, nfc_winner, best_offense, best_defense) VALUES (?, NULL, NULL, NULL, NULL, NULL);";
+    var inserts = [userId];
+    sql = mysql.format(sql, inserts);
+    connection.query(sql, function (err) {
         if (err) {
-            winston.info("error in database connection");
+            winston.info("error in database query insertNewGame");
+            winston.info(err.message);
+            sendError(resp, err.message, res, connection);
         }
-        else {
-            var sql = "INSERT INTO predictions_plus (user_id, superbowl, afc_winner, nfc_winner, best_offense, best_defense) VALUES (?, NULL, NULL, NULL, NULL, NULL);";
-            var inserts = [userId];
-            sql = mysql.format(sql, inserts);
-            connection.query(sql, function (err, result) {
-                if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
-                }
-            });
+        else{
+            sendResponse(res, resp, connection);
         }
-        connection.release();
     });
 }
 
-app.post('/registerLogin', function (req, res, next) {
+app.post('/loginUser', function (req, res) {
     var resp = {
         "result": "",
         "message": "",
-        "user": {
-            "name": req.body.user.name,
-            "uuid": ""
-        }
+        "userid": ""
     };
 
     pool.getConnection(function (err, connection) {
@@ -213,7 +200,7 @@ app.post('/registerLogin', function (req, res, next) {
         }
         else {
             var sql = "SELECT user_password, user_id FROM user WHERE user_name = ?";
-            var inserts = [req.body.user.name];
+            var inserts = [req.body.name];
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, rows) {
                 if (err) {
@@ -225,7 +212,7 @@ app.post('/registerLogin', function (req, res, next) {
                     if(rows[0] !== undefined) {
                         var password = rows[0].user_password;
 
-                        bcrypt.compare(req.body.user.password, password, function (err, result) {
+                        bcrypt.compare(req.body.password, password, function (err, result) {
                             if (err) {
                                 resp.result = "failed";
                                 resp.message = "internal error";
@@ -234,7 +221,7 @@ app.post('/registerLogin', function (req, res, next) {
                                 if(result) {
                                     resp.result = "success";
                                     resp.message = "login successfull";
-                                    resp.user.uuid = rows[0].user_id;
+                                    resp.userid = rows[0].user_id;
                                 }
                                 else{
                                     resp.result = "success";
@@ -500,7 +487,7 @@ function updateSuperBowlWinner(game) {
 }
 
 app.post('/getData', function (req, res, next) {
-    calculateRanking(res, req.body.uuid);
+    calculateRanking(res, req.body.userId);
 });
 
 function calculateRanking(res, uuid){
