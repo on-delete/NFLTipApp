@@ -12,6 +12,7 @@ var requestWebsite = require("request");
 var cheerio = require("cheerio");
 var schedule = require('node-schedule');
 var winston = require('winston');
+var bcrypt = require('bcrypt-nodejs');
 
 winston.add(
     winston.transports.File, {
@@ -113,33 +114,46 @@ app.post('/registerUser', function (req, res, next) {
         "message": ""
     };
 
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            resp.result = "failed";
-            resp.message = err.message;
-            sendResponse(res, resp, connection);
-        }
+    bcrypt.hash(req.body.user.password, null, null, function (err, hash) {
+        if (err) sendError(resp, err.message, res);
         else {
-            var sql = "INSERT INTO user (user_name, user_email, user_password) VALUES (?, ?, ?)";
-            var inserts = [req.body.user.name, req.body.user.email, req.body.user.password];
-            sql = mysql.format(sql, inserts);
-            connection.query(sql, function (err, result) {
+            var passwordHash = hash;
+
+            pool.getConnection(function (err, connection) {
                 if (err) {
                     resp.result = "failed";
                     resp.message = err.message;
                     sendResponse(res, resp, connection);
                 }
                 else {
-                    resp.result = "success";
-                    resp.message = "user registered";
-                    initPredictionsForNewUser(result.insertId);
-                    initPredictionsPlusForNewUser(result.insertId);
-                    sendResponse(res, resp, connection);
+                    var sql = "INSERT INTO user (user_name, user_email, user_password) VALUES (?, ?, ?)";
+                    var inserts = [req.body.user.name, req.body.user.email, passwordHash];
+                    sql = mysql.format(sql, inserts);
+                    connection.query(sql, function (err, result) {
+                        if (err) {
+                            resp.result = "failed";
+                            resp.message = err.message;
+                            sendResponse(res, resp, connection);
+                        }
+                        else {
+                            resp.result = "success";
+                            resp.message = "user registered";
+                            initPredictionsForNewUser(result.insertId);
+                            initPredictionsPlusForNewUser(result.insertId);
+                            sendResponse(res, resp, connection);
+                        }
+                    });
                 }
             });
         }
     });
 });
+
+function sendError(resp, errMsg, res){
+    resp.result = "failed";
+    resp.message = errMsg;
+    sendResponse(res, resp, null);
+}
 
 function initPredictionsForNewUser(userId){
     pool.getConnection(function (err, connection) {
@@ -167,7 +181,7 @@ function initPredictionsPlusForNewUser(userId){
             winston.info("error in database connection");
         }
         else {
-            var sql = "INSERT INTO predictions_plus (user_id, superbowl, afc_winner, nfc_winner, best_offense, best_defense) VALUES (?, 999, 999, 999, 999, 999);";
+            var sql = "INSERT INTO predictions_plus (user_id, superbowl, afc_winner, nfc_winner, best_offense, best_defense) VALUES (?, NULL, NULL, NULL, NULL, NULL);";
             var inserts = [userId];
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {
@@ -210,21 +224,31 @@ app.post('/registerLogin', function (req, res, next) {
                 else {
                     if(rows[0] !== undefined) {
                         var password = rows[0].user_password;
-                        if (password === req.body.user.password) {
-                            resp.result = "success";
-                            resp.message = "login successfull";
-                            resp.user.uuid = rows[0].user_id;
 
-                        } else {
-                            resp.result = "success";
-                            resp.message = "password wrong";
-                        }
+                        bcrypt.compare(req.body.user.password, password, function (err, result) {
+                            if (err) {
+                                resp.result = "failed";
+                                resp.message = "internal error";
+                            }
+                            else{
+                                if(result) {
+                                    resp.result = "success";
+                                    resp.message = "login successfull";
+                                    resp.user.uuid = rows[0].user_id;
+                                }
+                                else{
+                                    resp.result = "success";
+                                    resp.message = "password wrong";
+                                }
+                            }
+                            sendResponse(res, resp, connection);
+                        });
                     }
                     else{
                         resp.result = "success";
                         resp.message = "user not found";
+                        sendResponse(res, resp, connection);
                     }
-                    sendResponse(res, resp, connection);
                 }
             });
         }

@@ -19,6 +19,7 @@
     "simple-rate-limiter": "~0.2.3",
     "node-schedule": "~1.2.0",
     "winston": "~2.3.0",
-    "cheerio": "~0.22.0"
+    "cheerio": "~0.22.0",
+    "bcrypt-nodejs": "~0.0.3"
   }
 }
