@@ -26,11 +26,11 @@ import com.andre.nfltipapp.Utils;
 import com.andre.nfltipapp.rest.Api;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsResponse;
-import com.andre.nfltipapp.tabview.fragments.model.Game;
-import com.andre.nfltipapp.tabview.fragments.model.Prediction;
-import com.andre.nfltipapp.tabview.fragments.model.PredictionPlus;
+import com.andre.nfltipapp.tabview.fragments.model.GamePrediction;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionsForWeek;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionBeforeSeason;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.TeamInfoSpinnerObject;
-import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionPlusRequest;
+import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionBeforeSeasonRequest;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionRequest;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdateResponse;
 import com.andre.nfltipapp.rest.ApiInterface;
@@ -71,7 +71,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private boolean userInteractionHomeCheckbox = true;
     private boolean userInteractionAwayCheckbox = true;
 
-    public PredictionsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus, String userId) {
+    public PredictionsListViewAdapter(Activity activity, List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionPlus, String userId) {
         this.activity = activity;
         this.userId = userId;
 
@@ -80,17 +80,17 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             expandableListDetail.put("Tips vor der Saison", predictionPlus);
         }
 
-        for(Prediction predictionItem : predictionList){
-            List<Game> tempGamesList = new ArrayList<>();
+        for(PredictionsForWeek predictionsForWeekItem : predictionsForWeekList){
+            List<GamePrediction> tempGamesList = new ArrayList<>();
 
-            for (Game game : predictionItem.getGames()){
-                if(game.isFinished()==0){
-                    tempGamesList.add(game);
+            for (GamePrediction gamePrediction : predictionsForWeekItem.getGamePredictions()){
+                if(gamePrediction.isFinished()==0){
+                    tempGamesList.add(gamePrediction);
                 }
             }
 
             if(tempGamesList.size()>0){
-                String title = "Woche " + predictionItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionItem.getType()) : "");
+                String title = "Woche " + predictionsForWeekItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) : "");
                 this.expandableListTitle.add(title);
                 this.expandableListDetail.put(title, tempGamesList);
             }
@@ -103,20 +103,20 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     public Object getChild(int listPosition, int expandedListPosition) {
         child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
 
-        if(child.get(0) instanceof Game){
+        if(child.get(0) instanceof GamePrediction){
             return child.get(expandedListPosition);
         }
         else{
-            PredictionPlus returnPredictionPlus = null;
+            PredictionBeforeSeason returnPredictionBeforeSeason = null;
 
             for(int i = 0; i < child.size(); i++){
-                PredictionPlus tempPrediction = (PredictionPlus) child.get(i);
+                PredictionBeforeSeason tempPrediction = (PredictionBeforeSeason) child.get(i);
                 if(tempPrediction.getUser().equals("user")){
-                    returnPredictionPlus = tempPrediction;
+                    returnPredictionBeforeSeason = tempPrediction;
                     break;
                 }
             }
-            return returnPredictionPlus;
+            return returnPredictionBeforeSeason;
         }
     }
 
@@ -133,15 +133,15 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         Object childView = getChild(listPosition, expandedListPosition);
-        if(childView instanceof Game){
-            return initPredictionView(convertView, parent, (Game) childView);
+        if(childView instanceof GamePrediction){
+            return initPredictionView(convertView, parent, (GamePrediction) childView);
         }
         else {
-            return initPredictionPlusView(convertView, parent, (PredictionPlus) childView);
+            return initPredictionPlusView(convertView, parent, (PredictionBeforeSeason) childView);
         }
     }
 
-    private View initPredictionView(View convertView, ViewGroup parent, final Game expandedListItem){
+    private View initPredictionView(View convertView, ViewGroup parent, final GamePrediction expandedListItem){
         convertView = layoutInflater.inflate(R.layout.predictions_list_item, parent, false);
         final LinearLayout disableOverlay = (LinearLayout) convertView.findViewById(R.id.disable_overlay);
         final CheckBox homeTeamCheckbox = (CheckBox) convertView
@@ -279,7 +279,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    private View initPredictionPlusView(View convertView, ViewGroup parent, PredictionPlus child) {
+    private View initPredictionPlusView(View convertView, ViewGroup parent, PredictionBeforeSeason child) {
         if(teamInfoList.isEmpty() && teamPrefixList.isEmpty()){
             for (String key : Constants.TEAM_INFO_MAP.keySet()) {
                 teamInfoList.add(new TeamInfoSpinnerObject(Constants.TEAM_INFO_MAP.get(key).getTeamName(), key));
@@ -306,7 +306,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    private View initPredictionPlusSubView(ViewGroup parent, final Constants.PREDICTION_TYPE state, String team, final PredictionPlus predictionPlus){
+    private View initPredictionPlusSubView(ViewGroup parent, final Constants.PREDICTION_TYPE state, String team, final PredictionBeforeSeason predictionBeforeSeason){
         View subView = layoutInflater.inflate(R.layout.predictions_plus_subitem, parent, false);
 
         final LinearLayout teamBackground = (LinearLayout) subView.findViewById(R.id.team_background);
@@ -364,7 +364,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     userInteraction = true;
                     return;
                 }
-                if(Utils.isPredictionTimeOver(predictionPlus.getFirstgamedate(), offsetPredictionPlusTime)){
+                if(Utils.isPredictionTimeOver(predictionBeforeSeason.getFirstgamedate(), offsetPredictionPlusTime)){
                     Spinner spinner = (Spinner) parent;
                     switch (state) {
                         case SUPERBOWL: {
@@ -393,7 +393,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Zusatztips sind jetzt gesperrt!", Snackbar.LENGTH_LONG).show();
                 }
                 else {
-                    sendUpdateRequest(state, position, (Spinner) parent, teamBackground, teamIcon, predictionPlus);
+                    sendUpdateRequest(state, position, (Spinner) parent, teamBackground, teamIcon, predictionBeforeSeason);
                 }
             }
 
@@ -421,7 +421,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     public int getChildrenCount(int listPosition) {
         child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
 
-        if(child.get(0) instanceof Game){
+        if(child.get(0) instanceof GamePrediction){
             return child.size();
         }
         else{
@@ -471,34 +471,34 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    private void updatePrediction(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, UPDATE_STATES state, Game game, String uuid){
+    private void updatePrediction(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, UPDATE_STATES state, GamePrediction gamePrediction, String uuid){
         UpdatePredictionRequest request = new UpdatePredictionRequest();
-        request.setGameid(game.getGameid());
-        request.setUuid(uuid);
+        request.setGameId(gamePrediction.getGameid());
+        request.setUserId(uuid);
         switch (state){
             case HOME_TEAM_SELECTED:{
                 request.setHasPredicted(true);
                 request.setHasHomeTeamPredicted(true);
-                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, game, state);
+                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, gamePrediction, state);
                 break;
             }
             case AWAY_TEAM_SELECTED: {
                 request.setHasPredicted(true);
                 request.setHasHomeTeamPredicted(false);
-                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, game, state);
+                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, gamePrediction, state);
                 break;
             }
             case UNPREDICTED: {
                 request.setHasPredicted(false);
                 request.setHasHomeTeamPredicted(true);
-                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, game, state);
+                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, gamePrediction, state);
                 break;
             }
             default: break;
         }
     }
 
-    private void sendUpdateRequest(UpdatePredictionRequest request, final CheckBox homeTeamCheckbox, final CheckBox awayTeamCheckbox, final Game game, final UPDATE_STATES state){
+    private void sendUpdateRequest(UpdatePredictionRequest request, final CheckBox homeTeamCheckbox, final CheckBox awayTeamCheckbox, final GamePrediction gamePrediction, final UPDATE_STATES state){
         Call<UpdateResponse> response = this.apiInterface.updatePrediction(request);
 
         response.enqueue(new Callback<UpdateResponse>() {
@@ -506,7 +506,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             public void onResponse(Call<UpdateResponse> call, retrofit2.Response<UpdateResponse> response) {
                 UpdateResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    updateModel(homeTeamCheckbox, awayTeamCheckbox, game, state);
+                    updateModel(homeTeamCheckbox, awayTeamCheckbox, gamePrediction, state);
                 }
                 else{
                     setCheckboxesToLastValue(homeTeamCheckbox, awayTeamCheckbox, state);
@@ -523,21 +523,21 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    private void sendUpdateRequest(final Constants.PREDICTION_TYPE state, final int position, final Spinner teamSpinner, final LinearLayout teamBackground, final ImageView teamIcon, final PredictionPlus predictionPlus){
+    private void sendUpdateRequest(final Constants.PREDICTION_TYPE state, final int position, final Spinner teamSpinner, final LinearLayout teamBackground, final ImageView teamIcon, final PredictionBeforeSeason predictionBeforeSeason){
         final String teamPredicted = position == 0 ? "" : teamInfoList.get(position).getTeamPrefix();
-        UpdatePredictionPlusRequest updatePredictionPlusRequest = new UpdatePredictionPlusRequest();
-        updatePredictionPlusRequest.setTeamprefix(teamPredicted);
-        updatePredictionPlusRequest.setState(state.toString().toLowerCase());
-        updatePredictionPlusRequest.setUuid(this.userId);
+        UpdatePredictionBeforeSeasonRequest updatePredictionBeforeSeasonRequest = new UpdatePredictionBeforeSeasonRequest();
+        updatePredictionBeforeSeasonRequest.setTeamprefix(teamPredicted);
+        updatePredictionBeforeSeasonRequest.setPredictionType(state.toString().toLowerCase());
+        updatePredictionBeforeSeasonRequest.setUserId(this.userId);
 
-        Call<UpdateResponse> response = this.apiInterface.updatePredictionPlus(updatePredictionPlusRequest);
+        Call<UpdateResponse> response = this.apiInterface.updatePredictionPlus(updatePredictionBeforeSeasonRequest);
 
         response.enqueue(new Callback<UpdateResponse>() {
             @Override
             public void onResponse(Call<UpdateResponse> call, retrofit2.Response<UpdateResponse> response) {
                 UpdateResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    updateModel(state, teamPredicted, teamSpinner, predictionPlus);
+                    updateModel(state, teamPredicted, teamSpinner, predictionBeforeSeason);
                     setTeamInfos(teamSpinner.getSelectedItemPosition(), teamBackground, teamIcon);
                 }
                 else{
@@ -555,21 +555,21 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    private void updateModel(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, Game game, UPDATE_STATES state){
+    private void updateModel(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, GamePrediction gamePrediction, UPDATE_STATES state){
         switch (state){
             case HOME_TEAM_SELECTED:{
-                game.setHaspredicted(1);
-                game.setPredictedhometeam(1);
+                gamePrediction.setHaspredicted(1);
+                gamePrediction.setPredictedhometeam(1);
                 break;
             }
             case AWAY_TEAM_SELECTED: {
-                game.setHaspredicted(1);
-                game.setPredictedhometeam(0);
+                gamePrediction.setHaspredicted(1);
+                gamePrediction.setPredictedhometeam(0);
                 break;
             }
             case UNPREDICTED: {
-                game.setHaspredicted(0);
-                game.setPredictedhometeam(0);
+                gamePrediction.setHaspredicted(0);
+                gamePrediction.setPredictedhometeam(0);
                 break;
             }
             default: break;
@@ -578,31 +578,31 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         lastAwayTeamCheckboxStatus = awayTeamCheckbox.isChecked();
     }
 
-    private void updateModel(Constants.PREDICTION_TYPE state, String teamPredicted, Spinner teamSpinner, PredictionPlus predictionPlus){
+    private void updateModel(Constants.PREDICTION_TYPE state, String teamPredicted, Spinner teamSpinner, PredictionBeforeSeason predictionBeforeSeason){
         switch (state) {
             case SUPERBOWL: {
                 lastSuperbowlSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                predictionPlus.setSuperbowl(teamPredicted);
+                predictionBeforeSeason.setSuperbowl(teamPredicted);
                 break;
             }
             case AFC_WINNER: {
                 lastAFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                predictionPlus.setAfcwinnerteam(teamPredicted);
+                predictionBeforeSeason.setAfcwinnerteam(teamPredicted);
                 break;
             }
             case NFC_WINNER: {
                 lastNFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                predictionPlus.setNfcwinnerteam(teamPredicted);
+                predictionBeforeSeason.setNfcwinnerteam(teamPredicted);
                 break;
             }
             case BEST_OFFENSE: {
                 lastOffenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                predictionPlus.setBestoffenseteam(teamPredicted);
+                predictionBeforeSeason.setBestoffenseteam(teamPredicted);
                 break;
             }
             case BEST_DEFENSE: {
                 lastDefenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                predictionPlus.setBestdefenseteam(teamPredicted);
+                predictionBeforeSeason.setBestdefenseteam(teamPredicted);
                 break;
             }
             default:
@@ -678,7 +678,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    private void getAllPredictionsForGameid(final Game game, AllPredictionsRequest request){
+    private void getAllPredictionsForGameid(final GamePrediction gamePrediction, AllPredictionsRequest request){
         Call<AllPredictionsResponse> response = this.apiInterface.allPredictions(request);
 
         response.enqueue(new Callback<AllPredictionsResponse>() {
@@ -687,8 +687,8 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 AllPredictionsResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
                     Intent intent = new Intent(activity, AllPredictionsForGameActivity.class);
-                    intent.putParcelableArrayListExtra(Constants.PREDICTIONS, resp.getPredictionList());
-                    intent.putExtra(Constants.GAME, game);
+                    intent.putParcelableArrayListExtra(Constants.PREDICTIONS, resp.getGamePredictionForStatistic());
+                    intent.putExtra(Constants.GAME, gamePrediction);
                     intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
                 }

@@ -25,7 +25,7 @@ public class UtilsTest {
     @Test
     public void isPredictionTimeOver_should_return_false(){
         Calendar testDate = Calendar.getInstance();
-        testDate.add(Calendar.DAY_OF_MONTH, 1);
+        testDate.add(Calendar.DAY_OF_MONTH, 5);
 
         String testDateString = testDate.get(Calendar.YEAR) + "-" + (testDate.get(Calendar.MONTH) + 1) + "-" + testDate.get(Calendar.DAY_OF_MONTH) + " 08:00:00 PM";
         assertFalse(Utils.isPredictionTimeOver(testDateString, 0));

@@ -47,7 +47,7 @@ public class NfcTableFragment extends Fragment {
 
             TextView tvTeamCityName = (TextView) rowRootView.findViewById(R.id.standings_row_team_city);
             TextView tvTeamDivGames = (TextView) rowRootView.findViewById(R.id.standings_row_team_divgames);
-            TextView tvTeamPrefix = (TextView) rowRootView.findViewById(R.id.standings_row_team_prefix);
+            TextView tvClinching = (TextView) rowRootView.findViewById(R.id.standings_row_team_prefix);
             TextView tvTeamName = (TextView) rowRootView.findViewById(R.id.standings_row_team_name);
             TextView tvTeamGames = (TextView) rowRootView.findViewById(R.id.standings_row_team_games);
             TextView tvTeamScore = (TextView) rowRootView.findViewById(R.id.standings_row_team_score);
@@ -57,7 +57,7 @@ public class NfcTableFragment extends Fragment {
 
             tvTeamCityName.setText(Constants.TEAM_INFO_MAP.get(standing.getTeamprefix()).getTeamCity());
             tvTeamDivGames.setText(standing.getDivgames());
-            tvTeamPrefix.setText(standing.getPrefix() == null ? "" : standing.getPrefix());
+            tvClinching.setText(standing.getClinching() == null ? "" : standing.getClinching());
             tvTeamName.setText(Constants.TEAM_INFO_MAP.get(standing.getTeamprefix()).getTeamName());
             tvTeamGames.setText(standing.getGames());
             tvTeamScore.setText(standing.getScore());

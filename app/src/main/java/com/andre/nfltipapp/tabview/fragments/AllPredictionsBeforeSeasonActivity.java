@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
-import com.andre.nfltipapp.tabview.fragments.statisticssection.model.PredictionsPlusStatistic;
+import com.andre.nfltipapp.tabview.fragments.statisticssection.model.PredictionsBeforeSeasonStatistic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_for_prediction_plus);
 
-        ArrayList<PredictionsPlusStatistic> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONS_BEFORE_SEASON);
+        ArrayList<PredictionsBeforeSeasonStatistic> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONS_BEFORE_SEASON);
         this.teamName = getIntent().getStringExtra(Constants.TEAMNAME);
         String userId = getIntent().getStringExtra(Constants.USERID);
         String predictionTypeParcel = getIntent().getStringExtra(Constants.PREDICTION_TYPE_STRING);
@@ -71,10 +71,10 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
             ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(teamName).getTeamIcon());
         }
 
-        List<PredictionsPlusStatistic> predictionListCopy = new ArrayList<>(predictionList);
+        List<PredictionsBeforeSeasonStatistic> predictionListCopy = new ArrayList<>(predictionList);
 
         for(int i = 0; i < predictionList.size(); i++){
-            PredictionsPlusStatistic predictionTemp = predictionList.get(i);
+            PredictionsBeforeSeasonStatistic predictionTemp = predictionList.get(i);
             if(predictionTemp.getUserid().equals(userId)){
                 View view = initView(predictionTemp);
                 view.setBackgroundResource(R.drawable.bottom_border);
@@ -85,12 +85,12 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
             }
         }
 
-        for(PredictionsPlusStatistic prediction : predictionListCopy){
+        for(PredictionsBeforeSeasonStatistic prediction : predictionListCopy){
             initView(prediction);
         }
     }
 
-    private View initView (PredictionsPlusStatistic prediction){
+    private View initView (PredictionsBeforeSeasonStatistic prediction){
         View rowView = getLayoutInflater().inflate(R.layout.statistic_for_plus_table_row, null);
 
         TextView tvName = (TextView) rowView.findViewById(R.id.player_name_statistic);

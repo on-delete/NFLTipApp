@@ -7,13 +7,13 @@ import android.os.Parcelable;
  * Created by Andre on 16.02.2017.
  */
 
-public class PredictionsPlusStatistic implements Parcelable{
+public class PredictionsBeforeSeasonStatistic implements Parcelable{
 
     private String username;
     private String userid;
     private String teamprefix;
 
-    public PredictionsPlusStatistic (Parcel parcel){
+    public PredictionsBeforeSeasonStatistic(Parcel parcel){
         username = parcel.readString();
         userid = parcel.readString();
         teamprefix = parcel.readString();
@@ -43,17 +43,17 @@ public class PredictionsPlusStatistic implements Parcelable{
         dest.writeString(teamprefix);
     }
 
-    public static final Parcelable.Creator<PredictionsPlusStatistic> CREATOR =
-            new Parcelable.Creator<PredictionsPlusStatistic>(){
+    public static final Parcelable.Creator<PredictionsBeforeSeasonStatistic> CREATOR =
+            new Parcelable.Creator<PredictionsBeforeSeasonStatistic>(){
 
                 @Override
-                public PredictionsPlusStatistic createFromParcel(Parcel source) {
-                    return new PredictionsPlusStatistic(source);
+                public PredictionsBeforeSeasonStatistic createFromParcel(Parcel source) {
+                    return new PredictionsBeforeSeasonStatistic(source);
                 }
 
                 @Override
-                public PredictionsPlusStatistic[] newArray(int size) {
-                    return new PredictionsPlusStatistic[size];
+                public PredictionsBeforeSeasonStatistic[] newArray(int size) {
+                    return new PredictionsBeforeSeasonStatistic[size];
                 }
             };
 }

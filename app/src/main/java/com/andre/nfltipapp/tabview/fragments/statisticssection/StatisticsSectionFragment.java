@@ -13,8 +13,8 @@ import android.widget.ExpandableListView;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
-import com.andre.nfltipapp.tabview.fragments.model.Prediction;
-import com.andre.nfltipapp.tabview.fragments.model.PredictionPlus;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionsForWeek;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionBeforeSeason;
 
 import java.util.List;
 
@@ -53,10 +53,10 @@ public class StatisticsSectionFragment extends Fragment {
         elvStatistics = (ExpandableListView) rootView.findViewById(R.id.statisticsListView);
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
-        List<Prediction> predictionList = data.getPredictions();
-        List<PredictionPlus> predictionsBeforeSeasonList = data.getPredictionsplus();
+        List<PredictionsForWeek> predictionsForWeekList = data.getPredictionsForWeeks();
+        List<PredictionBeforeSeason> predictionsBeforeSeasonList = data.getPredictionBeforeSeason();
 
-        ExpandableListAdapter elvStatisticsAdapter = new StatisticsListViewAdapter(activity, predictionList, predictionsBeforeSeasonList, userId);
+        ExpandableListAdapter elvStatisticsAdapter = new StatisticsListViewAdapter(activity, predictionsForWeekList, predictionsBeforeSeasonList, userId);
         elvStatistics.setAdapter(elvStatisticsAdapter);
 
         elvStatistics.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {

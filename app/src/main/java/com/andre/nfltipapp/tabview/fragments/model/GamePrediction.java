@@ -3,7 +3,7 @@ package com.andre.nfltipapp.tabview.fragments.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Game implements Parcelable{
+public class GamePrediction implements Parcelable{
 
     private String gameid;
     private String gamedatetime;
@@ -15,7 +15,7 @@ public class Game implements Parcelable{
     private int haspredicted;
     private int predictedhometeam;
 
-    public Game(Parcel parcel){
+    public GamePrediction(Parcel parcel){
         gameid = parcel.readString();
         gamedatetime = parcel.readString();
         hometeam = parcel.readString();
@@ -87,17 +87,17 @@ public class Game implements Parcelable{
         dest.writeInt(predictedhometeam);
     }
 
-    public static final Parcelable.Creator<Game> CREATOR =
-            new Parcelable.Creator<Game>(){
+    public static final Parcelable.Creator<GamePrediction> CREATOR =
+            new Parcelable.Creator<GamePrediction>(){
 
                 @Override
-                public Game createFromParcel(Parcel source) {
-                    return new Game(source);
+                public GamePrediction createFromParcel(Parcel source) {
+                    return new GamePrediction(source);
                 }
 
                 @Override
-                public Game[] newArray(int size) {
-                    return new Game[size];
+                public GamePrediction[] newArray(int size) {
+                    return new GamePrediction[size];
                 }
             };
 }

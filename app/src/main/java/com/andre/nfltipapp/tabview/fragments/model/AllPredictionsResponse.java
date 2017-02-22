@@ -10,7 +10,7 @@ public class AllPredictionsResponse {
 
     private String result;
     private String message;
-    private ArrayList<GamePredictions> predictionlist;
+    private ArrayList<GamePredictionStatistic> predictionlist;
 
     public String getResult() {
         return result;
@@ -20,5 +20,5 @@ public class AllPredictionsResponse {
         return message;
     }
 
-    public ArrayList<GamePredictions> getPredictionList() {return predictionlist; }
+    public ArrayList<GamePredictionStatistic> getGamePredictionForStatistic() {return predictionlist; }
 }

@@ -6,13 +6,13 @@ import com.andre.nfltipapp.loginregistryview.model.NameExistRequest;
 import com.andre.nfltipapp.loginregistryview.model.NameExistResponse;
 import com.andre.nfltipapp.loginregistryview.model.RegisterRequest;
 import com.andre.nfltipapp.loginregistryview.model.RegisterResponse;
-import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusRequest;
-import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusResponse;
+import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonRequest;
+import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonResponse;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsResponse;
 import com.andre.nfltipapp.model.DataRequest;
 import com.andre.nfltipapp.model.DataResponse;
-import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionPlusRequest;
+import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionBeforeSeasonRequest;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdatePredictionRequest;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.model.UpdateResponse;
 
@@ -38,10 +38,10 @@ public interface ApiInterface {
     Call<UpdateResponse> updatePrediction(@Body UpdatePredictionRequest request);
 
     @POST("updatePredictionPlus")
-    Call<UpdateResponse> updatePredictionPlus(@Body UpdatePredictionPlusRequest request);
+    Call<UpdateResponse> updatePredictionPlus(@Body UpdatePredictionBeforeSeasonRequest request);
 
     @POST("getAllPredictionsPlusForState")
-    Call<AllPredictionsPlusResponse> allPredictionsPlus(@Body AllPredictionsPlusRequest request);
+    Call<AllPredictionsBeforeSeasonResponse> allPredictionsPlus(@Body AllPredictionsBeforeSeasonRequest request);
 
     @POST("getAllPredictionsForGame")
     Call<AllPredictionsResponse> allPredictions(@Body AllPredictionsRequest request);

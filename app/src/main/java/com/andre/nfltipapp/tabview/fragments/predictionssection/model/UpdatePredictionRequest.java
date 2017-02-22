@@ -6,17 +6,17 @@ package com.andre.nfltipapp.tabview.fragments.predictionssection.model;
 
 public class UpdatePredictionRequest {
 
-    private String uuid;
-    private String gameid;
+    private String userId;
+    private String gameId;
     private boolean hasPredicted;
     private boolean hasHomeTeamPredicted;
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public void setGameid(String gameid) {
-        this.gameid = gameid;
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 
     public void setHasPredicted(boolean hasPredicted) {

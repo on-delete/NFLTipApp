@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
-import com.andre.nfltipapp.tabview.fragments.model.Game;
-import com.andre.nfltipapp.tabview.fragments.model.GamePredictions;
+import com.andre.nfltipapp.tabview.fragments.model.GamePrediction;
+import com.andre.nfltipapp.tabview.fragments.model.GamePredictionStatistic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,24 +26,24 @@ public class AllPredictionsForGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistic_for_game);
 
-        ArrayList<GamePredictions> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONS);
-        Game game = getIntent().getParcelableExtra(Constants.GAME);
+        ArrayList<GamePredictionStatistic> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONS);
+        GamePrediction gamePrediction = getIntent().getParcelableExtra(Constants.GAME);
         String userId = getIntent().getStringExtra(Constants.USERID);
 
         ImageView ivAwayTeamIcon = (ImageView) findViewById(R.id.away_team_icon_statistic);
         ImageView ivHomeTeamIcon = (ImageView) findViewById(R.id.home_team_icon_statistic);
         this.llAllPredictionsTable = (LinearLayout) findViewById(R.id.statistics_game_table_layout);
 
-        setTitle(game.getAwayteam() + " vs " + game.getHometeam());
+        setTitle(gamePrediction.getAwayteam() + " vs " + gamePrediction.getHometeam());
 
-        ivAwayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(game.getAwayteam()).getTeamIcon());
-        ivHomeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(game.getHometeam()).getTeamIcon());
+        ivAwayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamIcon());
+        ivHomeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamIcon());
 
-        if(game.getAwaypoints() > game.getHomepoints()){
+        if(gamePrediction.getAwaypoints() > gamePrediction.getHomepoints()){
             ivAwayTeamIcon.setBackground(getDrawable(R.drawable.back_green));
             ivHomeTeamIcon.setBackground(getDrawable(R.drawable.back_red));
         }
-        else if (game.getAwaypoints() < game.getHomepoints()){
+        else if (gamePrediction.getAwaypoints() < gamePrediction.getHomepoints()){
             ivAwayTeamIcon.setBackground(getDrawable(R.drawable.back_red));
             ivHomeTeamIcon.setBackground(getDrawable(R.drawable.back_green));
         }
@@ -52,10 +52,10 @@ public class AllPredictionsForGameActivity extends AppCompatActivity {
             ivHomeTeamIcon.setBackground(getDrawable(R.drawable.back_yellow));
         }
 
-        List<GamePredictions> predictionListCopy = new ArrayList<>(predictionList);
+        List<GamePredictionStatistic> predictionListCopy = new ArrayList<>(predictionList);
 
         for(int i = 0; i < predictionList.size(); i++){
-            GamePredictions predictionTemp = predictionList.get(i);
+            GamePredictionStatistic predictionTemp = predictionList.get(i);
             if(predictionTemp.getUserid().equals(userId)){
                 View view = initView(predictionTemp);
                 view.setBackgroundResource(R.drawable.bottom_border);
@@ -66,12 +66,12 @@ public class AllPredictionsForGameActivity extends AppCompatActivity {
             }
         }
 
-        for(GamePredictions prediction : predictionListCopy){
+        for(GamePredictionStatistic prediction : predictionListCopy){
             initView(prediction);
         }
     }
 
-    private View initView (GamePredictions prediction){
+    private View initView (GamePredictionStatistic prediction){
         View rowView = getLayoutInflater().inflate(R.layout.statistic_for_game_table_row, null);
 
         TextView tvName = (TextView) rowView.findViewById(R.id.player_name_statistic) ;

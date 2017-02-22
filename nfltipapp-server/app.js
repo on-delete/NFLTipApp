@@ -666,7 +666,7 @@ function getStandings(rankingList, predictionsList, res, uuid){
             winston.info("error in database connection");
         }
         else {
-            var sql = "SELECT teams.team_prefix as team_prefix, standings.prefix as prefix, standings.games as games, standings.score as score, standings.div_games as div_games " +
+            var sql = "SELECT teams.team_prefix as team_prefix, standings.prefix as clinching, standings.games as games, standings.score as score, standings.div_games as div_games " +
                 "FROM standings " +
                 "RIGHT JOIN teams " +
                 "ON standings.team_id = teams.team_id " +
@@ -681,7 +681,7 @@ function getStandings(rankingList, predictionsList, res, uuid){
                         var standingsList = [];
                         for(var i=0; i<rows.length; i++){
                             var actualRow = rows[i];
-                            var tempItem = {"teamprefix": actualRow.team_prefix, "prefix": actualRow.prefix, "games": actualRow.games, "score": actualRow.score, "divgames": actualRow.div_games};
+                            var tempItem = {"teamprefix": actualRow.team_prefix, "clinching": actualRow.clinching, "games": actualRow.games, "score": actualRow.score, "divgames": actualRow.div_games};
                             standingsList.push(tempItem);
                         }
                         getPredictionPlus(rankingList, predictionsList, standingsList, res, uuid);
@@ -771,8 +771,8 @@ function getFirstGameDate(callback) {
 
 function sendDataResponse(rankingList, predictionsList, standingsList, predictionsPlus, res){
     var data = {"ranking" : rankingList,
-        "predictions": predictionsList,
-        "predictionsplus": predictionsPlus,
+        "predictionsForWeeks": predictionsList,
+        "predictionBeforeSeason": predictionsPlus,
         "standings": standingsList};
 
     var resp = {
@@ -819,11 +819,11 @@ app.post('/updatePrediction', function (req, res, next) {
             var inserts;
             if(req.body.hasPredicted){
                 sql = "UPDATE predictions SET predicted=1, home_team_predicted=? where game_id=? and user_id=?;";
-                inserts = [(req.body.hasHomeTeamPredicted ? 1 : 0), req.body.gameid, req.body.uuid];
+                inserts = [(req.body.hasHomeTeamPredicted ? 1 : 0), req.body.gameId, req.body.userId];
             }
             else{
                 sql = "UPDATE predictions SET predicted=0, home_team_predicted=0 where game_id=? and user_id=?;";
-                inserts = [req.body.gameid, req.body.uuid];
+                inserts = [req.body.gameId, req.body.userId];
             }
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {
@@ -1028,7 +1028,7 @@ app.post('/getAllPredictionsPlusForState', function (req, res, next) {
                 "LEFT JOIN teams ON predictions_plus.?? = teams.team_id " +
                 "WHERE predictions_plus.user_id <> 3 " +
                 "ORDER BY user.user_name ASC";
-            var inserts = [req.body.state];
+            var inserts = [req.body.predictionType];
 
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, rows) {
@@ -1109,13 +1109,13 @@ app.post('/updatePredictionPlus', function (req, res) {
                     "ON ? = teams.team_prefix " +
                     "SET ?? = teams.team_id " +
                     "WHERE user_id = ?;";
-                inserts = [teamPrefix, req.body.state, req.body.uuid];
+                inserts = [teamPrefix, req.body.predictionType, req.body.userId];
             }
             else {
                 sql = "UPDATE predictions_plus " +
                     "SET ?? = NULL " +
                     "WHERE user_id = ?;";
-                inserts = [req.body.state, req.body.uuid];
+                inserts = [req.body.predictionType, req.body.userId];
             }
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {

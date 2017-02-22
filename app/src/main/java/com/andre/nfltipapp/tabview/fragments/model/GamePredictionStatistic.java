@@ -6,14 +6,14 @@ import android.os.Parcelable;
 /**
  * Created by Andre on 16.01.2017.
  */
-public class GamePredictions implements Parcelable{
+public class GamePredictionStatistic implements Parcelable{
 
     private int predicted;
     private int hometeampredicted;
     private String userid;
     private String username;
 
-    public GamePredictions(Parcel parcel){
+    public GamePredictionStatistic(Parcel parcel){
         userid = parcel.readString();
         username = parcel.readString();
         predicted = parcel.readInt();
@@ -49,17 +49,17 @@ public class GamePredictions implements Parcelable{
         dest.writeInt(hometeampredicted);
     }
 
-    public static final Parcelable.Creator<GamePredictions> CREATOR =
-            new Parcelable.Creator<GamePredictions>(){
+    public static final Parcelable.Creator<GamePredictionStatistic> CREATOR =
+            new Parcelable.Creator<GamePredictionStatistic>(){
 
                 @Override
-                public GamePredictions createFromParcel(Parcel source) {
-                    return new GamePredictions(source);
+                public GamePredictionStatistic createFromParcel(Parcel source) {
+                    return new GamePredictionStatistic(source);
                 }
 
                 @Override
-                public GamePredictions[] newArray(int size) {
-                    return new GamePredictions[size];
+                public GamePredictionStatistic[] newArray(int size) {
+                    return new GamePredictionStatistic[size];
                 }
             };
 }

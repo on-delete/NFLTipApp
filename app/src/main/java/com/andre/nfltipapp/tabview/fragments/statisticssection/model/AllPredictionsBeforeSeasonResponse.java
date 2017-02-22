@@ -6,11 +6,11 @@ import java.util.ArrayList;
  * Created by Andre on 16.02.2017.
  */
 
-public class AllPredictionsPlusResponse {
+public class AllPredictionsBeforeSeasonResponse {
 
     private String result;
     private String message;
-    private ArrayList<PredictionsPlusStatistic> predictionlist;
+    private ArrayList<PredictionsBeforeSeasonStatistic> predictionlist;
 
     public String getResult() {
         return result;
@@ -20,5 +20,5 @@ public class AllPredictionsPlusResponse {
         return message;
     }
 
-    public ArrayList<PredictionsPlusStatistic> getPredictionList() {return predictionlist; }
+    public ArrayList<PredictionsBeforeSeasonStatistic> getPredictionList() {return predictionlist; }
 }

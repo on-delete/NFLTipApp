@@ -9,14 +9,14 @@ import android.os.Parcelable;
 public class Standing implements Parcelable {
 
     private String teamprefix;
-    private String prefix;
+    private String clinching;
     private String games;
     private String score;
     private String divgames;
 
     public Standing(Parcel parcel){
         teamprefix = parcel.readString();
-        prefix = parcel.readString();
+        clinching = parcel.readString();
         games = parcel.readString();
         score = parcel.readString();
         divgames = parcel.readString();
@@ -26,8 +26,8 @@ public class Standing implements Parcelable {
         return teamprefix;
     }
 
-    public String getPrefix() {
-        return prefix;
+    public String getClinching() {
+        return clinching;
     }
 
     public String getGames() {
@@ -50,7 +50,7 @@ public class Standing implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(teamprefix);
-        dest.writeString(prefix);
+        dest.writeString(clinching);
         dest.writeString(games);
         dest.writeString(score);
         dest.writeString(divgames);

@@ -19,14 +19,14 @@ import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.Utils;
 import com.andre.nfltipapp.rest.Api;
-import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusRequest;
-import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsPlusResponse;
-import com.andre.nfltipapp.tabview.fragments.model.PredictionPlus;
+import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonRequest;
+import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonResponse;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionBeforeSeason;
 import com.andre.nfltipapp.tabview.fragments.AllPredictionsForGameActivity;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsResponse;
-import com.andre.nfltipapp.tabview.fragments.model.Game;
-import com.andre.nfltipapp.tabview.fragments.model.Prediction;
+import com.andre.nfltipapp.tabview.fragments.model.GamePrediction;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionsForWeek;
 import com.andre.nfltipapp.rest.ApiInterface;
 import com.andre.nfltipapp.tabview.fragments.AllPredictionsBeforeSeasonActivity;
 
@@ -50,7 +50,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     private List<?> child;
     private LayoutInflater layoutInflater;
 
-    public StatisticsListViewAdapter(Activity activity, List<Prediction> predictionList, List<PredictionPlus> predictionPlus, String userId) {
+    public StatisticsListViewAdapter(Activity activity, List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionPlus, String userId) {
         this.activity = activity;
 
         this.userId = userId;
@@ -60,17 +60,17 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             expandableListDetail.put("Tips vor der Saison", predictionPlus);
         }
 
-        for(Prediction predictionItem : predictionList){
-            List<Game> tempGamesList = new ArrayList<>();
+        for(PredictionsForWeek predictionsForWeekItem : predictionsForWeekList){
+            List<GamePrediction> tempGamesList = new ArrayList<>();
 
-            for (Game game : predictionItem.getGames()){
-                if(game.isFinished()==1){
-                    tempGamesList.add(game);
+            for (GamePrediction gamePrediction : predictionsForWeekItem.getGamePredictions()){
+                if(gamePrediction.isFinished()==1){
+                    tempGamesList.add(gamePrediction);
                 }
             }
 
             if(tempGamesList.size()>0){
-                String title = "Woche " + predictionItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionItem.getType()) : "");
+                String title = "Woche " + predictionsForWeekItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) : "");
                 this.expandableListTitle.add(title);
                 this.expandableListDetail.put(title, tempGamesList);
             }
@@ -85,12 +85,12 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     public Object getChild(int listPosition, int expandedListPosition) {
         child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
 
-        if(child.get(0) instanceof Game){
+        if(child.get(0) instanceof GamePrediction){
             return child.get(expandedListPosition);
         }
         else{
             for(int i = 0; i < child.size(); i++){
-                PredictionPlus tempPrediction = (PredictionPlus) child.get(i);
+                PredictionBeforeSeason tempPrediction = (PredictionBeforeSeason) child.get(i);
                 if(tempPrediction.getUser().equals("default")){
                     return tempPrediction;
                 }
@@ -112,15 +112,15 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         Object childView = getChild(listPosition, expandedListPosition);
-        if(childView instanceof Game){
-            return initPredictionView(convertView, parent, (Game) childView);
+        if(childView instanceof GamePrediction){
+            return initPredictionView(convertView, parent, (GamePrediction) childView);
         }
         else {
-            return initPredictionPlusView(convertView, parent, (PredictionPlus) childView);
+            return initPredictionPlusView(convertView, parent, (PredictionBeforeSeason) childView);
         }
     }
 
-    private View initPredictionView(View convertView, ViewGroup parent, final Game expandedListItem){
+    private View initPredictionView(View convertView, ViewGroup parent, final GamePrediction expandedListItem){
         convertView = layoutInflater.inflate(R.layout.statistics_list_item, parent, false);
 
         TextView homeScoreTextView = (TextView) convertView
@@ -155,7 +155,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    private View initPredictionPlusView(View convertView, ViewGroup parent, PredictionPlus child) {
+    private View initPredictionPlusView(View convertView, ViewGroup parent, PredictionBeforeSeason child) {
         convertView = layoutInflater.inflate(R.layout.predictions_plus_item, parent, false);
         LinearLayout container = (LinearLayout) convertView.findViewById(R.id.subitems_container);
 
@@ -207,8 +207,8 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         teamBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AllPredictionsPlusRequest request = new AllPredictionsPlusRequest();
-                request.setState(state.toString());
+                AllPredictionsBeforeSeasonRequest request = new AllPredictionsBeforeSeasonRequest();
+                request.setPredictionType(state.toString());
                 getAllPredictionsPlusForState(state, team, request);
             }
         });
@@ -233,7 +233,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     public int getChildrenCount(int listPosition) {
         child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
 
-        if(child.get(0) instanceof Game){
+        if(child.get(0) instanceof GamePrediction){
             return child.size();
         }
         else{
@@ -284,7 +284,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    private void getAllPredictionsForGameid(final Game game, AllPredictionsRequest request){
+    private void getAllPredictionsForGameid(final GamePrediction gamePrediction, AllPredictionsRequest request){
         Call<AllPredictionsResponse> response = apiInterface.allPredictions(request);
 
         response.enqueue(new Callback<AllPredictionsResponse>() {
@@ -293,8 +293,8 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                 AllPredictionsResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
                     Intent intent = new Intent(activity, AllPredictionsForGameActivity.class);
-                    intent.putParcelableArrayListExtra(Constants.PREDICTIONS, resp.getPredictionList());
-                    intent.putExtra(Constants.GAME, game);
+                    intent.putParcelableArrayListExtra(Constants.PREDICTIONS, resp.getGamePredictionForStatistic());
+                    intent.putExtra(Constants.GAME, gamePrediction);
                     intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
                 }
@@ -311,13 +311,13 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    private void getAllPredictionsPlusForState(final Constants.PREDICTION_TYPE state, final String teamName, AllPredictionsPlusRequest request){
-        Call<AllPredictionsPlusResponse> response = apiInterface.allPredictionsPlus(request);
+    private void getAllPredictionsPlusForState(final Constants.PREDICTION_TYPE state, final String teamName, AllPredictionsBeforeSeasonRequest request){
+        Call<AllPredictionsBeforeSeasonResponse> response = apiInterface.allPredictionsPlus(request);
 
-        response.enqueue(new Callback<AllPredictionsPlusResponse>() {
+        response.enqueue(new Callback<AllPredictionsBeforeSeasonResponse>() {
             @Override
-            public void onResponse(Call<AllPredictionsPlusResponse> call, retrofit2.Response<AllPredictionsPlusResponse> response) {
-                AllPredictionsPlusResponse resp = response.body();
+            public void onResponse(Call<AllPredictionsBeforeSeasonResponse> call, retrofit2.Response<AllPredictionsBeforeSeasonResponse> response) {
+                AllPredictionsBeforeSeasonResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
                     Intent intent = new Intent(activity, AllPredictionsBeforeSeasonActivity.class);
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONS_BEFORE_SEASON, resp.getPredictionList());
@@ -332,7 +332,7 @@ public class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             }
 
             @Override
-            public void onFailure(Call<AllPredictionsPlusResponse> call, Throwable t) {
+            public void onFailure(Call<AllPredictionsBeforeSeasonResponse> call, Throwable t) {
                 Snackbar.make(activity.findViewById(R.id.statisticsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }

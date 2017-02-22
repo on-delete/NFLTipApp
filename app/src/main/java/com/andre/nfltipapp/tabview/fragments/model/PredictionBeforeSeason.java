@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by Andre on 04.02.2017.
  */
-public class PredictionPlus implements Parcelable{
+public class PredictionBeforeSeason implements Parcelable{
 
     private String user;
     private String superbowl;
@@ -16,7 +16,7 @@ public class PredictionPlus implements Parcelable{
     private String bestdefenseteam;
     private String firstgamedate;
 
-    public PredictionPlus (Parcel parcel){
+    public PredictionBeforeSeason(Parcel parcel){
         user = parcel.readString();
         superbowl = parcel.readString();
         afcwinnerteam = parcel.readString();
@@ -90,17 +90,17 @@ public class PredictionPlus implements Parcelable{
         dest.writeString(firstgamedate);
     }
 
-    public static final Parcelable.Creator<PredictionPlus> CREATOR =
-            new Parcelable.Creator<PredictionPlus>(){
+    public static final Parcelable.Creator<PredictionBeforeSeason> CREATOR =
+            new Parcelable.Creator<PredictionBeforeSeason>(){
 
                 @Override
-                public PredictionPlus createFromParcel(Parcel source) {
-                    return new PredictionPlus(source);
+                public PredictionBeforeSeason createFromParcel(Parcel source) {
+                    return new PredictionBeforeSeason(source);
                 }
 
                 @Override
-                public PredictionPlus[] newArray(int size) {
-                    return new PredictionPlus[size];
+                public PredictionBeforeSeason[] newArray(int size) {
+                    return new PredictionBeforeSeason[size];
                 }
             };
 }
