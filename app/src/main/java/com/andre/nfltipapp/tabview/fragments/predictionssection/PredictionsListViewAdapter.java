@@ -485,19 +485,20 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             @Override
             public void onResponse(Call<UpdateResponse> call, retrofit2.Response<UpdateResponse> response) {
                 UpdateResponse resp = response.body();
-                if(resp.getResult().equals(Constants.SUCCESS)){
-                    updateModel(cbHomeTeam, cbAwayTeam, gamePrediction, updateType);
+                if(response.code()==500){
+                    Log.d(Constants.TAG, resp.getMessage());
+                    Snackbar.make(activity.findViewById(R.id.predictionsListView) , "Server error!", Snackbar.LENGTH_LONG).show();
+                    setCheckboxesToLastValue(cbHomeTeam, cbAwayTeam, updateType);
                 }
                 else{
-                    setCheckboxesToLastValue(cbHomeTeam, cbAwayTeam, updateType);
-                    Log.d(Constants.TAG, resp.getMessage());
+                    updateModel(cbHomeTeam, cbAwayTeam, gamePrediction, updateType);
                 }
             }
 
             @Override
             public void onFailure(Call<UpdateResponse> call, Throwable t) {
                 setCheckboxesToLastValue(cbHomeTeam, cbAwayTeam, updateType);
-                Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(activity.findViewById(R.id.predictionsListView) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });
@@ -516,20 +517,21 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             @Override
             public void onResponse(Call<UpdateResponse> call, retrofit2.Response<UpdateResponse> response) {
                 UpdateResponse resp = response.body();
-                if(resp.getResult().equals(Constants.SUCCESS)){
-                    updateModel(predictionType, teamPredicted, spTeamChoice, predictionBeforeSeason);
-                    setTeamInfos(spTeamChoice.getSelectedItemPosition(), llTeamBackground, ivTeamIcon);
+                if(response.code()==500){
+                    Log.d(Constants.TAG, resp.getMessage());
+                    Snackbar.make(activity.findViewById(R.id.predictionsListView) , "Server error!", Snackbar.LENGTH_LONG).show();
+                    setSpinnerToLastValue(predictionType, spTeamChoice, llTeamBackground, ivTeamIcon);
                 }
                 else{
-                    Log.d(Constants.TAG, resp.getMessage());
-                    setSpinnerToLastValue(predictionType, spTeamChoice, llTeamBackground, ivTeamIcon);
+                    updateModel(predictionType, teamPredicted, spTeamChoice, predictionBeforeSeason);
+                    setTeamInfos(spTeamChoice.getSelectedItemPosition(), llTeamBackground, ivTeamIcon);
                 }
             }
 
             @Override
             public void onFailure(Call<UpdateResponse> call, Throwable t) {
                 setSpinnerToLastValue(predictionType, spTeamChoice, llTeamBackground, ivTeamIcon);
-                Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(activity.findViewById(R.id.predictionsListView) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });
@@ -665,21 +667,22 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             @Override
             public void onResponse(Call<AllPredictionsResponse> call, retrofit2.Response<AllPredictionsResponse> response) {
                 AllPredictionsResponse resp = response.body();
-                if(resp.getResult().equals(Constants.SUCCESS)){
+                if(response.code()==500){
+                    Log.d(Constants.TAG, resp.getMessage());
+                    Snackbar.make(activity.findViewById(R.id.predictionsListView) , "Server error!", Snackbar.LENGTH_LONG).show();
+                }
+                else{
                     Intent intent = new Intent(activity, AllPredictionsForGameActivity.class);
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONS, resp.getGamePredictionForStatistic());
                     intent.putExtra(Constants.GAME, gamePrediction);
                     intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
                 }
-                else{
-                    Log.d(Constants.TAG, resp.getMessage());
-                }
             }
 
             @Override
             public void onFailure(Call<AllPredictionsResponse> call, Throwable t) {
-                Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(activity.findViewById(R.id.predictionsListView) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });

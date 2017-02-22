@@ -297,21 +297,22 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             @Override
             public void onResponse(Call<AllPredictionsResponse> call, retrofit2.Response<AllPredictionsResponse> response) {
                 AllPredictionsResponse resp = response.body();
-                if(resp.getResult().equals(Constants.SUCCESS)){
+                if(response.code()==500){
+                    Log.d(Constants.TAG, resp.getMessage());
+                    Snackbar.make(activity.findViewById(R.id.statisticsListView) , "Server error!", Snackbar.LENGTH_LONG).show();
+                }
+                else{
                     Intent intent = new Intent(activity, AllPredictionsForGameActivity.class);
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONS, resp.getGamePredictionForStatistic());
                     intent.putExtra(Constants.GAME, gamePrediction);
                     intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
                 }
-                else{
-                    Log.d(Constants.TAG, resp.getMessage());
-                }
             }
 
             @Override
             public void onFailure(Call<AllPredictionsResponse> call, Throwable t) {
-                Snackbar.make(activity.findViewById(R.id.statisticsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(activity.findViewById(R.id.statisticsListView) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });
@@ -324,7 +325,11 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             @Override
             public void onResponse(Call<AllPredictionsBeforeSeasonResponse> call, retrofit2.Response<AllPredictionsBeforeSeasonResponse> response) {
                 AllPredictionsBeforeSeasonResponse resp = response.body();
-                if(resp.getResult().equals(Constants.SUCCESS)){
+                if(response.code()==500){
+                    Log.d(Constants.TAG, resp.getMessage());
+                    Snackbar.make(activity.findViewById(R.id.statisticsListView) , "Server error!", Snackbar.LENGTH_LONG).show();
+                }
+                else{
                     Intent intent = new Intent(activity, AllPredictionsBeforeSeasonActivity.class);
                     intent.putParcelableArrayListExtra(Constants.PREDICTIONS_BEFORE_SEASON, resp.getPredictionList());
                     intent.putExtra(Constants.TEAMNAME, teamName);
@@ -332,14 +337,11 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                     intent.putExtra(Constants.USERID, userId);
                     activity.startActivity(intent);
                 }
-                else{
-                    Log.d(Constants.TAG, resp.getMessage());
-                }
             }
 
             @Override
             public void onFailure(Call<AllPredictionsBeforeSeasonResponse> call, Throwable t) {
-                Snackbar.make(activity.findViewById(R.id.statisticsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(activity.findViewById(R.id.statisticsListView) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });

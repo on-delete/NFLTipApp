@@ -59,11 +59,19 @@ public class RegisterFragment extends Fragment {
                 String password = etPassword.getText().toString();
                 User newUser = new User(name, email, password);
 
+                if(name.isEmpty()){
+                    etName.setError("Kein Name angegeben!");
+                }
+                if(email.isEmpty()){
+                    etEmail.setError("Keine eMail angegeben!");
+                }
+                if(password.isEmpty()){
+                    etPassword.setError("Kein Password angegeben!");
+                }
+
                 if(!name.isEmpty() && !email.isEmpty() && !password.isEmpty()) {
                     progressBar.setVisibility(View.VISIBLE);
                     nameExistingProcess(newUser);
-                } else {
-                    Snackbar.make(getActivity().findViewById(R.id.fragment_host), "Fields are empty !", Snackbar.LENGTH_LONG).show();
                 }
             }
         });
@@ -85,25 +93,26 @@ public class RegisterFragment extends Fragment {
             public void onResponse(Call<NameExistResponse> call, retrofit2.Response<NameExistResponse> response) {
                 NameExistResponse resp = response.body();
                 progressBar.setVisibility(View.INVISIBLE);
-                if(resp.getResult().equals(Constants.SUCCESS)){
-                    if(resp.getMessage().equals("username unused")) {
-                        registerProcess(newUser);
-                    }
-                    else{
-                        Snackbar.make(getActivity().findViewById(R.id.fragment_host),"Username already in use!", Snackbar.LENGTH_LONG).show();
-                    }
+                if(response.code()==500){
+                    Log.d(Constants.TAG, resp.getMessage());
+                    Snackbar.make(getActivity().findViewById(R.id.fragment_host),"Server error!", Snackbar.LENGTH_LONG).show();
                 }
-                else{
-                    Log.d(Constants.FAILURE, resp.getMessage());
-                    Snackbar.make(getActivity().findViewById(R.id.fragment_host),"Error", Snackbar.LENGTH_LONG).show();
+                else {
+                    if (resp.getResult().equals(Constants.SUCCESS)) {
+                        if (resp.getMessage().equals("username_unused")) {
+                            registerProcess(newUser);
+                        } else {
+                            etName.setError("Name bereits vorhanden!");
+                        }
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<NameExistResponse> call, Throwable t) {
                 progressBar.setVisibility(View.INVISIBLE);
-                Log.d(Constants.TAG,"failed");
-                Snackbar.make(getActivity().findViewById(R.id.fragment_host), t.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                Log.d(Constants.TAG, t.getMessage());
+                Snackbar.make(getActivity().findViewById(R.id.fragment_host), "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
             }
         });
     }
@@ -118,20 +127,20 @@ public class RegisterFragment extends Fragment {
             public void onResponse(Call<RegisterResponse> call, retrofit2.Response<RegisterResponse> response) {
                 RegisterResponse resp = response.body();
                 progressBar.setVisibility(View.INVISIBLE);
-                if(resp.getResult().equals(Constants.SUCCESS)){
-                    Snackbar.make(getActivity().findViewById(R.id.fragment_host),"Registered!", Snackbar.LENGTH_LONG).show();
-                    goToLogin();
+                if(response.code()==500){
+                    Log.d(Constants.TAG, resp.getMessage());
+                    Snackbar.make(getActivity().findViewById(R.id.fragment_host),"Server error!", Snackbar.LENGTH_LONG).show();
                 }
                 else{
-                    Snackbar.make(getActivity().findViewById(R.id.fragment_host),"Internal Error", Snackbar.LENGTH_LONG).show();
+                    goToLogin();
                 }
             }
 
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 progressBar.setVisibility(View.INVISIBLE);
-                Log.d(Constants.TAG,"failed");
-                Snackbar.make(getActivity().findViewById(R.id.fragment_host), t.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                Log.d(Constants.TAG, t.getMessage());
+                Snackbar.make(getActivity().findViewById(R.id.fragment_host), "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
             }
         });
     }

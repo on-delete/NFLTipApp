@@ -81,7 +81,7 @@ app.post('/nameExisting', function (req, res, next) {
         if (err) {
             resp.result = "failed";
             resp.message = err.message;
-            sendResponse(res, resp, connection);
+            sendResponse(res, resp, connection, 500);
         }
         else {
             var sql = "SELECT user_name FROM user WHERE user_name = ?";
@@ -91,24 +91,24 @@ app.post('/nameExisting', function (req, res, next) {
                 if (err) {
                     resp.result = "failed";
                     resp.message = err.message;
-                    sendResponse(res, resp, connection);
+                    sendResponse(res, resp, connection, 500);
                 }
                 else {
                     resp.result = "success";
                     if (rows.length > 0) {
-                        resp.message = "username already used";
+                        resp.message = "username_already_used";
                     }
                     else {
-                        resp.message = "username unused";
+                        resp.message = "username_unused";
                     }
-                    sendResponse(res, resp, connection);
+                    sendResponse(res, resp, connection, 200);
                 }
             });
         }
     });
 });
 
-app.post('/registerUser', function (req, res, next) {
+app.post('/registerUser', function (req, res) {
     var resp = {
         "result": "",
         "message": ""
@@ -123,7 +123,7 @@ app.post('/registerUser', function (req, res, next) {
                 if (err) {
                     resp.result = "failed";
                     resp.message = err.message;
-                    sendResponse(res, resp, connection);
+                    sendResponse(res, resp, connection, 500);
                 }
                 else {
                     var sql = "INSERT INTO user (user_name, user_email, user_password) VALUES (?, ?, ?)";
@@ -133,12 +133,12 @@ app.post('/registerUser', function (req, res, next) {
                         if (err) {
                             resp.result = "failed";
                             resp.message = err.message;
-                            sendResponse(res, resp, connection);
+                            sendResponse(res, resp, connection, 500);
                         }
                         else {
                             resp.result = "success";
-                            resp.message = "user registered";
-                            initPredictionsForNewUser(res, resp, result.insertId, connection);
+                            resp.message = "user_registered";
+                            initPredictionsForNewUser(res, resp, result.insertId, connection, 200);
                         }
                     });
                 }
@@ -150,7 +150,7 @@ app.post('/registerUser', function (req, res, next) {
 function sendError(resp, errMsg, res, connection){
     resp.result = "failed";
     resp.message = errMsg;
-    sendResponse(res, resp, connection);
+    sendResponse(res, resp, connection, 500);
 }
 
 function initPredictionsForNewUser(res, resp, userId, connection){
@@ -161,7 +161,7 @@ function initPredictionsForNewUser(res, resp, userId, connection){
         if (err) {
             winston.info("error in database query insertNewGame");
             winston.info(err.message);
-            sendError(resp, err.message, res, connection);
+            sendError(resp, err.message, res, connection, 500);
         }
         else{
             initPredictionsPlusForNewUser(res, resp, userId, connection);
@@ -177,10 +177,10 @@ function initPredictionsPlusForNewUser(res, resp, userId, connection){
         if (err) {
             winston.info("error in database query insertNewGame");
             winston.info(err.message);
-            sendError(resp, err.message, res, connection);
+            sendError(resp, err.message, res, connection, 500);
         }
         else{
-            sendResponse(res, resp, connection);
+            sendResponse(res, resp, connection, 200);
         }
     });
 }
@@ -196,7 +196,7 @@ app.post('/loginUser', function (req, res) {
         if (err) {
             resp.result = "failed";
             resp.message = err.message;
-            sendResponse(res, resp, connection);
+            sendResponse(res, resp, connection, 500);
         }
         else {
             var sql = "SELECT user_password, user_id FROM user WHERE user_name = ?";
@@ -206,7 +206,7 @@ app.post('/loginUser', function (req, res) {
                 if (err) {
                     resp.result = "failed";
                     resp.message = err.message;
-                    sendResponse(res, resp, connection);
+                    sendResponse(res, resp, connection, 500);
                 }
                 else {
                     if(rows[0] !== undefined) {
@@ -216,35 +216,31 @@ app.post('/loginUser', function (req, res) {
                             if (err) {
                                 resp.result = "failed";
                                 resp.message = "internal error";
+                                sendError(res, resp, connection);
                             }
                             else{
                                 if(result) {
                                     resp.result = "success";
-                                    resp.message = "login successfull";
+                                    resp.message = "login_successfull";
                                     resp.userid = rows[0].user_id;
                                 }
                                 else{
                                     resp.result = "success";
-                                    resp.message = "password wrong";
+                                    resp.message = "password_wrong";
                                 }
+                                sendResponse(res, resp, connection, 200);
                             }
-                            sendResponse(res, resp, connection);
                         });
                     }
                     else{
                         resp.result = "success";
-                        resp.message = "user not found";
-                        sendResponse(res, resp, connection);
+                        resp.message = "user_not_found";
+                        sendResponse(res, resp, connection, 200);
                     }
                 }
             });
         }
     });
-});
-
-app.get('/updateSchedule', function (req, res, next) {
-    updateSchedule();
-    res.end("OK");
 });
 
 function updateSchedule() {
@@ -486,14 +482,30 @@ function updateSuperBowlWinner(game) {
     }
 }
 
-app.post('/getData', function (req, res, next) {
-    calculateRanking(res, req.body.userId);
+app.post('/getData', function (req, res){
+    var data = {
+        "ranking" : "",
+        "predictionsForWeeks": "",
+        "predictionBeforeSeason": "",
+        "standings": ""
+    };
+
+    var resp = {
+        "result": "",
+        "message": "",
+        "data" : data
+    };
+
+    calculateRanking(res, resp, req.body.userId);
 });
 
-function calculateRanking(res, uuid){
+function calculateRanking(res, resp, uuid){
     pool.getConnection(function (err, connection) {
         if (err) {
             winston.info("error in database connection");
+            resp.result = "failed";
+            resp.message = err.message;
+            sendResponse(resp, res, connection, 500);
         }
         else {
             var sql = "SELECT user_name, user_id FROM user WHERE user_id <> 3;";
@@ -501,6 +513,9 @@ function calculateRanking(res, uuid){
                 if (err) {
                     winston.info("error in database query insertNewGame");
                     winston.info(err.message);
+                    resp.result = "failed";
+                    resp.message = err.message;
+                    sendResponse(resp, res, connection, 500);
                 }
                 else{
                     if(rows !== undefined) {
@@ -513,7 +528,8 @@ function calculateRanking(res, uuid){
                                 rankingList = rankingList.sort(function (a, b) {
                                     return b.points - a.points;
                                 });
-                                getPredictions(rankingList, res, uuid)
+                                resp.data.ranking = rankingList;
+                                getPredictions(resp, res, connection, uuid);
                             }
                             else{
                                 var user_name = rows[i].user_name;
@@ -531,6 +547,9 @@ function calculateRanking(res, uuid){
                                     if (err) {
                                         winston.info("error in database query insertNewGame");
                                         winston.info(err.message);
+                                        resp.result = "failed";
+                                        resp.message = err.message;
+                                        sendResponse(resp, res, connection, 500);
                                     }
                                     else {
                                         if (rows2 !== undefined) {
@@ -554,6 +573,9 @@ function calculateRanking(res, uuid){
                                                                     if (err) {
                                                                         winston.info("error in database query insertNewGame");
                                                                         winston.info(err.message);
+                                                                        resp.result = "failed";
+                                                                        resp.message = err.message;
+                                                                        sendResponse(resp, res, connection, 500);
                                                                     }
                                                                     else{
                                                                         if(result!==undefined){
@@ -580,10 +602,11 @@ function calculateRanking(res, uuid){
                                                                             if(userRow.best_defense !== null && defaultRow.best_defense !== null && userRow.best_defense === defaultRow.best_defense){
                                                                                 score += 2;
                                                                             }
+
+                                                                            rankingList.push({"name": user_name, "userid" : user_id, "points": score});
                                                                         }
+                                                                        calculateForEveryUser(rankingList);
                                                                     }
-                                                                    rankingList.push({"name": user_name, "userid" : user_id, "points": score});
-                                                                    calculateForEveryUser(rankingList);
                                                                 });
                                                     })();
                                                 }
@@ -599,13 +622,18 @@ function calculateRanking(res, uuid){
 
                                             })(score);
                                         }
+                                        else{
+                                            resp.data.ranking = [];
+                                            getPredictions(resp, res, connection, uuid);
+                                        }
                                     }
                                 });
                             }
                         })(rankingList);
                     }
                     else{
-                        connection.release();
+                        resp.data.ranking = [];
+                        getPredictions(resp, res, connection, uuid);
                     }
                 }
             });
@@ -613,181 +641,202 @@ function calculateRanking(res, uuid){
     });
 }
 
-function getPredictions(rankingList, res, uuid){
-    pool.getConnection(function (err, connection) {
+function getPredictions(resp, res, connection, uuid){
+    var sql = "SELECT predictions.game_id as game_id, predictions.predicted as predicted, predictions.home_team_predicted as home_team_predicted, games.game_finished as game_finished, games.home_team_score as home_team_score, games.away_team_score as away_team_score, DATE_FORMAT(games.game_datetime, \"%Y-%m-%d %T\") as game_datetime, games.season_type as season_type, games.week as week, teams_home.team_prefix as home_team_prefix, teams_away.team_prefix as away_team_prefix " +
+        "FROM predictions " +
+        "RIGHT JOIN games " +
+        "ON predictions.game_id = games.game_id " +
+        "Right JOIN teams as teams_home " +
+        "ON games.home_team_id = teams_home.team_id " +
+        "RIGHT JOIN teams as teams_away " +
+        "ON games.away_team_id = teams_away.team_id " +
+        "WHERE predictions.user_id = ? " +
+        "ORDER BY game_id;";
+    var inserts = [uuid];
+    sql = mysql.format(sql, inserts);
+    connection.query(sql, function (err, rows) {
         if (err) {
-            winston.info("error in database connection");
+            winston.info("error in database query insertNewGame");
+            winston.info(err.message);
+            resp.result = "failed";
+            resp.message = err.message;
+            sendResponse(resp, res, connection, 500);
         }
         else {
-            var sql = "SELECT predictions.game_id as game_id, predictions.predicted as predicted, predictions.home_team_predicted as home_team_predicted, games.game_finished as game_finished, games.home_team_score as home_team_score, games.away_team_score as away_team_score, DATE_FORMAT(games.game_datetime, \"%Y-%m-%d %T\") as game_datetime, games.season_type as season_type, games.week as week, teams_home.team_prefix as home_team_prefix, teams_away.team_prefix as away_team_prefix " +
-            "FROM predictions " +
-            "RIGHT JOIN games " +
-            "ON predictions.game_id = games.game_id " +
-            "Right JOIN teams as teams_home " +
-            "ON games.home_team_id = teams_home.team_id " +
-            "RIGHT JOIN teams as teams_away " +
-            "ON games.away_team_id = teams_away.team_id " +
-            "WHERE predictions.user_id = ? " +
-            "ORDER BY game_id;";
-            var inserts = [uuid];
-            sql = mysql.format(sql, inserts);
-            connection.query(sql, function (err, rows) {
-                if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
-                }
-                else{
-                    if(rows!==undefined){
-                        var predictionsList = [];
-                        for(var i=0; i<rows.length; i++){
-                            var actualRow = rows[i];
-                            var predictionListItem = getPredictionListItem(predictionsList, actualRow.week, actualRow.season_type);
-                            if(predictionListItem.length === 0){
-                                var tempItem = {"week": actualRow.week, "type": actualRow.season_type, "gamePredictions": []};
-                                tempItem.gamePredictions.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
-                                predictionsList.push(tempItem);
-                            }
-                            else{
-                                predictionListItem[0].gamePredictions.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
-                            }
-                        }
-                        getStandings(rankingList, predictionsList, res, uuid);
+            if (rows !== undefined) {
+                var predictionsList = [];
+                for (var i = 0; i < rows.length; i++) {
+                    var actualRow = rows[i];
+                    var predictionListItem = getPredictionListItem(predictionsList, actualRow.week, actualRow.season_type);
+                    if (predictionListItem.length === 0) {
+                        var tempItem = {"week": actualRow.week, "type": actualRow.season_type, "gamePredictions": []};
+                        tempItem.gamePredictions.push({
+                            "gameid": actualRow.game_id,
+                            "gamedatetime": actualRow.game_datetime,
+                            "hometeam": actualRow.home_team_prefix,
+                            "awayteam": actualRow.away_team_prefix,
+                            "homepoints": actualRow.home_team_score,
+                            "awaypoints": actualRow.away_team_score,
+                            "isfinished": actualRow.game_finished,
+                            "haspredicted": actualRow.predicted,
+                            "predictedhometeam": actualRow.home_team_predicted
+                        });
+                        predictionsList.push(tempItem);
+                    }
+                    else {
+                        predictionListItem[0].gamePredictions.push({
+                            "gameid": actualRow.game_id,
+                            "gamedatetime": actualRow.game_datetime,
+                            "hometeam": actualRow.home_team_prefix,
+                            "awayteam": actualRow.away_team_prefix,
+                            "homepoints": actualRow.home_team_score,
+                            "awaypoints": actualRow.away_team_score,
+                            "isfinished": actualRow.game_finished,
+                            "haspredicted": actualRow.predicted,
+                            "predictedhometeam": actualRow.home_team_predicted
+                        });
                     }
                 }
-                connection.release();
-            });
-        }
-    });
-}
-
-function getStandings(rankingList, predictionsList, res, uuid){
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            winston.info("error in database connection");
-        }
-        else {
-            var sql = "SELECT teams.team_prefix as team_prefix, standings.prefix as clinching, standings.games as games, standings.score as score, standings.div_games as div_games " +
-                "FROM standings " +
-                "RIGHT JOIN teams " +
-                "ON standings.team_id = teams.team_id " +
-                "ORDER BY standings.standing_id;";
-            connection.query(sql, function (err, rows) {
-                if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
-                }
-                else{
-                    if(rows!==undefined){
-                        var standingsList = [];
-                        for(var i=0; i<rows.length; i++){
-                            var actualRow = rows[i];
-                            var tempItem = {"teamprefix": actualRow.team_prefix, "clinching": actualRow.clinching, "games": actualRow.games, "score": actualRow.score, "divgames": actualRow.div_games};
-                            standingsList.push(tempItem);
-                        }
-                        getPredictionPlus(rankingList, predictionsList, standingsList, res, uuid);
-                    }
-                    else{
-                        getPredictionPlus(rankingList, predictionsList, [], res, uuid);
-                    }
-                }
-                connection.release();
-            });
-        }
-    });
-}
-
-function getPredictionPlus(rankingList, predictionsList, standingsList, res, uuid){
-    getFirstGameDate(function (gameDate) {
-        pool.getConnection(function (err, connection) {
-            if (err) {
-                winston.info("error in database connection");
+                resp.data.predictionsForWeeks = predictionsList;
+                getStandings(resp, res, connection, uuid);
             }
             else {
-                var sql = "SELECT predictions_plus.user_id as userid, superbowl_team.team_prefix as superbowl, afc_winner_team.team_prefix as afc_winner, nfc_winner_team.team_prefix as nfc_winner, best_offense_team.team_prefix as best_offense, best_defense_team.team_prefix as best_defense " +
-                            "FROM predictions_plus " +
-                            "LEFT OUTER JOIN teams as superbowl_team ON superbowl = superbowl_team.team_id " +
-                            "LEFT OUTER JOIN teams as afc_winner_team ON afc_winner = afc_winner_team.team_id " +
-                            "LEFT OUTER JOIN teams as nfc_winner_team ON nfc_winner = nfc_winner_team.team_id " +
-                            "LEFT OUTER JOIN teams as best_offense_team ON best_offense = best_offense_team.team_id " +
-                            "LEFT OUTER JOIN teams as best_defense_team ON best_defense = best_defense_team.team_id " +
-                            "WHERE predictions_plus.user_id = ? OR predictions_plus.user_id = 3;";
-                var inserts = [uuid];
-                sql = mysql.format(sql, inserts);
-                connection.query(sql, function (err, rows) {
-                    if (err) {
-                        winston.info("error in database query insertNewGame");
-                        winston.info(err.message);
-                    }
-                    else{
-                        if(rows!==undefined){
-                            var predictionsPlus = [];
-                            if(rows[0].userid == 3){
-                                defaultRow = rows[0];
-                                userRow = rows[1];
-                            } else {
-                                defaultRow = rows[1];
-                                userRow = rows[0];
-                            }
+                resp.data.predictionsForWeeks = [];
+                getStandings(resp, res, connection, uuid);
+            }
+        }
+    });
+}
 
-                            predictionsPlus.push({"user": "default", "superbowl": defaultRow.superbowl === null ? "" : defaultRow.superbowl, "afcwinnerteam": defaultRow.afc_winner === null ? "" : defaultRow.afc_winner, "nfcwinnerteam": defaultRow.nfc_winner === null ? "" : defaultRow.nfc_winner, "bestoffenseteam": defaultRow.best_offense === null ? "" : defaultRow.best_offense, "bestdefenseteam": defaultRow.best_defense === null ? "" : defaultRow.best_defense, "firstgamedate": gameDate});
-                            predictionsPlus.push({"user": "user", "superbowl": userRow.superbowl === null ? "" : userRow.superbowl, "afcwinnerteam": userRow.afc_winner === null ? "" : userRow.afc_winner, "nfcwinnerteam": userRow.nfc_winner === null ? "" : userRow.nfc_winner, "bestoffenseteam": userRow.best_offense === null ? "" : userRow.best_offense, "bestdefenseteam": userRow.best_defense === null ? "" : userRow.best_defense, "firstgamedate": gameDate});
+function getStandings(resp, res, connection, uuid){
+    var sql = "SELECT teams.team_prefix as team_prefix, standings.prefix as clinching, standings.games as games, standings.score as score, standings.div_games as div_games " +
+        "FROM standings " +
+        "RIGHT JOIN teams " +
+        "ON standings.team_id = teams.team_id " +
+        "ORDER BY standings.standing_id;";
+    connection.query(sql, function (err, rows) {
+        if (err) {
+            winston.info("error in database query insertNewGame");
+            winston.info(err.message);
+            resp.result = "failed";
+            resp.message = err.message;
+            sendResponse(resp, res, connection, 500);
+        }
+        else {
+            if (rows !== undefined) {
+                var standingsList = [];
+                for (var i = 0; i < rows.length; i++) {
+                    var actualRow = rows[i];
+                    var tempItem = {
+                        "teamprefix": actualRow.team_prefix,
+                        "clinching": actualRow.clinching,
+                        "games": actualRow.games,
+                        "score": actualRow.score,
+                        "divgames": actualRow.div_games
+                    };
+                    standingsList.push(tempItem);
+                }
+                resp.data.standings = standingsList;
+                getPredictionPlus(resp, res, connection, uuid);
+            }
+            else {
+                resp.data.standings = [];
+                getPredictionPlus(resp, res, connection, uuid);
+            }
+        }
+    });
+}
 
-                            sendDataResponse(rankingList, predictionsList, standingsList, predictionsPlus, res);
-                        }
+function getPredictionPlus(resp, res, connection, uuid){
+    getFirstGameDate(connection, function (gameDate) {
+        var sql = "SELECT predictions_plus.user_id as userid, superbowl_team.team_prefix as superbowl, afc_winner_team.team_prefix as afc_winner, nfc_winner_team.team_prefix as nfc_winner, best_offense_team.team_prefix as best_offense, best_defense_team.team_prefix as best_defense " +
+            "FROM predictions_plus " +
+            "LEFT OUTER JOIN teams as superbowl_team ON superbowl = superbowl_team.team_id " +
+            "LEFT OUTER JOIN teams as afc_winner_team ON afc_winner = afc_winner_team.team_id " +
+            "LEFT OUTER JOIN teams as nfc_winner_team ON nfc_winner = nfc_winner_team.team_id " +
+            "LEFT OUTER JOIN teams as best_offense_team ON best_offense = best_offense_team.team_id " +
+            "LEFT OUTER JOIN teams as best_defense_team ON best_defense = best_defense_team.team_id " +
+            "WHERE predictions_plus.user_id = ? OR predictions_plus.user_id = 3;";
+        var inserts = [uuid];
+        sql = mysql.format(sql, inserts);
+        connection.query(sql, function (err, rows) {
+            if (err) {
+                winston.info("error in database query insertNewGame");
+                winston.info(err.message);
+                resp.result = "failed";
+                resp.message = err.message;
+                sendResponse(resp, res, connection, 500);
+            }
+            else {
+                if (rows !== undefined) {
+                    var predictionsPlus = [];
+                    if (rows[0].userid == 3) {
+                        defaultRow = rows[0];
+                        userRow = rows[1];
+                    } else {
+                        defaultRow = rows[1];
+                        userRow = rows[0];
                     }
-                    connection.release();
-                });
+
+                    predictionsPlus.push({
+                        "user": "default",
+                        "superbowl": defaultRow.superbowl === null ? "" : defaultRow.superbowl,
+                        "afcwinnerteam": defaultRow.afc_winner === null ? "" : defaultRow.afc_winner,
+                        "nfcwinnerteam": defaultRow.nfc_winner === null ? "" : defaultRow.nfc_winner,
+                        "bestoffenseteam": defaultRow.best_offense === null ? "" : defaultRow.best_offense,
+                        "bestdefenseteam": defaultRow.best_defense === null ? "" : defaultRow.best_defense,
+                        "firstgamedate": gameDate
+                    });
+                    predictionsPlus.push({
+                        "user": "user",
+                        "superbowl": userRow.superbowl === null ? "" : userRow.superbowl,
+                        "afcwinnerteam": userRow.afc_winner === null ? "" : userRow.afc_winner,
+                        "nfcwinnerteam": userRow.nfc_winner === null ? "" : userRow.nfc_winner,
+                        "bestoffenseteam": userRow.best_offense === null ? "" : userRow.best_offense,
+                        "bestdefenseteam": userRow.best_defense === null ? "" : userRow.best_defense,
+                        "firstgamedate": gameDate
+                    });
+
+                    resp.result = "success";
+                    resp.message = "data_full";
+                    resp.data.predictionBeforeSeason = predictionsPlus;
+                    sendResponse(res, resp, connection, 200);
+                }
+                else{
+                    resp.result = "success";
+                    resp.message = "data_full";
+                    resp.data.predictionBeforeSeason = [];
+                    sendResponse(res, resp, connection, 200);
+                }
             }
         });
     })
 }
 
-function getFirstGameDate(callback) {
-    pool.getConnection(function (err, connection) {
+function getFirstGameDate(connection, callback) {
+    var sql = "SELECT DATE_FORMAT(game_datetime, \"%Y-%m-%d %T\") as game_datetime from games where week = 1 AND season_type = \"REG\" ORDER BY game_datetime";
+    connection.query(sql, function (err, rows) {
         if (err) {
-            winston.info("error in database connection");
+            winston.info("error in database query insertNewGame");
+            winston.info(err.message);
+            callback("");
         }
         else {
-            var sql = "SELECT DATE_FORMAT(game_datetime, \"%Y-%m-%d %T\") as game_datetime from games where week = 1 AND season_type = \"REG\" ORDER BY game_datetime";
-            connection.query(sql, function (err, rows) {
-                if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
-                }
-                else{
-                    if(rows!==undefined){
-                        var gameDate = rows[0].game_datetime;
-                        callback(gameDate);
-                    }
-                    else {
-                        callback("");
-                    }
-                }
-                connection.release();
-            });
+            if (rows !== undefined) {
+                var gameDate = rows[0].game_datetime;
+                callback(gameDate);
+            }
+            else {
+                callback("");
+            }
         }
     });
 }
 
-function sendDataResponse(rankingList, predictionsList, standingsList, predictionsPlus, res){
-    var data = {"ranking" : rankingList,
-        "predictionsForWeeks": predictionsList,
-        "predictionBeforeSeason": predictionsPlus,
-        "standings": standingsList};
-
-    var resp = {
-        "result": "success",
-        "message": "data successfull",
-        "data" : data
-    };
-
-    sendResponse(res, resp, null);
-}
-
-function sendResponse(res, resp, connection) {
-    res.end(JSON.stringify(resp));
+function sendResponse(res, resp, connection, statusCode) {
+    res.status(statusCode).end(JSON.stringify(resp));
     if(connection!==null) {
-        connection.release();
+        connection.destroy();
     }
 }
 
@@ -812,7 +861,7 @@ app.post('/updatePrediction', function (req, res, next) {
             winston.info("error in database connection");
             resp.result = "failed";
             resp.message = err.message;
-            sendResponse(res, resp, connection);
+            sendResponse(res, resp, connection, 500);
         }
         else {
             var sql;
@@ -832,19 +881,19 @@ app.post('/updatePrediction', function (req, res, next) {
                     winston.info(err.message);
                     resp.result = "failed";
                     resp.message = err.message;
-                    sendResponse(res, resp, connection);
+                    sendResponse(res, resp, connection, 500);
                 }
                 else{
                     resp.result = "success";
-                    resp.message = "prediction updated";
-                    sendResponse(res, resp, connection);
+                    resp.message = "prediction_updated";
+                    sendResponse(res, resp, connection, 200);
                 }
             });
         }
     });
 });
 
-app.post('/getAllPredictionsForGame', function (req, res, next) {
+app.post('/getAllPredictionsForGame', function (req, res) {
     var resp = {
         "result": "",
         "message": "",
@@ -855,40 +904,49 @@ app.post('/getAllPredictionsForGame', function (req, res, next) {
             winston.info("error in database connection");
             resp.result = "failed";
             resp.message = err.message;
-            sendResponse(res, resp, connection);
+            sendResponse(res, resp, connection, 500);
         }
         else {
-                var sql = "SELECT predictions.predicted as predicted, predictions.home_team_predicted as home_team_predicted, predictions.user_id as user_id, user.user_name as user_name " +
-                    "FROM predictions " +
-                    "RIGHT JOIN user ON predictions.user_id = user.user_id " +
-                    "WHERE predictions.game_id = ? " +
-                    "ORDER BY user.user_name ASC";
-                var inserts = [req.body.gameid];
+            var sql = "SELECT predictions.predicted as predicted, predictions.home_team_predicted as home_team_predicted, predictions.user_id as user_id, user.user_name as user_name " +
+                "FROM predictions " +
+                "RIGHT JOIN user ON predictions.user_id = user.user_id " +
+                "WHERE predictions.game_id = ? " +
+                "ORDER BY user.user_name ASC";
+            var inserts = [req.body.gameid];
+            sql = mysql.format(sql, inserts);
+            connection.query(sql, function (err, rows) {
+                if (err) {
+                    winston.info("error in database query insertNewGame");
+                    winston.info(err.message);
+                    resp.result = "failed";
+                    resp.message = err.message;
+                    sendResponse(res, resp, connection, 500);
+                }
+                else {
+                    if (rows !== undefined) {
+                        var predictionsList = [];
+                        for (var i = 0; i < rows.length; i++) {
+                            var actualRow = rows[i];
+                            var tempObject = {
+                                "predicted": actualRow.predicted,
+                                "hometeampredicted": actualRow.home_team_predicted,
+                                "userid": actualRow.user_id,
+                                "username": actualRow.user_name
+                            };
+                            predictionsList.push(tempObject);
+                        }
 
-                sql = mysql.format(sql, inserts);
-                connection.query(sql, function (err, rows) {
-                    if (err) {
-                        winston.info("error in database query insertNewGame");
-                        winston.info(err.message);
-                        resp.result = "failed";
-                        resp.message = err.message;
-                        sendResponse(res, resp, connection);
+                        resp.result = "success";
+                        resp.predictionlist = predictionsList;
+                        sendResponse(res, resp, connection, 200);
                     }
                     else{
-                        if(rows!==undefined){
-                            var predictionsList = [];
-                            for(var i=0; i<rows.length; i++){
-                                var actualRow = rows[i];
-                                var tempObject = {"predicted": actualRow.predicted, "hometeampredicted": actualRow.home_team_predicted, "userid": actualRow.user_id, "username": actualRow.user_name};
-                                predictionsList.push(tempObject);
-                            }
-
-                            resp.result = "success";
-                            resp.predictionlist = predictionsList;
-                            sendResponse(res, resp, connection);
-                        }
+                        resp.result = "success";
+                        resp.predictionlist = [];
+                        sendResponse(res, resp, connection, 200);
                     }
-                });
+                }
+            });
         }
     });
 });
@@ -962,6 +1020,7 @@ function insertIntoStandingsTable(standings) {
                 if (err) {
                     winston.info("error in database query insertNewGame");
                     winston.info(err.message);
+                    connection.destroy();
                 }
                 else {
                     var i = -1;
@@ -976,6 +1035,7 @@ function insertIntoStandingsTable(standings) {
                                 if (err) {
                                     winston.info("error in database query insertNewGame");
                                     winston.info(err.message);
+                                    connection.destroy();
                                 }
                                 else {
                                     insertNewStanding();
@@ -983,7 +1043,7 @@ function insertIntoStandingsTable(standings) {
                             });
                         }
                         else {
-                            connection.release();
+                            connection.destroy();
                         }
                     })();
                 }
@@ -1019,7 +1079,7 @@ app.post('/getAllPredictionsPlusForState', function (req, res, next) {
             winston.info("error in database connection");
             resp.result = "failed";
             resp.message = err.message;
-            sendResponse(res, resp, connection);
+            sendResponse(res, resp, connection, 500);
         }
         else {
             var sql = "SELECT user.user_name as username, user.user_id as userid, teams.team_prefix as teamprefix " +
@@ -1029,7 +1089,6 @@ app.post('/getAllPredictionsPlusForState', function (req, res, next) {
                 "WHERE predictions_plus.user_id <> 3 " +
                 "ORDER BY user.user_name ASC";
             var inserts = [req.body.predictionType];
-
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, rows) {
                 if (err) {
@@ -1037,7 +1096,7 @@ app.post('/getAllPredictionsPlusForState', function (req, res, next) {
                     winston.info(err.message);
                     resp.result = "failed";
                     resp.message = err.message;
-                    sendResponse(res, resp, connection);
+                    sendResponse(res, resp, connection, 500);
                 }
                 else{
                     if(rows!==undefined){
@@ -1050,7 +1109,12 @@ app.post('/getAllPredictionsPlusForState', function (req, res, next) {
 
                         resp.result = "success";
                         resp.predictionlist = predictionsList;
-                        sendResponse(res, resp, connection);
+                        sendResponse(res, resp, connection, 200);
+                    }
+                    else {
+                        resp.result = "success";
+                        resp.predictionlist = [];
+                        sendResponse(res, resp, connection, 200);
                     }
                 }
             });
@@ -1062,6 +1126,7 @@ function updatePredictionsPlusInDatabase(bestOffenseTeamName, bestDefenseTeamNam
     pool.getConnection(function (err, connection) {
         if (err) {
             winston.info("error in database connection");
+            connection.destroy();
         }
         else {
             var sql = sql = "UPDATE predictions_plus " +
@@ -1081,6 +1146,7 @@ function updatePredictionsPlusInDatabase(bestOffenseTeamName, bestDefenseTeamNam
                 else{
                     winston.info('Best offense and defence were updated');
                 }
+                connection.destroy();
             });
         }
     });
@@ -1096,7 +1162,7 @@ app.post('/updatePredictionPlus', function (req, res) {
             winston.info("error in database connection");
             resp.result = "failed";
             resp.message = err.message;
-            sendResponse(res, resp, connection);
+            sendResponse(res, resp, connection, 500);
         }
         else {
             var sql;
@@ -1118,18 +1184,18 @@ app.post('/updatePredictionPlus', function (req, res) {
                 inserts = [req.body.predictionType, req.body.userId];
             }
             sql = mysql.format(sql, inserts);
-            connection.query(sql, function (err, result) {
+            connection.query(sql, function (err) {
                 if (err) {
                     winston.info("error in database query insertNewGame");
                     winston.info(err.message);
                     resp.result = "failed";
                     resp.message = err.message;
-                    sendResponse(res, resp, connection);
+                    sendResponse(res, resp, connection, 500);
                 }
                 else{
                     resp.result = "success";
-                    resp.message = "predictionplus updated";
-                    sendResponse(res, resp, connection);
+                    resp.message = "predictionplus_updated";
+                    sendResponse(res, resp, connection, 200);
                 }
             });
         }
