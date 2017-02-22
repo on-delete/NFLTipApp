@@ -643,12 +643,12 @@ function getPredictions(rankingList, res, uuid){
                             var actualRow = rows[i];
                             var predictionListItem = getPredictionListItem(predictionsList, actualRow.week, actualRow.season_type);
                             if(predictionListItem.length === 0){
-                                var tempItem = {"week": actualRow.week, "type": actualRow.season_type, "games": []};
-                                tempItem.games.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
+                                var tempItem = {"week": actualRow.week, "type": actualRow.season_type, "gamePredictions": []};
+                                tempItem.gamePredictions.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
                                 predictionsList.push(tempItem);
                             }
                             else{
-                                predictionListItem[0].games.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
+                                predictionListItem[0].gamePredictions.push({"gameid": actualRow.game_id, "gamedatetime": actualRow.game_datetime, "hometeam": actualRow.home_team_prefix, "awayteam": actualRow.away_team_prefix, "homepoints": actualRow.home_team_score, "awaypoints": actualRow.away_team_score, "isfinished": actualRow.game_finished, "haspredicted": actualRow.predicted, "predictedhometeam": actualRow.home_team_predicted});
                             }
                         }
                         getStandings(rankingList, predictionsList, res, uuid);
