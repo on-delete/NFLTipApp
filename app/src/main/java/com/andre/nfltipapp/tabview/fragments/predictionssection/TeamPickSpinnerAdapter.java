@@ -2,6 +2,7 @@ package com.andre.nfltipapp.tabview.fragments.predictionssection;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,46 +17,47 @@ import com.andre.nfltipapp.tabview.fragments.predictionssection.model.TeamInfoSp
 
 import java.util.ArrayList;
 
-/**
- * Created by Andre on 20.02.2017.
- */
-
-public class TeamPickSpinnerAdapter extends ArrayAdapter<TeamInfoSpinnerObject> {
+class TeamPickSpinnerAdapter extends ArrayAdapter<TeamInfoSpinnerObject> {
 
     private ArrayList<TeamInfoSpinnerObject> objects;
 
-    public TeamPickSpinnerAdapter(Context context, int resource, ArrayList<TeamInfoSpinnerObject> objects) {
+    TeamPickSpinnerAdapter(Context context, int resource, ArrayList<TeamInfoSpinnerObject> objects) {
         super(context, resource, objects);
 
         this.objects = objects;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater layoutInflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View subView = layoutInflater.inflate(R.layout.spinner_item, parent, false);
+    @NonNull
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        if(convertView==null) {
+            LayoutInflater layoutInflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.spinner_item, parent, false);
+        }
 
-        TextView textView = (TextView) subView.findViewById(R.id.text_name);
-        textView.setText(objects.get(position).getTeamName());
+        TextView tvTeamName = (TextView) convertView.findViewById(R.id.text_name);
+        tvTeamName.setText(objects.get(position).getTeamName());
 
-        return subView;
+        return convertView;
     }
 
     @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater layoutInflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View subView = layoutInflater.inflate(R.layout.custom_spinner_dropwdown_view, parent, false);
-
-        LinearLayout background = (LinearLayout) subView.findViewById(R.id.team_background);
-        TextView teamText = (TextView) subView.findViewById(R.id.team_name);
-        ImageView teamIcon = (ImageView) subView.findViewById(R.id.team_icon);
-
-        if(position!=0 && position < objects.size()){
-            background.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(objects.get(position).getTeamPrefix()).getTeamColor()));
-            teamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(objects.get(position).getTeamPrefix()).getTeamIcon());
-            teamText.setText(objects.get(position).getTeamName());
+    public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
+        if(convertView==null) {
+            LayoutInflater layoutInflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = layoutInflater.inflate(R.layout.custom_spinner_dropwdown_view, parent, false);
         }
 
-        return subView;
+        LinearLayout llTeamBackground = (LinearLayout) convertView.findViewById(R.id.team_background);
+        TextView tvTeamName = (TextView) convertView.findViewById(R.id.team_name);
+        ImageView ivTeamIcon = (ImageView) convertView.findViewById(R.id.team_icon);
+
+        if(position!=0 && position < objects.size()){
+            llTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(objects.get(position).getTeamPrefix()).getTeamColor()));
+            ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(objects.get(position).getTeamPrefix()).getTeamIcon());
+            tvTeamName.setText(objects.get(position).getTeamName());
+        }
+
+        return convertView;
     }
 }

@@ -1,10 +1,6 @@
 package com.andre.nfltipapp.tabview.fragments.predictionssection.model;
 
-import static android.R.attr.y;
-
-/**
- * Created by Andre on 20.02.2017.
- */
+import android.support.annotation.NonNull;
 
 public class TeamInfoSpinnerObject implements Comparable<TeamInfoSpinnerObject>{
 
@@ -25,7 +21,7 @@ public class TeamInfoSpinnerObject implements Comparable<TeamInfoSpinnerObject>{
     }
 
     @Override
-    public int compareTo(TeamInfoSpinnerObject o) {
+    public int compareTo(@NonNull TeamInfoSpinnerObject o) {
         return teamName.compareTo(o.teamName);
     }
 

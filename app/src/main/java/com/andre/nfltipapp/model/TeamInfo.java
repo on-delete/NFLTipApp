@@ -1,9 +1,5 @@
 package com.andre.nfltipapp.model;
 
-/**
- * Created by Andre on 15.01.2017.
- */
-
 public class TeamInfo {
 
     private String teamCity;

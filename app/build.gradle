@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 apply plugin: 'com.android.application'
 
 android {
@@ -5,7 +7,7 @@ android {
         config {
             def credsFilePath = file("../../keystore/credentials.json").toString()
             def credsFile = new File(credsFilePath, "").getText('UTF-8')
-            def json = new groovy.json.JsonSlurper().parseText(credsFile)
+            def json = new JsonSlurper().parseText(credsFile)
             keyAlias json.android.keyAlias
             keyPassword json.android.keyPassword
             storeFile file(json.android.storeFile)
@@ -36,8 +38,8 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support:design:25.1.1'
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:design:25.2.0'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.google.code.gson:gson:2.4'
@@ -47,5 +49,5 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    androidTestCompile 'com.android.support:support-annotations:25.1.1'
+    androidTestCompile 'com.android.support:support-annotations:25.2.0'
 }

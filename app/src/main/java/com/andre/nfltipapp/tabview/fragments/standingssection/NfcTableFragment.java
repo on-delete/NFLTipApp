@@ -17,10 +17,6 @@ import com.andre.nfltipapp.tabview.fragments.standingssection.model.Standing;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Andre on 22.01.2017.
- */
-
 public class NfcTableFragment extends Fragment {
 
     @Override

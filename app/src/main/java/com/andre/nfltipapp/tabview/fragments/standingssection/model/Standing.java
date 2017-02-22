@@ -3,9 +3,6 @@ package com.andre.nfltipapp.tabview.fragments.standingssection.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Andre on 22.01.2017.
- */
 public class Standing implements Parcelable {
 
     private String teamprefix;
@@ -14,7 +11,7 @@ public class Standing implements Parcelable {
     private String score;
     private String divgames;
 
-    public Standing(Parcel parcel){
+    private Standing(Parcel parcel){
         teamprefix = parcel.readString();
         clinching = parcel.readString();
         games = parcel.readString();

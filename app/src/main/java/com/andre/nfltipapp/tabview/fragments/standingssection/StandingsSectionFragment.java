@@ -15,10 +15,6 @@ import com.andre.nfltipapp.tabview.fragments.standingssection.model.Standing;
 
 import java.util.ArrayList;
 
-/**
- * Created by Andre on 30.01.2017.
- */
-
 public class StandingsSectionFragment extends Fragment {
 
     private Button btAfc;
@@ -57,7 +53,7 @@ public class StandingsSectionFragment extends Fragment {
     }
 
     private void changeTableToAfc(ArrayList<Standing> afcStanding){
-        btAfc.setBackgroundColor(Color.parseColor(Constants.AFC_BACKGROUND_COLOR));
+        btAfc.setBackgroundColor(Color.parseColor("#B50023"));
         btAfc.setTextColor(Color.parseColor(Constants.TABLE_SELECTED_TEXT_COLOR));
         btNfc.setBackgroundColor(Color.parseColor(Constants.DEFAULT_BACKGROUND_COLOR));
         btNfc.setTextColor(Color.parseColor(Constants.TABLE_DEFAULT_TEXT_COLOR));
@@ -73,7 +69,7 @@ public class StandingsSectionFragment extends Fragment {
     private void changeTableToNfc(ArrayList<Standing> nfcStanding){
         btAfc.setBackgroundColor(Color.parseColor(Constants.DEFAULT_BACKGROUND_COLOR));
         btAfc.setTextColor(Color.parseColor(Constants.TABLE_DEFAULT_TEXT_COLOR));
-        btNfc.setBackgroundColor(Color.parseColor(Constants.NFC_BACKGROUND_COLOR));
+        btNfc.setBackgroundColor(Color.parseColor("#004079"));
         btNfc.setTextColor(Color.parseColor(Constants.TABLE_SELECTED_TEXT_COLOR));
 
         Bundle bundle = new Bundle();

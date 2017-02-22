@@ -10,10 +10,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/**
- * Created by Andre on 06.01.2017.
- */
-
 public class Utils {
 
     @Nullable

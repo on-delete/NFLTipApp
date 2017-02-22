@@ -1,5 +1,6 @@
 package com.andre.nfltipapp.tabview.fragments;
 
+import android.annotation.SuppressLint;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,10 +15,6 @@ import com.andre.nfltipapp.tabview.fragments.statisticssection.model.Predictions
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Created by Andre on 16.02.2017.
- */
 
 public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
 
@@ -91,7 +88,7 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
     }
 
     private View initView (PredictionsBeforeSeasonStatistic prediction){
-        View rowView = getLayoutInflater().inflate(R.layout.statistic_for_plus_table_row, null);
+        @SuppressLint("InflateParams") View rowView = getLayoutInflater().inflate(R.layout.statistic_for_plus_table_row, null);
 
         TextView tvName = (TextView) rowView.findViewById(R.id.player_name_statistic);
         tvName.setText(prediction.getUsername());

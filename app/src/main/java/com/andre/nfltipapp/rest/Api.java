@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
-import com.andre.nfltipapp.Utils;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -22,10 +21,6 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Andre on 21.02.2017.
- */
-
 public class Api {
 
     private static Api instance = null;
@@ -40,18 +35,18 @@ public class Api {
     }
 
     private Api(Context context) {
-        buildRetrofit(Constants.BASE_URL, context);
+        buildRetrofit(context);
     }
 
     public ApiInterface getApiInterface(){
         return this.apiInterface;
     }
 
-    private void buildRetrofit(String baseUrl, Context context) {
+    private void buildRetrofit(Context context) {
         OkHttpClient httpClient = getHttpClient(context);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient)
                 .build();
@@ -59,7 +54,6 @@ public class Api {
         apiInterface = retrofit.create(ApiInterface.class);
     }
 
-    @Nullable
     private OkHttpClient getHttpClient(Context context) {
 
         SSLContext sslContext;
@@ -81,7 +75,9 @@ public class Api {
             sslContext.init(null, trustManagers, null);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new OkHttpClient.Builder()
+                    .connectTimeout(2, TimeUnit.SECONDS)
+                    .build();
         }
 
         return new OkHttpClient.Builder()

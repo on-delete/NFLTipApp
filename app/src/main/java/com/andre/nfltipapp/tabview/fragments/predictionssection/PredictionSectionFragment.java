@@ -18,10 +18,6 @@ import com.andre.nfltipapp.tabview.fragments.model.PredictionBeforeSeason;
 
 import java.util.List;
 
-/**
- * Created by Andre on 30.01.2017.
- */
-
 public class PredictionSectionFragment extends Fragment {
 
     private int lastExpandedPosition = -1;

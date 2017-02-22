@@ -3,9 +3,6 @@ package com.andre.nfltipapp.tabview.fragments.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Andre on 04.02.2017.
- */
 public class PredictionBeforeSeason implements Parcelable{
 
     private String user;
@@ -16,7 +13,7 @@ public class PredictionBeforeSeason implements Parcelable{
     private String bestdefenseteam;
     private String firstgamedate;
 
-    public PredictionBeforeSeason(Parcel parcel){
+    private PredictionBeforeSeason(Parcel parcel){
         user = parcel.readString();
         superbowl = parcel.readString();
         afcwinnerteam = parcel.readString();
@@ -30,7 +27,7 @@ public class PredictionBeforeSeason implements Parcelable{
         return user;
     }
 
-    public String getSuperbowl() {
+    public String getSuperbowlTeam() {
         return superbowl;
     }
 

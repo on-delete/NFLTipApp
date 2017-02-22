@@ -1,9 +1,5 @@
 package com.andre.nfltipapp.tabview.fragments.predictionssection.model;
 
-/**
- * Created by Andre on 06.01.2017.
- */
-
 public class UpdateResponse {
 
     private String result;

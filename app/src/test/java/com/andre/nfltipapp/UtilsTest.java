@@ -2,14 +2,11 @@ package com.andre.nfltipapp;
 
 import org.junit.Test;
 
+import java.io.CharArrayReader;
 import java.util.Calendar;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-/**
- * Created by Andre on 21.02.2017.
- */
 
 public class UtilsTest {
 

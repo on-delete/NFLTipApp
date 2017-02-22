@@ -3,17 +3,13 @@ package com.andre.nfltipapp.tabview.fragments.statisticssection.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Andre on 16.02.2017.
- */
-
 public class PredictionsBeforeSeasonStatistic implements Parcelable{
 
     private String username;
     private String userid;
     private String teamprefix;
 
-    public PredictionsBeforeSeasonStatistic(Parcel parcel){
+    private PredictionsBeforeSeasonStatistic(Parcel parcel){
         username = parcel.readString();
         userid = parcel.readString();
         teamprefix = parcel.readString();

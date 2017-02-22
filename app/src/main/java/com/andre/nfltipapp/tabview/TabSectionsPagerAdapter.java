@@ -12,10 +12,6 @@ import com.andre.nfltipapp.tabview.fragments.RankingSectionFragment;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.StatisticsSectionFragment;
 import com.andre.nfltipapp.tabview.fragments.standingssection.StandingsSectionFragment;
 
-/**
- * Created by Andre on 15.01.2017.
- */
-
 public class TabSectionsPagerAdapter extends FragmentPagerAdapter {
     private String userId;
     private Bundle bundle = new Bundle();

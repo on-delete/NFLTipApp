@@ -3,9 +3,6 @@ package com.andre.nfltipapp.tabview.fragments.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Andre on 16.01.2017.
- */
 public class GamePredictionStatistic implements Parcelable{
 
     private int predicted;
@@ -13,7 +10,7 @@ public class GamePredictionStatistic implements Parcelable{
     private String userid;
     private String username;
 
-    public GamePredictionStatistic(Parcel parcel){
+    private GamePredictionStatistic(Parcel parcel){
         userid = parcel.readString();
         username = parcel.readString();
         predicted = parcel.readInt();

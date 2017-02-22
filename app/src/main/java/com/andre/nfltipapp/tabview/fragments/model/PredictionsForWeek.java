@@ -12,7 +12,7 @@ public class PredictionsForWeek implements Parcelable{
     private String type;
     private List<GamePrediction> gamePredictions;
 
-    public PredictionsForWeek(Parcel parcel){
+    private PredictionsForWeek(Parcel parcel){
         week = parcel.readString();
         type = parcel.readString();
         gamePredictions = new ArrayList<>();

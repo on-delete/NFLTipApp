@@ -86,7 +86,7 @@ public class RegisterFragment extends Fragment {
                 NameExistResponse resp = response.body();
                 progressBar.setVisibility(View.INVISIBLE);
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    if(resp.getMessage().equals(Constants.USERNAME_FREE)) {
+                    if(resp.getMessage().equals("username unused")) {
                         registerProcess(newUser);
                     }
                     else{

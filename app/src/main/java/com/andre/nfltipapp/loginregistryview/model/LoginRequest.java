@@ -1,9 +1,5 @@
 package com.andre.nfltipapp.loginregistryview.model;
 
-/**
- * Created by Andre on 21.02.2017.
- */
-
 public class LoginRequest {
 
     private String name;

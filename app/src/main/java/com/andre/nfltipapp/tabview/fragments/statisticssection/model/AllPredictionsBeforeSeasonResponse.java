@@ -2,10 +2,6 @@ package com.andre.nfltipapp.tabview.fragments.statisticssection.model;
 
 import java.util.ArrayList;
 
-/**
- * Created by Andre on 16.02.2017.
- */
-
 public class AllPredictionsBeforeSeasonResponse {
 
     private String result;

@@ -15,7 +15,7 @@ public class GamePrediction implements Parcelable{
     private int haspredicted;
     private int predictedhometeam;
 
-    public GamePrediction(Parcel parcel){
+    private GamePrediction(Parcel parcel){
         gameid = parcel.readString();
         gamedatetime = parcel.readString();
         hometeam = parcel.readString();

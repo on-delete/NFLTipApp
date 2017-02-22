@@ -18,7 +18,7 @@ public class Data implements Parcelable{
     private List<PredictionBeforeSeason> predictionBeforeSeason;
     private ArrayList<Standing> standings;
 
-    public Data(Parcel parcel){
+    private Data(Parcel parcel){
         ranking = new ArrayList<>();
         parcel.readTypedList(ranking, Ranking.CREATOR);
 

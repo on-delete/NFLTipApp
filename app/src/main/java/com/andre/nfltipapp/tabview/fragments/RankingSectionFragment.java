@@ -16,10 +16,6 @@ import com.andre.nfltipapp.tabview.fragments.model.Ranking;
 
 import java.util.List;
 
-/**
- * Created by Andre on 30.01.2017.
- */
-
 public class RankingSectionFragment extends Fragment {
 
     @Override

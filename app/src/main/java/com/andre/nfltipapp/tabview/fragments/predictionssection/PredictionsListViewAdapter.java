@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,40 +43,47 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-import static com.andre.nfltipapp.Constants.UPDATE_STATES;
+import static com.andre.nfltipapp.Constants.UPDATE_TYPE;
+import static com.andre.nfltipapp.Constants.PREDICTION_TYPE;
 
-public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
+class PredictionsListViewAdapter extends BaseExpandableListAdapter {
+
+    private ApiInterface apiInterface;
 
     private Activity activity;
-    private List<String> expandableListTitle = new ArrayList<>();
-    private HashMap<String, List<?>> expandableListDetail = new HashMap<>();
-    private String userId;
-    private ApiInterface apiInterface;
-    private List<?> child;
     private LayoutInflater layoutInflater;
+
+    private List<String> predictionListHeaders = new ArrayList<>();
+    private HashMap<String, List<?>> predictionListItems = new HashMap<>();
     private ArrayList<TeamInfoSpinnerObject> teamInfoList = new ArrayList<>();
     private ArrayList<String> teamPrefixList = new ArrayList<>();
 
+    private String userId;
     private int lastSuperbowlSpinnerPosition = 0;
     private int lastAFCSpinnerPosition = 0;
     private int lastNFCSpinnerPosition = 0;
     private int lastOffenseSpinnerPosition = 0;
     private int lastDefenseSpinnerPosition = 0;
+    private int offsetPredictionPlusTime = 0;
     private boolean lastHomeTeamCheckboxStatus = false;
     private boolean lastAwayTeamCheckboxStatus = false;
-    private int offsetPredictionTime = -30;
-    private int offsetPredictionPlusTime = 0;
     private boolean userInteraction = true;
     private boolean userInteractionHomeCheckbox = true;
     private boolean userInteractionAwayCheckbox = true;
 
-    public PredictionsListViewAdapter(Activity activity, List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionPlus, String userId) {
+    PredictionsListViewAdapter(Activity activity, List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionBeforeSeasonList, String userId) {
         this.activity = activity;
         this.userId = userId;
 
-        if(!Utils.isPredictionTimeOver(predictionPlus.get(0).getFirstgamedate(), 0)){
-            this.expandableListTitle.add("Tips vor der Saison");
-            expandableListDetail.put("Tips vor der Saison", predictionPlus);
+        apiInterface = Api.getInstance(activity).getApiInterface();
+
+        initPredictionListItems(predictionsForWeekList, predictionBeforeSeasonList);
+    }
+
+    private void initPredictionListItems(List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionBeforeSeasonList){
+        if(!Utils.isPredictionTimeOver(predictionBeforeSeasonList.get(0).getFirstgamedate(), 0)){
+            this.predictionListHeaders.add(Constants.PREDICTION_BEFORE_SEASON);
+            predictionListItems.put(Constants.PREDICTION_BEFORE_SEASON, predictionBeforeSeasonList);
         }
 
         for(PredictionsForWeek predictionsForWeekItem : predictionsForWeekList){
@@ -90,196 +96,167 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
 
             if(tempGamesList.size()>0){
-                String title = "Woche " + predictionsForWeekItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) : "");
-                this.expandableListTitle.add(title);
-                this.expandableListDetail.put(title, tempGamesList);
+                String title = Constants.WEEK + predictionsForWeekItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) : "");
+                this.predictionListHeaders.add(title);
+                this.predictionListItems.put(title, tempGamesList);
             }
         }
-
-        apiInterface = Api.getInstance(activity).getApiInterface();
     }
 
     @Override
-    public Object getChild(int listPosition, int expandedListPosition) {
-        child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
+    public Object getChild(int listPosition, int predictionListPosition) {
+        List<?> genericList = this.predictionListItems.get(this.predictionListHeaders.get(listPosition));
 
-        if(child.get(0) instanceof GamePrediction){
-            return child.get(expandedListPosition);
+        if(genericList.get(0) instanceof GamePrediction){
+            return genericList.get(predictionListPosition);
         }
         else{
-            PredictionBeforeSeason returnPredictionBeforeSeason = null;
-
-            for(int i = 0; i < child.size(); i++){
-                PredictionBeforeSeason tempPrediction = (PredictionBeforeSeason) child.get(i);
+            for(int i = 0; i < genericList.size(); i++){
+                PredictionBeforeSeason tempPrediction = (PredictionBeforeSeason) genericList.get(i);
                 if(tempPrediction.getUser().equals("user")){
-                    returnPredictionBeforeSeason = tempPrediction;
-                    break;
+                    return tempPrediction;
                 }
             }
-            return returnPredictionBeforeSeason;
+            return null;
         }
     }
 
     @Override
-    public long getChildId(int listPosition, int expandedListPosition) {
-        return expandedListPosition;
+    public long getChildId(int listPosition, int predictionListPosition) {
+        return predictionListPosition;
     }
 
     @Override
-    public View getChildView(int listPosition, final int expandedListPosition,
+    public View getChildView(int listPosition, final int predictionListPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
         layoutInflater = (LayoutInflater) this.activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        Object childView = getChild(listPosition, expandedListPosition);
-        if(childView instanceof GamePrediction){
-            return initPredictionView(convertView, parent, (GamePrediction) childView);
+        Object listItem = getChild(listPosition, predictionListPosition);
+        if(listItem instanceof GamePrediction){
+            return initPredictionView(parent, (GamePrediction) listItem);
         }
         else {
-            return initPredictionPlusView(convertView, parent, (PredictionBeforeSeason) childView);
+            return initPredictionBeforeSeasonView(parent, (PredictionBeforeSeason) listItem);
         }
     }
 
-    private View initPredictionView(View convertView, ViewGroup parent, final GamePrediction expandedListItem){
-        convertView = layoutInflater.inflate(R.layout.predictions_list_item, parent, false);
-        final LinearLayout disableOverlay = (LinearLayout) convertView.findViewById(R.id.disable_overlay);
-        final CheckBox homeTeamCheckbox = (CheckBox) convertView
+    private View initPredictionView(ViewGroup parent, final GamePrediction gamePrediction){
+        View convertView = layoutInflater.inflate(R.layout.predictions_list_item, parent, false);
+
+        final LinearLayout llDisableOverlay = (LinearLayout) convertView.findViewById(R.id.disable_overlay);
+        final CheckBox cbHomeTeam = (CheckBox) convertView
                 .findViewById(R.id.home_team_checkbox);
-        final CheckBox awayTeamCheckbox = (CheckBox) convertView
+        final CheckBox cbAwayTeam = (CheckBox) convertView
                 .findViewById(R.id.away_team_checkbox);
-        ImageView awayTeamIcon = (ImageView) convertView.findViewById(R.id.icon_away_team);
-        ImageView homeTeamIcon = (ImageView) convertView.findViewById(R.id.icon_home_team);
-        LinearLayout awayLogoBackground = (LinearLayout) convertView.findViewById(R.id.away_team_logo_background);
-        LinearLayout homeLogoBackground = (LinearLayout) convertView.findViewById(R.id.home_team_logo_background);
+        ImageView ivAwayTeamIcon = (ImageView) convertView.findViewById(R.id.icon_away_team);
+        ImageView ivHomeTeamIcon = (ImageView) convertView.findViewById(R.id.icon_home_team);
+        LinearLayout llAwayTeamBackground = (LinearLayout) convertView.findViewById(R.id.away_team_logo_background);
+        LinearLayout llHomeTeamBackground = (LinearLayout) convertView.findViewById(R.id.home_team_logo_background);
 
-        awayLogoBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamColor()));
-        homeLogoBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamColor()));
+        llAwayTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamColor()));
+        llHomeTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamColor()));
 
-        awayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getAwayteam()).getTeamIcon());
-        homeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(expandedListItem.getHometeam()).getTeamIcon());
+        ivAwayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamIcon());
+        ivHomeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamIcon());
 
-        homeTeamCheckbox.setChecked(false);
-        awayTeamCheckbox.setChecked(false);
+        cbHomeTeam.setChecked(false);
+        cbAwayTeam.setChecked(false);
 
-        if(expandedListItem.hasPredicted() == 1){
-            if(expandedListItem.predictedHometeam() == 1){
-                homeTeamCheckbox.setChecked(true);
-            }
-            else{
-                awayTeamCheckbox.setChecked(true);
-            }
-        }
+        initCheckboxesToModel(gamePrediction, cbHomeTeam, cbAwayTeam);
 
-        lastHomeTeamCheckboxStatus = homeTeamCheckbox.isChecked();
-        lastAwayTeamCheckboxStatus = awayTeamCheckbox.isChecked();
+        lastHomeTeamCheckboxStatus = cbHomeTeam.isChecked();
+        lastAwayTeamCheckboxStatus = cbAwayTeam.isChecked();
 
-        if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime(), offsetPredictionTime)){
-            homeTeamCheckbox.setEnabled(false);
-            awayTeamCheckbox.setEnabled(false);
+        checkIfPredictionTimeIsOver(gamePrediction, cbHomeTeam, cbAwayTeam, llDisableOverlay);
 
-            disableOverlay.setBackgroundColor(Color.parseColor("#B2B2B2"));
-            disableOverlay.getBackground().setAlpha(150);
-
-            disableOverlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AllPredictionsRequest request = new AllPredictionsRequest();
-                    request.setGameid(expandedListItem.getGameid());
-                    getAllPredictionsForGameid(expandedListItem, request);
-                }
-            });
-        }
-
-        homeTeamCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                CheckBox clickedBox = (CheckBox) buttonView;
-
-                if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime(), offsetPredictionTime)){
-                    if(isChecked){
-                        clickedBox.setChecked(false);
-                    }
-                    else {
-                        clickedBox.setChecked(true);
-                    }
-                    clickedBox.setEnabled(false);
-                    awayTeamCheckbox.setEnabled(false);
-
-                    disableOverlay.setBackgroundColor(Color.parseColor("#B2B2B2"));
-                    disableOverlay.getBackground().setAlpha(150);
-
-                    disableOverlay.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            AllPredictionsRequest request = new AllPredictionsRequest();
-                            request.setGameid(expandedListItem.getGameid());
-                            getAllPredictionsForGameid(expandedListItem, request);
-                        }
-                    });
-                }
-                else{
-                    if(userInteractionHomeCheckbox){
-                        userInteractionAwayCheckbox = false;
-                        if(isChecked) {
-                            awayTeamCheckbox.setChecked(false);
-                            updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.HOME_TEAM_SELECTED, expandedListItem, userId);
-                        }
-                        else{
-                            updatePrediction(clickedBox, awayTeamCheckbox, UPDATE_STATES.UNPREDICTED, expandedListItem, userId);
-                        }
-                    }
-                    userInteractionAwayCheckbox = true;
-                }
-            }
-        });
-
-        awayTeamCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                CheckBox clickedBox = (CheckBox) buttonView;
-
-                if(Utils.isPredictionTimeOver(expandedListItem.getGamedatetime(), offsetPredictionTime)){
-                    if(isChecked){
-                        clickedBox.setChecked(false);
-                    }
-                    else {
-                        clickedBox.setChecked(true);
-                    }
-                    homeTeamCheckbox.setEnabled(false);
-                    clickedBox.setEnabled(false);
-
-                    disableOverlay.setBackgroundColor(Color.parseColor("#B2B2B2"));
-                    disableOverlay.getBackground().setAlpha(150);
-
-                    disableOverlay.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            AllPredictionsRequest request = new AllPredictionsRequest();
-                            request.setGameid(expandedListItem.getGameid());
-                            getAllPredictionsForGameid(expandedListItem, request);
-                        }
-                    });
-                }
-                else{
-                    if(userInteractionAwayCheckbox){
-                        userInteractionHomeCheckbox = false;
-                        if (isChecked) {
-                            homeTeamCheckbox.setChecked(false);
-                            updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.AWAY_TEAM_SELECTED, expandedListItem, userId);
-                        } else {
-                            updatePrediction(homeTeamCheckbox, clickedBox, UPDATE_STATES.UNPREDICTED, expandedListItem, userId);
-                        }
-                    }
-                    userInteractionHomeCheckbox = true;
-                }
-            }
-        });
+        setOnCheckedChangeListener(gamePrediction, cbHomeTeam, cbAwayTeam, llDisableOverlay);
+        setOnCheckedChangeListener(gamePrediction, cbAwayTeam, cbHomeTeam, llDisableOverlay);
 
         return convertView;
     }
 
-    private View initPredictionPlusView(View convertView, ViewGroup parent, PredictionBeforeSeason child) {
+    private void initCheckboxesToModel(GamePrediction gamePrediction, CheckBox cbHomeTeam, CheckBox cbAwayTeam){
+        if(gamePrediction.hasPredicted() == 1){
+            if(gamePrediction.predictedHometeam() == 1){
+                cbHomeTeam.setChecked(true);
+            }
+            else{
+                cbAwayTeam.setChecked(true);
+            }
+        }
+    }
+
+    private boolean checkIfPredictionTimeIsOver(final GamePrediction gamePrediction, CheckBox cbOne, CheckBox cbTwo, LinearLayout llDisableOverlay){
+        int offsetPredictionTime = -30;
+        if(Utils.isPredictionTimeOver(gamePrediction.getGamedatetime(), offsetPredictionTime)){
+            cbOne.setEnabled(false);
+            cbTwo.setEnabled(false);
+
+            llDisableOverlay.setBackgroundColor(Color.parseColor("#B2B2B2"));
+            llDisableOverlay.getBackground().setAlpha(150);
+
+            llDisableOverlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AllPredictionsRequest request = new AllPredictionsRequest();
+                    request.setGameid(gamePrediction.getGameid());
+                    getAllPredictionsForGameid(gamePrediction, request);
+                }
+            });
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private void setOnCheckedChangeListener(final GamePrediction gamePrediction, CheckBox cbClicked, final CheckBox cbOther, final LinearLayout llDisableOverlay){
+        cbClicked.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                CheckBox clickedBox = (CheckBox) buttonView;
+
+                if(checkIfPredictionTimeIsOver(gamePrediction, clickedBox, cbOther, llDisableOverlay)){
+                    if(isChecked){
+                        clickedBox.setChecked(false);
+                    }
+                    else {
+                        clickedBox.setChecked(true);
+                    }
+                }
+                else{
+                    if(clickedBox.getId() == R.id.home_team_checkbox) {
+                        if (userInteractionHomeCheckbox) {
+                            userInteractionAwayCheckbox = false;
+                            if (isChecked) {
+                                cbOther.setChecked(false);
+                                updatePrediction(clickedBox, cbOther, UPDATE_TYPE.HOME_TEAM_SELECTED, gamePrediction);
+                            } else {
+                                updatePrediction(clickedBox, cbOther, UPDATE_TYPE.UNPREDICTED, gamePrediction);
+                            }
+                        }
+                        userInteractionAwayCheckbox = true;
+                    }
+                    else{
+                        if(userInteractionAwayCheckbox){
+                            userInteractionHomeCheckbox = false;
+                            if (isChecked) {
+                                cbOther.setChecked(false);
+                                updatePrediction(cbOther, clickedBox, UPDATE_TYPE.AWAY_TEAM_SELECTED, gamePrediction);
+                            } else {
+                                updatePrediction(cbOther, clickedBox, UPDATE_TYPE.UNPREDICTED, gamePrediction);
+                            }
+                        }
+                        userInteractionHomeCheckbox = true;
+                    }
+                }
+            }
+        });
+    }
+
+    private View initPredictionBeforeSeasonView(ViewGroup parent, PredictionBeforeSeason predictionBeforeSeason) {
         if(teamInfoList.isEmpty() && teamPrefixList.isEmpty()){
             for (String key : Constants.TEAM_INFO_MAP.keySet()) {
                 teamInfoList.add(new TeamInfoSpinnerObject(Constants.TEAM_INFO_MAP.get(key).getTeamName(), key));
@@ -294,70 +271,42 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        convertView = layoutInflater.inflate(R.layout.predictions_plus_item, parent, false);
+        View convertView = layoutInflater.inflate(R.layout.predictions_plus_item, parent, false);
         LinearLayout container = (LinearLayout) convertView.findViewById(R.id.subitems_container);
 
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.SUPERBOWL, child.getSuperbowl(), child), 0);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.AFC_WINNER, child.getAfcwinnerteam(), child), 1);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.NFC_WINNER, child.getNfcwinnerteam(), child), 2);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.BEST_OFFENSE, child.getBestoffenseteam(), child), 3);
-        container.addView(initPredictionPlusSubView(parent, Constants.PREDICTION_TYPE.BEST_DEFENSE, child.getBestdefenseteam(), child), 4);
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.SUPERBOWL, predictionBeforeSeason.getSuperbowlTeam(), predictionBeforeSeason), 0);
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.AFC_WINNER, predictionBeforeSeason.getAfcwinnerteam(), predictionBeforeSeason), 1);
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.NFC_WINNER, predictionBeforeSeason.getNfcwinnerteam(), predictionBeforeSeason), 2);
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.BEST_OFFENSE, predictionBeforeSeason.getBestoffenseteam(), predictionBeforeSeason), 3);
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.BEST_DEFENSE, predictionBeforeSeason.getBestdefenseteam(), predictionBeforeSeason), 4);
 
         return convertView;
     }
 
-    private View initPredictionPlusSubView(ViewGroup parent, final Constants.PREDICTION_TYPE state, String team, final PredictionBeforeSeason predictionBeforeSeason){
+    private View initPredictionBeforeSeasonSubView(ViewGroup parent, final PREDICTION_TYPE predictionType, String team, final PredictionBeforeSeason predictionBeforeSeason){
         View subView = layoutInflater.inflate(R.layout.predictions_plus_subitem, parent, false);
 
-        final LinearLayout teamBackground = (LinearLayout) subView.findViewById(R.id.team_background);
+        final LinearLayout llTeamBackground = (LinearLayout) subView.findViewById(R.id.team_background);
 
-        TextView teamText = (TextView) subView.findViewById(R.id.team_text);
-        Spinner teamSpinner = (Spinner) subView.findViewById(R.id.team_spinner);
+        TextView tvTeamName = (TextView) subView.findViewById(R.id.team_text);
+        Spinner spTeamChoice = (Spinner) subView.findViewById(R.id.team_spinner);
+        final ImageView ivTeamIcon = (ImageView) subView.findViewById(R.id.team_icon);
 
         TeamPickSpinnerAdapter adapter = new TeamPickSpinnerAdapter(this.activity, R.layout.spinner_item, teamInfoList);
-        teamSpinner.setAdapter(adapter);
-
-        final ImageView teamIcon = (ImageView) subView.findViewById(R.id.team_icon);
+        spTeamChoice.setAdapter(adapter);
 
         if(!team.equals("")){
-            teamSpinner.setSelection(teamPrefixList.indexOf(team), false);
+            spTeamChoice.setSelection(teamPrefixList.indexOf(team), false);
         }
         else{
-            teamSpinner.setSelection(0, false);
-        }
-        setTeamInfos(teamSpinner.getSelectedItemPosition(), teamBackground, teamIcon);
-
-        switch (state) {
-            case SUPERBOWL: {
-                teamText.setText(R.string.superbowl);
-                lastSuperbowlSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                break;
-            }
-            case AFC_WINNER: {
-                teamText.setText(R.string.afc_winner);
-                lastAFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                break;
-            }
-            case NFC_WINNER: {
-                teamText.setText(R.string.nfc_winner);
-                lastNFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                break;
-            }
-            case BEST_OFFENSE: {
-                teamText.setText(R.string.best_offense);
-                lastOffenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                break;
-            }
-            case BEST_DEFENSE: {
-                teamText.setText(R.string.best_defense);
-                lastDefenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
-                break;
-            }
-            default:
-                break;
+            spTeamChoice.setSelection(0, false);
         }
 
-        teamSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        setTeamInfos(spTeamChoice.getSelectedItemPosition(), llTeamBackground, ivTeamIcon);
+
+        initViewsToModel(predictionType, tvTeamName, spTeamChoice);
+
+        spTeamChoice.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(!userInteraction){
@@ -366,7 +315,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 }
                 if(Utils.isPredictionTimeOver(predictionBeforeSeason.getFirstgamedate(), offsetPredictionPlusTime)){
                     Spinner spinner = (Spinner) parent;
-                    switch (state) {
+                    switch (predictionType) {
                         case SUPERBOWL: {
                             spinner.setSelection(lastSuperbowlSpinnerPosition);
                             break;
@@ -393,7 +342,7 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Zusatztips sind jetzt gesperrt!", Snackbar.LENGTH_LONG).show();
                 }
                 else {
-                    sendUpdateRequest(state, position, (Spinner) parent, teamBackground, teamIcon, predictionBeforeSeason);
+                    sendUpdateRequest(predictionType, position, (Spinner) parent, llTeamBackground, ivTeamIcon, predictionBeforeSeason);
                 }
             }
 
@@ -417,12 +366,44 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         }
     }
 
+    private void initViewsToModel(PREDICTION_TYPE predictionType, TextView tvTeamName, Spinner spTeamChoice){
+        switch (predictionType) {
+            case SUPERBOWL: {
+                tvTeamName.setText(R.string.superbowl);
+                lastSuperbowlSpinnerPosition = spTeamChoice.getSelectedItemPosition();
+                break;
+            }
+            case AFC_WINNER: {
+                tvTeamName.setText(R.string.afc_winner);
+                lastAFCSpinnerPosition = spTeamChoice.getSelectedItemPosition();
+                break;
+            }
+            case NFC_WINNER: {
+                tvTeamName.setText(R.string.nfc_winner);
+                lastNFCSpinnerPosition = spTeamChoice.getSelectedItemPosition();
+                break;
+            }
+            case BEST_OFFENSE: {
+                tvTeamName.setText(R.string.best_offense);
+                lastOffenseSpinnerPosition = spTeamChoice.getSelectedItemPosition();
+                break;
+            }
+            case BEST_DEFENSE: {
+                tvTeamName.setText(R.string.best_defense);
+                lastDefenseSpinnerPosition = spTeamChoice.getSelectedItemPosition();
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
     @Override
     public int getChildrenCount(int listPosition) {
-        child = this.expandableListDetail.get(this.expandableListTitle.get(listPosition));
+        List<?> genericList = this.predictionListItems.get(this.predictionListHeaders.get(listPosition));
 
-        if(child.get(0) instanceof GamePrediction){
-            return child.size();
+        if(genericList.get(0) instanceof GamePrediction){
+            return genericList.size();
         }
         else{
             return 1;
@@ -431,12 +412,12 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getGroup(int listPosition) {
-        return this.expandableListTitle.get(listPosition);
+        return this.predictionListHeaders.get(listPosition);
     }
 
     @Override
     public int getGroupCount() {
-        return this.expandableListTitle.size();
+        return this.predictionListHeaders.size();
     }
 
     @Override
@@ -453,10 +434,8 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_view_group, parent, false);
         }
-        TextView listTitleTextView = (TextView) convertView
-                .findViewById(R.id.listTitle);
-        listTitleTextView.setTypeface(null, Typeface.BOLD);
-        listTitleTextView.setText(listTitle);
+        TextView llPredictionListHeader = (TextView) convertView.findViewById(R.id.listTitle);
+        llPredictionListHeader.setText(listTitle);
 
         return convertView;
     }
@@ -471,34 +450,35 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    private void updatePrediction(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, UPDATE_STATES state, GamePrediction gamePrediction, String uuid){
+    private void updatePrediction(CheckBox cbHomeTeam, CheckBox cbAwayTeam, UPDATE_TYPE updateType, GamePrediction gamePrediction){
         UpdatePredictionRequest request = new UpdatePredictionRequest();
         request.setGameId(gamePrediction.getGameid());
-        request.setUserId(uuid);
-        switch (state){
+        request.setUserId(this.userId);
+
+        switch (updateType){
             case HOME_TEAM_SELECTED:{
                 request.setHasPredicted(true);
                 request.setHasHomeTeamPredicted(true);
-                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, gamePrediction, state);
+                sendUpdateRequest(request, cbHomeTeam, cbAwayTeam, gamePrediction, updateType);
                 break;
             }
             case AWAY_TEAM_SELECTED: {
                 request.setHasPredicted(true);
                 request.setHasHomeTeamPredicted(false);
-                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, gamePrediction, state);
+                sendUpdateRequest(request, cbHomeTeam, cbAwayTeam, gamePrediction, updateType);
                 break;
             }
             case UNPREDICTED: {
                 request.setHasPredicted(false);
                 request.setHasHomeTeamPredicted(true);
-                sendUpdateRequest(request, homeTeamCheckbox, awayTeamCheckbox, gamePrediction, state);
+                sendUpdateRequest(request, cbHomeTeam, cbAwayTeam, gamePrediction, updateType);
                 break;
             }
             default: break;
         }
     }
 
-    private void sendUpdateRequest(UpdatePredictionRequest request, final CheckBox homeTeamCheckbox, final CheckBox awayTeamCheckbox, final GamePrediction gamePrediction, final UPDATE_STATES state){
+    private void sendUpdateRequest(UpdatePredictionRequest request, final CheckBox cbHomeTeam, final CheckBox cbAwayTeam, final GamePrediction gamePrediction, final UPDATE_TYPE updateType){
         Call<UpdateResponse> response = this.apiInterface.updatePrediction(request);
 
         response.enqueue(new Callback<UpdateResponse>() {
@@ -506,28 +486,28 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             public void onResponse(Call<UpdateResponse> call, retrofit2.Response<UpdateResponse> response) {
                 UpdateResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    updateModel(homeTeamCheckbox, awayTeamCheckbox, gamePrediction, state);
+                    updateModel(cbHomeTeam, cbAwayTeam, gamePrediction, updateType);
                 }
                 else{
-                    setCheckboxesToLastValue(homeTeamCheckbox, awayTeamCheckbox, state);
+                    setCheckboxesToLastValue(cbHomeTeam, cbAwayTeam, updateType);
                     Log.d(Constants.TAG, resp.getMessage());
                 }
             }
 
             @Override
             public void onFailure(Call<UpdateResponse> call, Throwable t) {
-                setCheckboxesToLastValue(homeTeamCheckbox, awayTeamCheckbox, state);
+                setCheckboxesToLastValue(cbHomeTeam, cbAwayTeam, updateType);
                 Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });
     }
 
-    private void sendUpdateRequest(final Constants.PREDICTION_TYPE state, final int position, final Spinner teamSpinner, final LinearLayout teamBackground, final ImageView teamIcon, final PredictionBeforeSeason predictionBeforeSeason){
+    private void sendUpdateRequest(final PREDICTION_TYPE predictionType, final int position, final Spinner spTeamChoice, final LinearLayout llTeamBackground, final ImageView ivTeamIcon, final PredictionBeforeSeason predictionBeforeSeason){
         final String teamPredicted = position == 0 ? "" : teamInfoList.get(position).getTeamPrefix();
         UpdatePredictionBeforeSeasonRequest updatePredictionBeforeSeasonRequest = new UpdatePredictionBeforeSeasonRequest();
         updatePredictionBeforeSeasonRequest.setTeamprefix(teamPredicted);
-        updatePredictionBeforeSeasonRequest.setPredictionType(state.toString().toLowerCase());
+        updatePredictionBeforeSeasonRequest.setPredictionType(predictionType.toString().toLowerCase());
         updatePredictionBeforeSeasonRequest.setUserId(this.userId);
 
         Call<UpdateResponse> response = this.apiInterface.updatePredictionPlus(updatePredictionBeforeSeasonRequest);
@@ -537,26 +517,26 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             public void onResponse(Call<UpdateResponse> call, retrofit2.Response<UpdateResponse> response) {
                 UpdateResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    updateModel(state, teamPredicted, teamSpinner, predictionBeforeSeason);
-                    setTeamInfos(teamSpinner.getSelectedItemPosition(), teamBackground, teamIcon);
+                    updateModel(predictionType, teamPredicted, spTeamChoice, predictionBeforeSeason);
+                    setTeamInfos(spTeamChoice.getSelectedItemPosition(), llTeamBackground, ivTeamIcon);
                 }
                 else{
                     Log.d(Constants.TAG, resp.getMessage());
-                    setSpinnerToLastValue(state, teamSpinner, teamBackground, teamIcon);
+                    setSpinnerToLastValue(predictionType, spTeamChoice, llTeamBackground, ivTeamIcon);
                 }
             }
 
             @Override
             public void onFailure(Call<UpdateResponse> call, Throwable t) {
-                setSpinnerToLastValue(state, teamSpinner, teamBackground, teamIcon);
+                setSpinnerToLastValue(predictionType, spTeamChoice, llTeamBackground, ivTeamIcon);
                 Snackbar.make(activity.findViewById(R.id.predictionsListView) ,"Server not available...", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });
     }
 
-    private void updateModel(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, GamePrediction gamePrediction, UPDATE_STATES state){
-        switch (state){
+    private void updateModel(CheckBox cbHomeTeam, CheckBox cbAwayTeam, GamePrediction gamePrediction, UPDATE_TYPE updateType){
+        switch (updateType){
             case HOME_TEAM_SELECTED:{
                 gamePrediction.setHaspredicted(1);
                 gamePrediction.setPredictedhometeam(1);
@@ -574,34 +554,34 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
             default: break;
         }
-        lastHomeTeamCheckboxStatus = homeTeamCheckbox.isChecked();
-        lastAwayTeamCheckboxStatus = awayTeamCheckbox.isChecked();
+        lastHomeTeamCheckboxStatus = cbHomeTeam.isChecked();
+        lastAwayTeamCheckboxStatus = cbAwayTeam.isChecked();
     }
 
-    private void updateModel(Constants.PREDICTION_TYPE state, String teamPredicted, Spinner teamSpinner, PredictionBeforeSeason predictionBeforeSeason){
-        switch (state) {
+    private void updateModel(PREDICTION_TYPE predictionType, String teamPredicted, Spinner spTeamChoice, PredictionBeforeSeason predictionBeforeSeason){
+        switch (predictionType) {
             case SUPERBOWL: {
-                lastSuperbowlSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                lastSuperbowlSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 predictionBeforeSeason.setSuperbowl(teamPredicted);
                 break;
             }
             case AFC_WINNER: {
-                lastAFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                lastAFCSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 predictionBeforeSeason.setAfcwinnerteam(teamPredicted);
                 break;
             }
             case NFC_WINNER: {
-                lastNFCSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                lastNFCSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 predictionBeforeSeason.setNfcwinnerteam(teamPredicted);
                 break;
             }
             case BEST_OFFENSE: {
-                lastOffenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                lastOffenseSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 predictionBeforeSeason.setBestoffenseteam(teamPredicted);
                 break;
             }
             case BEST_DEFENSE: {
-                lastDefenseSpinnerPosition = teamSpinner.getSelectedItemPosition();
+                lastDefenseSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 predictionBeforeSeason.setBestdefenseteam(teamPredicted);
                 break;
             }
@@ -610,34 +590,34 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    private void setCheckboxesToLastValue(CheckBox homeTeamCheckbox, CheckBox awayTeamCheckbox, UPDATE_STATES state){
-        switch (state){
+    private void setCheckboxesToLastValue(CheckBox cbHomeTeam, CheckBox cbAwayTeam, UPDATE_TYPE updateType){
+        switch (updateType){
             case HOME_TEAM_SELECTED:{
                 userInteractionHomeCheckbox = false;
-                homeTeamCheckbox.setChecked(false);
+                cbHomeTeam.setChecked(false);
                 if(lastAwayTeamCheckboxStatus){
                     userInteractionAwayCheckbox = false;
-                    awayTeamCheckbox.setChecked(true);
+                    cbAwayTeam.setChecked(true);
                 }
                 break;
             }
             case AWAY_TEAM_SELECTED: {
                 userInteractionAwayCheckbox = false;
-                awayTeamCheckbox.setChecked(false);
+                cbAwayTeam.setChecked(false);
                 if(lastHomeTeamCheckboxStatus){
                     userInteractionHomeCheckbox = false;
-                    homeTeamCheckbox.setChecked(true);
+                    cbHomeTeam.setChecked(true);
                 }
                 break;
             }
             case UNPREDICTED: {
                 if(lastHomeTeamCheckboxStatus){
                     userInteractionHomeCheckbox = false;
-                    homeTeamCheckbox.setChecked(true);
+                    cbHomeTeam.setChecked(true);
                 }
                 if(lastAwayTeamCheckboxStatus){
                     userInteractionAwayCheckbox = false;
-                    awayTeamCheckbox.setChecked(true);
+                    cbAwayTeam.setChecked(true);
                 }
                 break;
             }
@@ -645,32 +625,32 @@ public class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    private void setSpinnerToLastValue(Constants.PREDICTION_TYPE state, Spinner teamSpinner, LinearLayout teamBackground, ImageView teamIcon){
+    private void setSpinnerToLastValue(PREDICTION_TYPE predictionType, Spinner spTeamChoice, LinearLayout llTeamBackground, ImageView ivTeamIcon){
         userInteraction = false;
-        switch (state) {
+        switch (predictionType) {
             case SUPERBOWL: {
-                teamSpinner.setSelection(lastSuperbowlSpinnerPosition, false);
-                setTeamInfos(lastSuperbowlSpinnerPosition, teamBackground, teamIcon);
+                spTeamChoice.setSelection(lastSuperbowlSpinnerPosition, false);
+                setTeamInfos(lastSuperbowlSpinnerPosition, llTeamBackground, ivTeamIcon);
                 break;
             }
             case AFC_WINNER: {
-                teamSpinner.setSelection(lastAFCSpinnerPosition, false);
-                setTeamInfos(lastAFCSpinnerPosition, teamBackground, teamIcon);
+                spTeamChoice.setSelection(lastAFCSpinnerPosition, false);
+                setTeamInfos(lastAFCSpinnerPosition, llTeamBackground, ivTeamIcon);
                 break;
             }
             case NFC_WINNER: {
-                teamSpinner.setSelection(lastNFCSpinnerPosition, false);
-                setTeamInfos(lastNFCSpinnerPosition, teamBackground, teamIcon);
+                spTeamChoice.setSelection(lastNFCSpinnerPosition, false);
+                setTeamInfos(lastNFCSpinnerPosition, llTeamBackground, ivTeamIcon);
                 break;
             }
             case BEST_OFFENSE: {
-                teamSpinner.setSelection(lastOffenseSpinnerPosition, false);
-                setTeamInfos(lastOffenseSpinnerPosition, teamBackground, teamIcon);
+                spTeamChoice.setSelection(lastOffenseSpinnerPosition, false);
+                setTeamInfos(lastOffenseSpinnerPosition, llTeamBackground, ivTeamIcon);
                 break;
             }
             case BEST_DEFENSE: {
-                teamSpinner.setSelection(lastDefenseSpinnerPosition, false);
-                setTeamInfos(lastDefenseSpinnerPosition, teamBackground, teamIcon);
+                spTeamChoice.setSelection(lastDefenseSpinnerPosition, false);
+                setTeamInfos(lastDefenseSpinnerPosition, llTeamBackground, ivTeamIcon);
                 break;
             }
             default:

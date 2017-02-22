@@ -84,7 +84,7 @@ public class LoginFragment extends Fragment {
             public void onResponse(Call<LoginResponse> call, retrofit2.Response<LoginResponse> response) {
                 LoginResponse resp = response.body();
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    if(resp.getMessage().equals(Constants.LOGIN_SUCCESSFULL)){
+                    if(resp.getMessage().equals("login successfull")){
                         getDataProcess(resp.getUserId());
                     } else {
                         Snackbar.make(getActivity().findViewById(R.id.fragment_host),"Login Failed!", Snackbar.LENGTH_LONG).show();
@@ -113,7 +113,7 @@ public class LoginFragment extends Fragment {
                 DataResponse resp = response.body();
                 progressBar.setVisibility(View.INVISIBLE);
                 if(resp.getResult().equals(Constants.SUCCESS)){
-                    if(resp.getMessage().equals(Constants.GET_DATA_SUCCESSFULL)){
+                    if(resp.getMessage().equals("data successfull")){
                         goToMainActivity(userId, resp.getData());
                     } else {
                         Snackbar.make(getActivity().findViewById(R.id.fragment_host),"Login Failed!", Snackbar.LENGTH_LONG).show();

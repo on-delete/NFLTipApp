@@ -9,7 +9,7 @@ public class Ranking implements Parcelable{
     private String userid;
     private String points;
 
-    public Ranking(Parcel parcel){
+    private Ranking(Parcel parcel){
         this.name = parcel.readString();
         this.userid = parcel.readString();
         this.points = parcel.readString();

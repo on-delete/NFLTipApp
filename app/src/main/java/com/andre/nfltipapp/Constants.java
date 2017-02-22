@@ -13,10 +13,6 @@ public class Constants {
 
     public static final String SUCCESS = "success";
     public static final String FAILURE = TAG + "failure";
-    public static final String USERNAME_FREE = "username unused";
-    public static final String LOGIN_SUCCESSFULL = "login successfull";
-    public static final String GET_DATA_SUCCESSFULL = "data successfull";
-
     public static final String USERID = "userId";
     public static final String DATA = "data";
     public static final String PREDICTIONS = "PREDICTIONS";
@@ -26,9 +22,9 @@ public class Constants {
     public static final String PREDICTION_TYPE_STRING = "predictiontype";
     public static final String AFC_STANDINGS = "afcstandings";
     public static final String NFC_STANDINGS = "nfcstandings";
+    public static final String PREDICTION_BEFORE_SEASON = "Tips vor der Saison";
+    public static final String WEEK = "Woche ";
 
-    public static final String AFC_BACKGROUND_COLOR = "#B50023";
-    public static final String NFC_BACKGROUND_COLOR = "#004079";
     public static final String DEFAULT_BACKGROUND_COLOR = "#E6E6E6";
     public static final String TABLE_SELECTED_TEXT_COLOR = "#FAFAFA";
     public static final String TABLE_DEFAULT_TEXT_COLOR = "#151515";
@@ -78,7 +74,7 @@ public class Constants {
         put("SF", new TeamInfo("San Francisco", "49ers", R.drawable.sf, "#B79C6D"));
     }};
 
-    public enum UPDATE_STATES {
+    public enum UPDATE_TYPE {
         HOME_TEAM_SELECTED,
         AWAY_TEAM_SELECTED,
         UNPREDICTED
