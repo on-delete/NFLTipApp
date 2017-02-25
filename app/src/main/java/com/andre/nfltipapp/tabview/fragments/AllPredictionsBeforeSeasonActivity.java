@@ -24,7 +24,7 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_statistic_for_prediction_plus);
+        setContentView(R.layout.activity_all_predictions_before_season);
 
         ArrayList<PredictionsBeforeSeasonStatistic> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONS_BEFORE_SEASON);
         this.teamName = getIntent().getStringExtra(Constants.TEAMNAME);
@@ -32,9 +32,9 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
         String predictionTypeParcel = getIntent().getStringExtra(Constants.PREDICTION_TYPE_STRING);
         Constants.PREDICTION_TYPE predictionType = Constants.PREDICTION_TYPE.valueOf(predictionTypeParcel);
 
-        TextView tvPredictionType = (TextView) findViewById(R.id.state_text);
-        ImageView ivTeamIcon = (ImageView) findViewById(R.id.team_icon_statistic);
-        this.llAllPredictionsTable = (LinearLayout) findViewById(R.id.statistics_plus_table_layout);
+        TextView tvPredictionType = (TextView) findViewById(R.id.text_prediction_type);
+        ImageView ivTeamIcon = (ImageView) findViewById(R.id.image_team_icon);
+        this.llAllPredictionsTable = (LinearLayout) findViewById(R.id.linear_predictions_before_season_table);
 
         switch (predictionType) {
             case SUPERBOWL: {
@@ -62,7 +62,7 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
         }
 
         if(teamName.equals("")){
-            ivTeamIcon.setImageResource(R.drawable.default_icon);
+            ivTeamIcon.setImageResource(R.drawable.ic_default_icon);
         }
         else {
             ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(teamName).getTeamIcon());
@@ -75,7 +75,7 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
             if(predictionTemp.getUserid().equals(userId)){
                 View view = initView(predictionTemp);
                 view.setBackgroundResource(R.drawable.bottom_border);
-                TextView tvName = (TextView) view.findViewById(R.id.player_name_statistic);
+                TextView tvName = (TextView) view.findViewById(R.id.text_player_name);
                 tvName.setTypeface(null, Typeface.BOLD);
 
                 predictionListCopy.remove(i);
@@ -88,12 +88,12 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
     }
 
     private View initView (PredictionsBeforeSeasonStatistic prediction){
-        @SuppressLint("InflateParams") View rowView = getLayoutInflater().inflate(R.layout.statistic_for_plus_table_row, null);
+        @SuppressLint("InflateParams") View rowView = getLayoutInflater().inflate(R.layout.statistic_prediction_before_season_table_row, null);
 
-        TextView tvName = (TextView) rowView.findViewById(R.id.player_name_statistic);
+        TextView tvName = (TextView) rowView.findViewById(R.id.text_player_name);
         tvName.setText(prediction.getUsername());
 
-        ImageView ivTeamIconPredicted = (ImageView) rowView.findViewById(R.id.player_pred_team_icon);
+        ImageView ivTeamIconPredicted = (ImageView) rowView.findViewById(R.id.image_player_pred_team);
 
         if(!teamName.equals("")){
             if(teamName.equals(prediction.getTeamprefix())){
@@ -105,7 +105,7 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
         }
 
         if(prediction.getTeamprefix().equals("")){
-            ivTeamIconPredicted.setImageResource(R.drawable.default_icon);
+            ivTeamIconPredicted.setImageResource(R.drawable.ic_default_icon);
         }
         else {
             ivTeamIconPredicted.setImageResource(Constants.TEAM_INFO_MAP.get(prediction.getTeamprefix()).getTeamIcon());

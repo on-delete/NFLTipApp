@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/player_name_statistic"
+            android:id="@+id/text_player_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -20,7 +20,7 @@
             android:gravity="center">
 
             <CheckBox
-                android:id="@+id/away_team_checkbox_statistic"
+                android:id="@+id/checkbox_away_team"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleX="1.5"
@@ -34,7 +34,7 @@
             android:gravity="center">
 
             <CheckBox
-                android:id="@+id/home_team_checkbox_statistic"
+                android:id="@+id/checkbox_home_team"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleX="1.5"

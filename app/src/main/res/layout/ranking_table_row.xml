@@ -7,7 +7,7 @@
     android:paddingBottom="10dp">
 
     <TextView
-        android:id="@+id/table_text_name"
+        android:id="@+id/text_player_name"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2.5"
@@ -18,7 +18,7 @@
         android:paddingEnd="20dp">
     </TextView>
     <TextView
-        android:id="@+id/table_text_points"
+        android:id="@+id/text_player_points"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

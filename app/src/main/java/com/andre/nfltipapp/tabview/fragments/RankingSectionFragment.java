@@ -29,20 +29,20 @@ public class RankingSectionFragment extends Fragment {
             userId = bundle.getString(Constants.USERID);
         }
 
-        LinearLayout llTable = (LinearLayout) rootView.findViewById(R.id.rankingTable);
+        LinearLayout llTable = (LinearLayout) rootView.findViewById(R.id.linear_ranking_table);
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         List<Ranking> rankingList = data.getRanking();
 
         for(Ranking rankingEntry : rankingList){
-            View rowView = inflater.inflate(R.layout.table_row, container, false);
+            View rowView = inflater.inflate(R.layout.ranking_table_row, container, false);
 
-            TextView tvName = (TextView) rowView.findViewById(R.id.table_text_name);
+            TextView tvName = (TextView) rowView.findViewById(R.id.text_player_name);
             tvName.setText(rankingEntry.getName());
             if(userId != null && userId.equals(rankingEntry.getUserid())){
                 tvName.setTypeface(null, Typeface.BOLD);
             }
-            TextView tvPoints = (TextView) rowView.findViewById(R.id.table_text_points) ;
+            TextView tvPoints = (TextView) rowView.findViewById(R.id.text_player_points) ;
             tvPoints.setText(rankingEntry.getPoints());
 
             llTable.addView(rowView);

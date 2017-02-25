@@ -45,14 +45,14 @@ public class LoginFragment extends Fragment {
     }
 
     private void initView(View view){
-        AppCompatButton btnLogin = (AppCompatButton) view.findViewById(R.id.btn_login);
-        TextView tvRegisterLink = (TextView) view.findViewById(R.id.tv_register);
-        etName = (TextInputEditText)view.findViewById(R.id.et_name);
-        etPassword = (TextInputEditText)view.findViewById(R.id.et_password);
+        AppCompatButton btnLogin = (AppCompatButton) view.findViewById(R.id.button_login);
+        TextView tvRegisterLink = (TextView) view.findViewById(R.id.text_register);
+        etName = (TextInputEditText)view.findViewById(R.id.text_team_name);
+        etPassword = (TextInputEditText)view.findViewById(R.id.text_password);
         etName.setText("test2");
         etPassword.setText("hallo1");
 
-        progressBar = (ProgressBar)view.findViewById(R.id.progress);
+        progressBar = (ProgressBar)view.findViewById(R.id.progress_bar);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override

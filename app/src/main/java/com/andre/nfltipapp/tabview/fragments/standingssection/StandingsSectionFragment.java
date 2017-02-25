@@ -32,14 +32,14 @@ public class StandingsSectionFragment extends Fragment {
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         final ArrayList<Standing> standingsList = data.getStandings();
 
-        btAfc = (Button) rootView.findViewById(R.id.afc_button);
+        btAfc = (Button) rootView.findViewById(R.id.button_afc);
         btAfc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeTableToAfc(new ArrayList<>(standingsList.subList(bottomAfcRange, upperAfcRange)));
             }
         });
-        btNfc = (Button) rootView.findViewById(R.id.nfc_button);
+        btNfc = (Button) rootView.findViewById(R.id.button_nfc);
         btNfc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,7 +63,7 @@ public class StandingsSectionFragment extends Fragment {
         AfcTableFragment afcTableFragment = new AfcTableFragment();
         afcTableFragment.setArguments(bundle);
 
-        getFragmentManager().beginTransaction().replace(R.id.table_fragment, afcTableFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.frame_table, afcTableFragment).commit();
     }
 
     private void changeTableToNfc(ArrayList<Standing> nfcStanding){
@@ -77,6 +77,6 @@ public class StandingsSectionFragment extends Fragment {
         NfcTableFragment nfcTableFragment = new NfcTableFragment();
         nfcTableFragment.setArguments(bundle);
 
-        getFragmentManager().beginTransaction().replace(R.id.table_fragment, nfcTableFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.frame_table, nfcTableFragment).commit();
     }
 }

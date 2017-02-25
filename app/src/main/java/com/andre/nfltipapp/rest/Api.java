@@ -1,7 +1,6 @@
 package com.andre.nfltipapp.rest;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;

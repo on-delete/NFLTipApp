@@ -124,18 +124,18 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private View initPredictionView(ViewGroup parent, final GamePrediction gamePrediction){
-        View convertView = layoutInflater.inflate(R.layout.statistics_list_item, parent, false);
+        View convertView = layoutInflater.inflate(R.layout.list_item_statistic_prediction_for_game, parent, false);
 
         TextView tvHomeScore = (TextView) convertView
-                .findViewById(R.id.home_team_score_text);
+                .findViewById(R.id.text_home_team_score);
         TextView tvAwayScore = (TextView) convertView
-                .findViewById(R.id.away_team_score_text);
+                .findViewById(R.id.text_away_team_score);
 
-        LinearLayout llStatisticsListItem = (LinearLayout)  convertView.findViewById(R.id.statistics_row);
-        ImageView ivAwayTeamIcon = (ImageView) convertView.findViewById(R.id.icon_away_team);
-        ImageView ivHomeTeamIcon = (ImageView) convertView.findViewById(R.id.icon_home_team);
-        LinearLayout llAwayTeamBackground = (LinearLayout) convertView.findViewById(R.id.away_team_logo_background);
-        LinearLayout llHomeTeamBackground = (LinearLayout) convertView.findViewById(R.id.home_team_logo_background);
+        LinearLayout llStatisticsListItem = (LinearLayout)  convertView.findViewById(R.id.linear_statistic_list_item);
+        ImageView ivAwayTeamIcon = (ImageView) convertView.findViewById(R.id.image_away_team);
+        ImageView ivHomeTeamIcon = (ImageView) convertView.findViewById(R.id.image_home_team);
+        LinearLayout llAwayTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_background_team_away);
+        LinearLayout llHomeTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_background_team_home);
 
         llStatisticsListItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,8 +159,8 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private View initPredictionBeforeSeasonView(ViewGroup parent, PredictionBeforeSeason predictionBeforeSeason) {
-        View convertView = layoutInflater.inflate(R.layout.predictions_plus_item, parent, false);
-        LinearLayout llContainer = (LinearLayout) convertView.findViewById(R.id.subitems_container);
+        View convertView = layoutInflater.inflate(R.layout.list_item_prediction_before_season, parent, false);
+        LinearLayout llContainer = (LinearLayout) convertView.findViewById(R.id.linear_subitems_container);
 
         llContainer.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.SUPERBOWL, predictionBeforeSeason.getSuperbowlTeam()), 0);
         llContainer.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.AFC_WINNER, predictionBeforeSeason.getAfcwinnerteam()), 1);
@@ -172,13 +172,13 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private View initPredictionBeforeSeasonSubView(ViewGroup parent, final PREDICTION_TYPE predictionType, final String team){
-        View subView = layoutInflater.inflate(R.layout.predictions_plus_statistic_subitem, parent, false);
+        View subView = layoutInflater.inflate(R.layout.list_subitem_statistics_prediction_before_season, parent, false);
 
-        final LinearLayout llTeamBackground = (LinearLayout) subView.findViewById(R.id.team_background);
+        final LinearLayout llTeamBackground = (LinearLayout) subView.findViewById(R.id.linear_team_background);
 
-        TextView tvPredictionType = (TextView) subView.findViewById(R.id.state_text);
-        TextView tvTeamName = (TextView) subView.findViewById(R.id.team_text);
-        ImageView ivTeamIcon = (ImageView) subView.findViewById(R.id.team_icon);
+        TextView tvPredictionType = (TextView) subView.findViewById(R.id.text_prediction_type);
+        TextView tvTeamName = (TextView) subView.findViewById(R.id.text_team_name);
+        ImageView ivTeamIcon = (ImageView) subView.findViewById(R.id.image_team_icon);
 
         setTeamInfos(team, llTeamBackground, ivTeamIcon, tvTeamName);
 
@@ -226,7 +226,7 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
     private void setTeamInfos(String team, LinearLayout llTeamBackground, ImageView ivTeamIcon, TextView tvTeamName){
         if(team.equals("")){
             llTeamBackground.setBackgroundColor(Color.parseColor("#BFBFBF"));
-            ivTeamIcon.setImageResource(R.drawable.default_icon);
+            ivTeamIcon.setImageResource(R.drawable.ic_default_icon);
             tvTeamName.setText("-");
         }
         else {
@@ -270,11 +270,11 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.activity.
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.list_view_group, parent, false);
+            convertView = layoutInflater.inflate(R.layout.list_header_view, parent, false);
         }
 
         TextView llStatisticListHeader = (TextView) convertView
-                .findViewById(R.id.listTitle);
+                .findViewById(R.id.text_list_header);
         llStatisticListHeader.setText(listTitle);
 
         return convertView;
@@ -299,7 +299,7 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                 AllPredictionsResponse resp = response.body();
                 if(response.code()==500){
                     Log.d(Constants.TAG, resp.getMessage());
-                    Snackbar.make(activity.findViewById(R.id.statisticsListView) , "Server error!", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(activity.findViewById(R.id.list_view_statistics) , "Server error!", Snackbar.LENGTH_LONG).show();
                 }
                 else{
                     Intent intent = new Intent(activity, AllPredictionsForGameActivity.class);
@@ -312,7 +312,7 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
             @Override
             public void onFailure(Call<AllPredictionsResponse> call, Throwable t) {
-                Snackbar.make(activity.findViewById(R.id.statisticsListView) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(activity.findViewById(R.id.list_view_statistics) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });
@@ -327,7 +327,7 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                 AllPredictionsBeforeSeasonResponse resp = response.body();
                 if(response.code()==500){
                     Log.d(Constants.TAG, resp.getMessage());
-                    Snackbar.make(activity.findViewById(R.id.statisticsListView) , "Server error!", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(activity.findViewById(R.id.list_view_statistics) , "Server error!", Snackbar.LENGTH_LONG).show();
                 }
                 else{
                     Intent intent = new Intent(activity, AllPredictionsBeforeSeasonActivity.class);
@@ -341,7 +341,7 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
             @Override
             public void onFailure(Call<AllPredictionsBeforeSeasonResponse> call, Throwable t) {
-                Snackbar.make(activity.findViewById(R.id.statisticsListView) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(activity.findViewById(R.id.list_view_statistics) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
         });

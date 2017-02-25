@@ -2,7 +2,6 @@ package com.andre.nfltipapp;
 
 import org.junit.Test;
 
-import java.io.CharArrayReader;
 import java.util.Calendar;
 
 import static org.junit.Assert.assertFalse;

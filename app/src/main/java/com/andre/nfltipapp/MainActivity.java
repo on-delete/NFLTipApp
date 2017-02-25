@@ -27,10 +27,10 @@ public class MainActivity extends AppCompatActivity {
 
         TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), userId);
 
-        ViewPager vpMain = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager vpMain = (ViewPager) findViewById(R.id.view_pager);
         vpMain.setAdapter(tabSectionsPagerAdapter);
 
-        tblMain = (TabLayout) findViewById(R.id.tabs);
+        tblMain = (TabLayout) findViewById(R.id.tab_host);
         tblMain.setupWithViewPager(vpMain);
 
         initTabIcons();
@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTabIcons(){
-        tblMain.getTabAt(0).setIcon(R.drawable.ranking_tab_icon_white);
-        tblMain.getTabAt(1).setIcon(R.drawable.prognosen_tab_icon_white);
-        tblMain.getTabAt(2).setIcon(R.drawable.statistic_tab_icon_white);
-        tblMain.getTabAt(3).setIcon(R.drawable.tabelle_tab_icon_white);
+        tblMain.getTabAt(0).setIcon(R.drawable.ic_tab_ranking_white);
+        tblMain.getTabAt(1).setIcon(R.drawable.ic_tab_prognosen_white);
+        tblMain.getTabAt(2).setIcon(R.drawable.ic_tab_statistic_white);
+        tblMain.getTabAt(3).setIcon(R.drawable.ic_tab_tabelle_white);
     }
 }

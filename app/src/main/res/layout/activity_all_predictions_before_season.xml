@@ -9,10 +9,10 @@
         android:layout_width="match_parent"
         android:layout_weight="5"
         android:layout_height="match_parent"
-        android:background="@drawable/football_stadium">
+        android:background="@drawable/ic_football_stadium">
 
         <TextView
-            android:id="@+id/state_text"
+            android:id="@+id/text_prediction_type"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -22,7 +22,7 @@
             android:textColor="@android:color/black"/>
 
         <ImageView
-            android:id="@+id/team_icon_statistic"
+            android:id="@+id/image_team_icon"
             android:layout_width="82dp"
             android:layout_height="55dp"
             android:layout_marginEnd="15dp"
@@ -36,7 +36,7 @@
         android:layout_weight="1">
 
         <LinearLayout
-            android:id="@+id/statistics_plus_table_layout"
+            android:id="@+id/linear_predictions_before_season_table"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"/>

@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/subtable_afc_east"
+        android:id="@+id/linear_subtable_nfc_east"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -16,13 +16,13 @@
             android:paddingEnd="15dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="@string/afc_east"
+            android:text="@string/nfc_east"
             android:textSize="16sp"
             android:background="#D8D8D8"/>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/subtable_afc_north"
+        android:id="@+id/linear_subtable_nfc_north"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -34,13 +34,13 @@
             android:paddingEnd="15dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="@string/afc_north"
+            android:text="@string/nfc_north"
             android:textSize="16sp"
             android:background="#D8D8D8"/>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/subtable_afc_south"
+        android:id="@+id/linear_subtable_nfc_south"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -52,13 +52,13 @@
             android:paddingEnd="15dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="@string/afc_south"
+            android:text="@string/nfc_south"
             android:textSize="16sp"
             android:background="#D8D8D8"/>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/subtable_afc_west"
+        android:id="@+id/linear_subtable_nfc_west"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -70,7 +70,7 @@
             android:paddingEnd="15dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
-            android:text="@string/afc_west"
+            android:text="@string/nfc_west"
             android:textSize="16sp"
             android:background="#D8D8D8"/>
     </LinearLayout>

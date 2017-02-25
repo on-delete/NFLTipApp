@@ -43,13 +43,13 @@ public class RegisterFragment extends Fragment {
     }
 
     private void initViews(View view){
-        AppCompatButton btnRegister = (AppCompatButton) view.findViewById(R.id.btn_register);
-        TextView tvLoginLink = (TextView) view.findViewById(R.id.tv_login);
-        etEmail = (TextInputEditText) view.findViewById(R.id.et_email);
-        etPassword = (TextInputEditText) view.findViewById(R.id.et_password);
-        etName = (TextInputEditText) view.findViewById(R.id.et_name);
+        AppCompatButton btnRegister = (AppCompatButton) view.findViewById(R.id.button_register);
+        TextView tvLoginLink = (TextView) view.findViewById(R.id.text_login);
+        etEmail = (TextInputEditText) view.findViewById(R.id.text_email);
+        etPassword = (TextInputEditText) view.findViewById(R.id.text_password);
+        etName = (TextInputEditText) view.findViewById(R.id.text_team_name);
 
-        progressBar = (ProgressBar) view.findViewById(R.id.progress);
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override

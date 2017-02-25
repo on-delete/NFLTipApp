@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/player_name_statistic"
+            android:id="@+id/text_player_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
@@ -14,7 +14,7 @@
             android:textSize="@dimen/font_size"/>
 
         <ImageView
-            android:id="@+id/player_pred_team_icon"
+            android:id="@+id/image_player_pred_team"
             android:layout_width="82dp"
             android:layout_height="55dp"
             android:padding="5dp"/>

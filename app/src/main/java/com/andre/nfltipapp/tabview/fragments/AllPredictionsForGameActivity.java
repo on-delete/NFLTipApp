@@ -24,15 +24,15 @@ public class AllPredictionsForGameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_statistic_for_game);
+        setContentView(R.layout.activity_all_predictions_for_game);
 
         ArrayList<GamePredictionStatistic> predictionList = getIntent().getParcelableArrayListExtra(Constants.PREDICTIONS);
         GamePrediction gamePrediction = getIntent().getParcelableExtra(Constants.GAME);
         String userId = getIntent().getStringExtra(Constants.USERID);
 
-        ImageView ivAwayTeamIcon = (ImageView) findViewById(R.id.away_team_icon_statistic);
-        ImageView ivHomeTeamIcon = (ImageView) findViewById(R.id.home_team_icon_statistic);
-        this.llAllPredictionsTable = (LinearLayout) findViewById(R.id.statistics_game_table_layout);
+        ImageView ivAwayTeamIcon = (ImageView) findViewById(R.id.image_team_icon_away);
+        ImageView ivHomeTeamIcon = (ImageView) findViewById(R.id.image_team_icon_home);
+        this.llAllPredictionsTable = (LinearLayout) findViewById(R.id.linear_predictions_for_game_table);
 
         setTitle(gamePrediction.getAwayteam() + " vs " + gamePrediction.getHometeam());
 
@@ -59,7 +59,7 @@ public class AllPredictionsForGameActivity extends AppCompatActivity {
             if(predictionTemp.getUserid().equals(userId)){
                 View view = initView(predictionTemp);
                 view.setBackgroundResource(R.drawable.bottom_border);
-                TextView tvName = (TextView) view.findViewById(R.id.player_name_statistic) ;
+                TextView tvName = (TextView) view.findViewById(R.id.text_player_name) ;
                 tvName.setTypeface(null, Typeface.BOLD);
 
                 predictionListCopy.remove(i);
@@ -72,13 +72,13 @@ public class AllPredictionsForGameActivity extends AppCompatActivity {
     }
 
     private View initView (GamePredictionStatistic prediction){
-        View rowView = getLayoutInflater().inflate(R.layout.statistic_for_game_table_row, null);
+        View rowView = getLayoutInflater().inflate(R.layout.statistic_prediction_for_game_table_row, null);
 
-        TextView tvName = (TextView) rowView.findViewById(R.id.player_name_statistic) ;
+        TextView tvName = (TextView) rowView.findViewById(R.id.text_player_name) ;
         tvName.setText(prediction.getUsername());
-        CheckBox cbAwayTeam = (CheckBox) rowView.findViewById(R.id.away_team_checkbox_statistic);
+        CheckBox cbAwayTeam = (CheckBox) rowView.findViewById(R.id.checkbox_away_team);
         cbAwayTeam.setEnabled(false);
-        CheckBox cbHomeTeam = (CheckBox) rowView.findViewById(R.id.home_team_checkbox_statistic);
+        CheckBox cbHomeTeam = (CheckBox) rowView.findViewById(R.id.checkbox_home_team);
         cbHomeTeam.setEnabled(false);
 
         if(prediction.getPredicted()==1) {

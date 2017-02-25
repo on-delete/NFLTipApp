@@ -22,32 +22,32 @@ public class AfcTableFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_table_afc, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_afc_table, container, false);
 
         List<Standing> afcStandingsList = getArguments().getParcelableArrayList(Constants.AFC_STANDINGS);
         if(afcStandingsList==null){
             afcStandingsList = new ArrayList<>();
         }
 
-        LinearLayout llSubtableAfcEast = (LinearLayout) rootView.findViewById(R.id.subtable_afc_east);
-        LinearLayout llSubtableAfcNorth = (LinearLayout) rootView.findViewById(R.id.subtable_afc_north);
-        LinearLayout llSubtableAfcSouth = (LinearLayout) rootView.findViewById(R.id.subtable_afc_south);
-        LinearLayout llSubtableAfcWest = (LinearLayout) rootView.findViewById(R.id.subtable_afc_west);
+        LinearLayout llSubtableAfcEast = (LinearLayout) rootView.findViewById(R.id.linear_subtable_afc_east);
+        LinearLayout llSubtableAfcNorth = (LinearLayout) rootView.findViewById(R.id.linear_subtable_afc_north);
+        LinearLayout llSubtableAfcSouth = (LinearLayout) rootView.findViewById(R.id.linear_subtable_afc_south);
+        LinearLayout llSubtableAfcWest = (LinearLayout) rootView.findViewById(R.id.linear_subtable_afc_west);
 
         for(int i=0; i< afcStandingsList.size(); i++){
             Standing standing = afcStandingsList.get(i);
 
-            View rowRootView = inflater.inflate(R.layout.table_row_standings, container, false);
+            View rowRootView = inflater.inflate(R.layout.standings_table_row, container, false);
 
-            LinearLayout llTableRow = (LinearLayout) rowRootView.findViewById(R.id.standings_table_row);
-            ImageView ivTeamIcon = (ImageView) rowRootView.findViewById(R.id.standings_row_team_icon);
+            LinearLayout llTableRow = (LinearLayout) rowRootView.findViewById(R.id.linear_standings_table_row);
+            ImageView ivTeamIcon = (ImageView) rowRootView.findViewById(R.id.image_team);
 
-            TextView tvTeamCityName = (TextView) rowRootView.findViewById(R.id.standings_row_team_city);
-            TextView tvTeamDivGames = (TextView) rowRootView.findViewById(R.id.standings_row_team_divgames);
-            TextView tvClinching = (TextView) rowRootView.findViewById(R.id.standings_row_team_prefix);
-            TextView tvTeamName = (TextView) rowRootView.findViewById(R.id.standings_row_team_name);
-            TextView tvTeamGames = (TextView) rowRootView.findViewById(R.id.standings_row_team_games);
-            TextView tvTeamScore = (TextView) rowRootView.findViewById(R.id.standings_row_team_score);
+            TextView tvTeamCityName = (TextView) rowRootView.findViewById(R.id.text_team_city);
+            TextView tvTeamDivGames = (TextView) rowRootView.findViewById(R.id.text_team_divgames);
+            TextView tvClinching = (TextView) rowRootView.findViewById(R.id.text_team_prefix);
+            TextView tvTeamName = (TextView) rowRootView.findViewById(R.id.text_team_name);
+            TextView tvTeamGames = (TextView) rowRootView.findViewById(R.id.text_team_games);
+            TextView tvTeamScore = (TextView) rowRootView.findViewById(R.id.text_team_score);
 
             llTableRow.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(standing.getTeamprefix()).getTeamColor()));
             ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(standing.getTeamprefix()).getTeamIcon());

@@ -4,13 +4,13 @@
     android:layout_height="wrap_content">
 
     <LinearLayout
-        android:id="@+id/subitems_container"
+        android:id="@+id/linear_subitems_container"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <LinearLayout
-        android:id="@+id/disable_overlay"
+        android:id="@+id/linear_disable_overlay"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

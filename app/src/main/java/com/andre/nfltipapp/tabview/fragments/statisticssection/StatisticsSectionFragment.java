@@ -46,7 +46,7 @@ public class StatisticsSectionFragment extends Fragment {
             userId = bundle.getString(Constants.USERID);
         }
 
-        elvStatistics = (ExpandableListView) rootView.findViewById(R.id.statisticsListView);
+        elvStatistics = (ExpandableListView) rootView.findViewById(R.id.list_view_statistics);
 
         Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
         List<PredictionsForWeek> predictionsForWeekList = data.getPredictionsForWeeks();

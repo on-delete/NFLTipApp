@@ -32,10 +32,10 @@ class TeamPickSpinnerAdapter extends ArrayAdapter<TeamInfoSpinnerObject> {
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         if(convertView==null) {
             LayoutInflater layoutInflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.spinner_item, parent, false);
+            convertView = layoutInflater.inflate(R.layout.costum_spinner_view, parent, false);
         }
 
-        TextView tvTeamName = (TextView) convertView.findViewById(R.id.text_name);
+        TextView tvTeamName = (TextView) convertView.findViewById(R.id.text_team_name);
         tvTeamName.setText(objects.get(position).getTeamName());
 
         return convertView;
@@ -48,9 +48,9 @@ class TeamPickSpinnerAdapter extends ArrayAdapter<TeamInfoSpinnerObject> {
             convertView = layoutInflater.inflate(R.layout.custom_spinner_dropwdown_view, parent, false);
         }
 
-        LinearLayout llTeamBackground = (LinearLayout) convertView.findViewById(R.id.team_background);
-        TextView tvTeamName = (TextView) convertView.findViewById(R.id.team_name);
-        ImageView ivTeamIcon = (ImageView) convertView.findViewById(R.id.team_icon);
+        LinearLayout llTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_team_background);
+        TextView tvTeamName = (TextView) convertView.findViewById(R.id.text_team_name);
+        ImageView ivTeamIcon = (ImageView) convertView.findViewById(R.id.image_team_icon);
 
         if(position!=0 && position < objects.size()){
             llTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(objects.get(position).getTeamPrefix()).getTeamColor()));

@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <ExpandableListView
-        android:id="@+id/predictionsListView"
+        android:id="@+id/list_view_predictions"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
