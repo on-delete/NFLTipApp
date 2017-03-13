@@ -340,7 +340,7 @@ function getPredictionPlus(resp, res, connection, uuid) {
 }
 
 function getFirstGameDate(connection, callback) {
-    var sql = "SELECT DATE_FORMAT(game_datetime, \"%Y-%m-%d %T\") as game_datetime from games where week = 1 AND season_type = \"REG\" ORDER BY game_datetime";
+    var sql = "SELECT DATE_FORMAT(game_datetime, \"%Y-%m-%d %T\") as game_datetime from games where season_type = \"REG\" ORDER BY game_datetime";
     connection.query(sql, function (err, rows) {
         if (err) {
             winston.info("error in database query insertNewGame");
@@ -348,7 +348,7 @@ function getFirstGameDate(connection, callback) {
             callback("");
         }
         else {
-            if (rows !== undefined) {
+            if (rows[0] !== undefined) {
                 var gameDate = rows[0].game_datetime;
                 callback(gameDate);
             }

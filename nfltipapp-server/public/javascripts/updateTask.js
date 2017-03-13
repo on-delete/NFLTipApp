@@ -171,7 +171,7 @@ function insertNewPrediction(gameid) {
             winston.info("error in database connection");
         }
         else {
-            var sql = "INSERT INTO predictions (user_id, predicted, home_team_predicted, game_id) select user_id, 'false', 'NULL', ? from user;";
+            var sql = "INSERT INTO predictions (user_id, predicted, home_team_predicted, game_id) select user_id, 'false', 'NULL', ? from user WHERE user_id <> 3;";
             var inserts = [gameid];
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {

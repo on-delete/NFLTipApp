@@ -36,7 +36,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 
-updateTask.startUpdateTask();
+/* Uncomment if automatic updates should be triggered again */
+//updateTask.startUpdateTask();
 
 app.get('/startUpdate', function (req, res) {
     updateTask.startTest();
