@@ -49,8 +49,8 @@ public class LoginFragment extends Fragment {
         TextView tvRegisterLink = (TextView) view.findViewById(R.id.text_register);
         etName = (TextInputEditText)view.findViewById(R.id.text_team_name);
         etPassword = (TextInputEditText)view.findViewById(R.id.text_password);
-        etName.setText("test2");
-        etPassword.setText("hallo1");
+        etName.setText("Andre");
+        etPassword.setText("andre");
 
         progressBar = (ProgressBar)view.findViewById(R.id.progress_bar);
 

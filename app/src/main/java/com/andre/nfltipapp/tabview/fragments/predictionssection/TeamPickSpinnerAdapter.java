@@ -57,6 +57,11 @@ class TeamPickSpinnerAdapter extends ArrayAdapter<TeamInfoSpinnerObject> {
             ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(objects.get(position).getTeamPrefix()).getTeamIcon());
             tvTeamName.setText(objects.get(position).getTeamName());
         }
+        else{
+            llTeamBackground.setBackgroundColor(Color.parseColor(Constants.DEFAULT_TEAM_BACKGROUND_COLOR));
+            tvTeamName.setText("");
+            ivTeamIcon.setImageResource(R.drawable.ic_default_icon);
+        }
 
         return convertView;
     }

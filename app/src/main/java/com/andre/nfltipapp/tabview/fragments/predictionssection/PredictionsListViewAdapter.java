@@ -57,6 +57,10 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private HashMap<String, List<?>> predictionListItems = new HashMap<>();
     private ArrayList<TeamInfoSpinnerObject> teamInfoList = new ArrayList<>();
     private ArrayList<String> teamPrefixList = new ArrayList<>();
+    private ArrayList<TeamInfoSpinnerObject> teamInfoAFCList = new ArrayList<>();
+    private ArrayList<String> teamPrefixAFCList = new ArrayList<>();
+    private ArrayList<TeamInfoSpinnerObject> teamInfoNFCList = new ArrayList<>();
+    private ArrayList<String> teamPrefixNFCList = new ArrayList<>();
 
     private String userId;
     private int lastSuperbowlSpinnerPosition = 0;
@@ -81,10 +85,10 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void initPredictionListItems(List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionBeforeSeasonList){
-        if(!Utils.isPredictionTimeOver(predictionBeforeSeasonList.get(0).getFirstgamedate(), 0)){
+        //if(!Utils.isPredictionTimeOver(predictionBeforeSeasonList.get(0).getFirstgamedate(), 0)){
             this.predictionListHeaders.add(Constants.PREDICTION_BEFORE_SEASON);
             predictionListItems.put(Constants.PREDICTION_BEFORE_SEASON, predictionBeforeSeasonList);
-        }
+        //}
 
         for(PredictionsForWeek predictionsForWeekItem : predictionsForWeekList){
             List<GamePrediction> tempGamesList = new ArrayList<>();
@@ -257,6 +261,21 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private View initPredictionBeforeSeasonView(ViewGroup parent, PredictionBeforeSeason predictionBeforeSeason) {
+        initSpinnerLists();
+
+        View convertView = layoutInflater.inflate(R.layout.list_item_prediction_before_season, parent, false);
+        LinearLayout container = (LinearLayout) convertView.findViewById(R.id.linear_subitems_container);
+
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.SUPERBOWL, predictionBeforeSeason.getSuperbowlTeam(), predictionBeforeSeason, teamInfoList, teamPrefixList), 0);
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.AFC_WINNER, predictionBeforeSeason.getAfcwinnerteam(), predictionBeforeSeason, teamInfoAFCList, teamPrefixAFCList), 1);
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.NFC_WINNER, predictionBeforeSeason.getNfcwinnerteam(), predictionBeforeSeason, teamInfoNFCList, teamPrefixNFCList), 2);
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.BEST_OFFENSE, predictionBeforeSeason.getBestoffenseteam(), predictionBeforeSeason, teamInfoList, teamPrefixList), 3);
+        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.BEST_DEFENSE, predictionBeforeSeason.getBestdefenseteam(), predictionBeforeSeason, teamInfoList, teamPrefixList), 4);
+
+        return convertView;
+    }
+
+    private void initSpinnerLists(){
         if(teamInfoList.isEmpty() && teamPrefixList.isEmpty()){
             for (String key : Constants.TEAM_INFO_MAP.keySet()) {
                 teamInfoList.add(new TeamInfoSpinnerObject(Constants.TEAM_INFO_MAP.get(key).getTeamName(), key));
@@ -271,19 +290,40 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
         }
 
-        View convertView = layoutInflater.inflate(R.layout.list_item_prediction_before_season, parent, false);
-        LinearLayout container = (LinearLayout) convertView.findViewById(R.id.linear_subitems_container);
+        if(teamInfoAFCList.isEmpty() && teamPrefixAFCList.isEmpty()){
+            for (String key : Constants.TEAM_INFO_MAP.keySet()) {
+                if(Constants.TEAM_INFO_MAP.get(key).getDivision() == Constants.DIVISION.AFC) {
+                    teamInfoAFCList.add(new TeamInfoSpinnerObject(Constants.TEAM_INFO_MAP.get(key).getTeamName(), key));
+                }
+            }
 
-        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.SUPERBOWL, predictionBeforeSeason.getSuperbowlTeam(), predictionBeforeSeason), 0);
-        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.AFC_WINNER, predictionBeforeSeason.getAfcwinnerteam(), predictionBeforeSeason), 1);
-        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.NFC_WINNER, predictionBeforeSeason.getNfcwinnerteam(), predictionBeforeSeason), 2);
-        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.BEST_OFFENSE, predictionBeforeSeason.getBestoffenseteam(), predictionBeforeSeason), 3);
-        container.addView(initPredictionBeforeSeasonSubView(parent, PREDICTION_TYPE.BEST_DEFENSE, predictionBeforeSeason.getBestdefenseteam(), predictionBeforeSeason), 4);
+            Collections.sort(teamInfoAFCList);
 
-        return convertView;
+            teamInfoAFCList.add(0, new TeamInfoSpinnerObject("", ""));
+
+            for(TeamInfoSpinnerObject object : teamInfoAFCList){
+                teamPrefixAFCList.add(object.getTeamPrefix());
+            }
+        }
+
+        if(teamInfoNFCList.isEmpty() && teamPrefixNFCList.isEmpty()){
+            for (String key : Constants.TEAM_INFO_MAP.keySet()) {
+                if(Constants.TEAM_INFO_MAP.get(key).getDivision() == Constants.DIVISION.NFC) {
+                    teamInfoNFCList.add(new TeamInfoSpinnerObject(Constants.TEAM_INFO_MAP.get(key).getTeamName(), key));
+                }
+            }
+
+            Collections.sort(teamInfoNFCList);
+
+            teamInfoNFCList.add(0, new TeamInfoSpinnerObject("", ""));
+
+            for(TeamInfoSpinnerObject object : teamInfoNFCList){
+                teamPrefixNFCList.add(object.getTeamPrefix());
+            }
+        }
     }
 
-    private View initPredictionBeforeSeasonSubView(ViewGroup parent, final PREDICTION_TYPE predictionType, String team, final PredictionBeforeSeason predictionBeforeSeason){
+    private View initPredictionBeforeSeasonSubView(ViewGroup parent, final PREDICTION_TYPE predictionType, String team, final PredictionBeforeSeason predictionBeforeSeason, final ArrayList<TeamInfoSpinnerObject> teamInfoList, final ArrayList<String> teamPrefixList){
         View subView = layoutInflater.inflate(R.layout.list_subitem_prediction_before_season, parent, false);
 
         final LinearLayout llTeamBackground = (LinearLayout) subView.findViewById(R.id.linear_team_background);
@@ -302,7 +342,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             spTeamChoice.setSelection(0, false);
         }
 
-        setTeamInfos(spTeamChoice.getSelectedItemPosition(), llTeamBackground, ivTeamIcon);
+        setTeamInfos(spTeamChoice.getSelectedItemPosition(), teamPrefixList, llTeamBackground, ivTeamIcon);
 
         initViewsToModel(predictionType, tvTeamName, spTeamChoice);
 
@@ -313,7 +353,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     userInteraction = true;
                     return;
                 }
-                if(Utils.isPredictionTimeOver(predictionBeforeSeason.getFirstgamedate(), offsetPredictionPlusTime)){
+                /*if(Utils.isPredictionTimeOver(predictionBeforeSeason.getFirstgamedate(), offsetPredictionPlusTime)){
                     Spinner spinner = (Spinner) parent;
                     switch (predictionType) {
                         case SUPERBOWL: {
@@ -341,9 +381,9 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     }
                     Snackbar.make(activity.findViewById(R.id.list_view_predictions) ,"Zusatztips sind jetzt gesperrt!", Snackbar.LENGTH_LONG).show();
                 }
-                else {
-                    sendUpdateRequest(predictionType, position, (Spinner) parent, llTeamBackground, ivTeamIcon, predictionBeforeSeason);
-                }
+                else {*/
+                    sendUpdateRequest(predictionType, position, (Spinner) parent, llTeamBackground, ivTeamIcon, predictionBeforeSeason, teamInfoList, teamPrefixList);
+                //}
             }
 
             @Override
@@ -355,9 +395,9 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         return subView;
     }
 
-    private void setTeamInfos(int position, LinearLayout teamBackground, ImageView teamIcon){
+    private void setTeamInfos(int position, ArrayList<String> teamPrefixList, LinearLayout teamBackground, ImageView teamIcon){
         if(position == 0){
-            teamBackground.setBackgroundColor(Color.parseColor("#BFBFBF"));
+            teamBackground.setBackgroundColor(Color.parseColor(Constants.DEFAULT_TEAM_BACKGROUND_COLOR));
             teamIcon.setImageResource(R.drawable.ic_default_icon);
         }
         else {
@@ -504,7 +544,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    private void sendUpdateRequest(final PREDICTION_TYPE predictionType, final int position, final Spinner spTeamChoice, final LinearLayout llTeamBackground, final ImageView ivTeamIcon, final PredictionBeforeSeason predictionBeforeSeason){
+    private void sendUpdateRequest(final PREDICTION_TYPE predictionType, final int position, final Spinner spTeamChoice, final LinearLayout llTeamBackground, final ImageView ivTeamIcon, final PredictionBeforeSeason predictionBeforeSeason, final ArrayList<TeamInfoSpinnerObject> teamInfoList, final ArrayList<String> teamPrefixList){
         final String teamPredicted = position == 0 ? "" : teamInfoList.get(position).getTeamPrefix();
         UpdatePredictionBeforeSeasonRequest updatePredictionBeforeSeasonRequest = new UpdatePredictionBeforeSeasonRequest();
         updatePredictionBeforeSeasonRequest.setTeamprefix(teamPredicted);
@@ -520,17 +560,17 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 if(response.code()==500){
                     Log.d(Constants.TAG, resp.getMessage());
                     Snackbar.make(activity.findViewById(R.id.list_view_predictions) , "Server error!", Snackbar.LENGTH_LONG).show();
-                    setSpinnerToLastValue(predictionType, spTeamChoice, llTeamBackground, ivTeamIcon);
+                    setSpinnerToLastValue(predictionType, teamPrefixList, spTeamChoice, llTeamBackground, ivTeamIcon);
                 }
                 else{
                     updateModel(predictionType, teamPredicted, spTeamChoice, predictionBeforeSeason);
-                    setTeamInfos(spTeamChoice.getSelectedItemPosition(), llTeamBackground, ivTeamIcon);
+                    setTeamInfos(spTeamChoice.getSelectedItemPosition(), teamPrefixList, llTeamBackground, ivTeamIcon);
                 }
             }
 
             @Override
             public void onFailure(Call<UpdateResponse> call, Throwable t) {
-                setSpinnerToLastValue(predictionType, spTeamChoice, llTeamBackground, ivTeamIcon);
+                setSpinnerToLastValue(predictionType, teamPrefixList, spTeamChoice, llTeamBackground, ivTeamIcon);
                 Snackbar.make(activity.findViewById(R.id.list_view_predictions) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
@@ -627,32 +667,32 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    private void setSpinnerToLastValue(PREDICTION_TYPE predictionType, Spinner spTeamChoice, LinearLayout llTeamBackground, ImageView ivTeamIcon){
+    private void setSpinnerToLastValue(PREDICTION_TYPE predictionType, ArrayList<String> teamPrefixList, Spinner spTeamChoice, LinearLayout llTeamBackground, ImageView ivTeamIcon){
         userInteraction = false;
         switch (predictionType) {
             case SUPERBOWL: {
                 spTeamChoice.setSelection(lastSuperbowlSpinnerPosition, false);
-                setTeamInfos(lastSuperbowlSpinnerPosition, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastSuperbowlSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
                 break;
             }
             case AFC_WINNER: {
                 spTeamChoice.setSelection(lastAFCSpinnerPosition, false);
-                setTeamInfos(lastAFCSpinnerPosition, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastAFCSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
                 break;
             }
             case NFC_WINNER: {
                 spTeamChoice.setSelection(lastNFCSpinnerPosition, false);
-                setTeamInfos(lastNFCSpinnerPosition, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastNFCSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
                 break;
             }
             case BEST_OFFENSE: {
                 spTeamChoice.setSelection(lastOffenseSpinnerPosition, false);
-                setTeamInfos(lastOffenseSpinnerPosition, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastOffenseSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
                 break;
             }
             case BEST_DEFENSE: {
                 spTeamChoice.setSelection(lastDefenseSpinnerPosition, false);
-                setTeamInfos(lastDefenseSpinnerPosition, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastDefenseSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
                 break;
             }
             default:
