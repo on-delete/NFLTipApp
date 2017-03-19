@@ -10,9 +10,9 @@ exports.loginUser = function (req, res) {
         "message": "",
         "userid": ""
     };
-
     utils.pool.getConnection(function (err, connection) {
         if (err) {
+            utils.handleError('loginUser - poolConnection', err);
             resp.result = "failed";
             resp.message = err.message;
             utils.sendResponse(res, resp, connection, 500);
@@ -23,6 +23,7 @@ exports.loginUser = function (req, res) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, rows) {
                 if (err) {
+                    utils.handleError('loginUser - select query from user', err);
                     resp.result = "failed";
                     resp.message = err.message;
                     utils.sendResponse(res, resp, connection, 500);
@@ -33,6 +34,7 @@ exports.loginUser = function (req, res) {
 
                         bcrypt.compare(req.body.password, password, function (err, result) {
                             if (err) {
+                                utils.handleError('loginUser - bcrypt.compare', err);
                                 resp.result = "failed";
                                 resp.message = "internal error";
                                 utils.sendResponse(res, resp, connection, 500);

@@ -11,7 +11,7 @@ exports.updatePrediction = function (req, res) {
     };
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
+            utils.handleError('updatePrediction - poolConnection', err);
             resp.result = "failed";
             resp.message = err.message;
             utils.sendResponse(res, resp, connection, 500);
@@ -30,8 +30,7 @@ exports.updatePrediction = function (req, res) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err) {
                 if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
+                    utils.handleError('updatePrediction - update query predictions', err);
                     resp.result = "failed";
                     resp.message = err.message;
                     utils.sendResponse(res, resp, connection, 500);
@@ -53,7 +52,7 @@ exports.updatePredictionPlus = function (req, res) {
     };
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
+            utils.handleError('updatePredictionPlus - poolConnection', err);
             resp.result = "failed";
             resp.message = err.message;
             utils.sendResponse(res, resp, connection, 500);
@@ -80,8 +79,7 @@ exports.updatePredictionPlus = function (req, res) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err) {
                 if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
+                    utils.handleError('updatePredictionPlus - update query predictions_plus', err);
                     resp.result = "failed";
                     resp.message = err.message;
                     utils.sendResponse(res, resp, connection, 500);

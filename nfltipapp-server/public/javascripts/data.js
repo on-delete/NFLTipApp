@@ -24,7 +24,7 @@ exports.getData = function (req, res) {
 function calculateRanking(res, resp, uuid) {
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
+            utils.handleError('calcualateRanking - poolConnection', err);
             resp.result = "failed";
             resp.message = err.message;
             utils.sendResponse(resp, res, connection, 500);
@@ -33,8 +33,7 @@ function calculateRanking(res, resp, uuid) {
             var sql = "SELECT user_name, user_id FROM user WHERE user_id <> 3;";
             connection.query(sql, function (err, rows) {
                 if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
+                    utils.handleError('calcualateRanking - select query from user', err);
                     resp.result = "failed";
                     resp.message = err.message;
                     utils.sendResponse(resp, res, connection, 500);
@@ -67,8 +66,7 @@ function calculateRanking(res, resp, uuid) {
                                 sql = mysql.format(sql, inserts);
                                 connection.query(sql, function (err, rows2) {
                                     if (err) {
-                                        winston.info("error in database query insertNewGame");
-                                        winston.info(err.message);
+                                        utils.handleError('calcualateRanking - select query from predictions', err);
                                         resp.result = "failed";
                                         resp.message = err.message;
                                         utils.sendResponse(resp, res, connection, 500);
@@ -93,8 +91,7 @@ function calculateRanking(res, resp, uuid) {
                                                         sql = mysql.format(sql, inserts);
                                                         connection.query(sql, function (err, result) {
                                                             if (err) {
-                                                                winston.info("error in database query insertNewGame");
-                                                                winston.info(err.message);
+                                                                utils.handleError('calcualateRanking - select query from predictions_plus', err);
                                                                 resp.result = "failed";
                                                                 resp.message = err.message;
                                                                 utils.sendResponse(resp, res, connection, 500);
@@ -182,8 +179,7 @@ function getPredictions(resp, res, connection, uuid) {
     sql = mysql.format(sql, inserts);
     connection.query(sql, function (err, rows) {
         if (err) {
-            winston.info("error in database query insertNewGame");
-            winston.info(err.message);
+            utils.handleError('getPredictions - select query from predictions', err);
             resp.result = "failed";
             resp.message = err.message;
             utils.sendResponse(resp, res, connection, 500);
@@ -242,8 +238,7 @@ function getStandings(resp, res, connection, uuid) {
         "ORDER BY standings.standing_id;";
     connection.query(sql, function (err, rows) {
         if (err) {
-            winston.info("error in database query insertNewGame");
-            winston.info(err.message);
+            utils.handleError('getStandings - select query from standings', err);
             resp.result = "failed";
             resp.message = err.message;
             utils.sendResponse(resp, res, connection, 500);
@@ -287,8 +282,7 @@ function getPredictionPlus(resp, res, connection, uuid) {
         sql = mysql.format(sql, inserts);
         connection.query(sql, function (err, rows) {
             if (err) {
-                winston.info("error in database query insertNewGame");
-                winston.info(err.message);
+                utils.handleError('getPredictionPlus - select query from predictions_plus', err);
                 resp.result = "failed";
                 resp.message = err.message;
                 utils.sendResponse(resp, res, connection, 500);
@@ -343,8 +337,7 @@ function getFirstGameDate(connection, callback) {
     var sql = "SELECT DATE_FORMAT(game_datetime, \"%Y-%m-%d %T\") as game_datetime from games where season_type = \"REG\" ORDER BY game_datetime";
     connection.query(sql, function (err, rows) {
         if (err) {
-            winston.info("error in database query insertNewGame");
-            winston.info(err.message);
+            utils.handleError('getFirstGameDate - select query from games', err);
             callback("");
         }
         else {
@@ -378,7 +371,7 @@ exports.getAllPredictionsForGame = function (req, res) {
     };
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
+            utils.handleError('getAllPredictionsForGame - poolConnection', err);
             resp.result = "failed";
             resp.message = err.message;
             utils.sendResponse(res, resp, connection, 500);
@@ -393,8 +386,7 @@ exports.getAllPredictionsForGame = function (req, res) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, rows) {
                 if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
+                    utils.handleError('getAllPredictionsForGame - select query from predictions', err);
                     resp.result = "failed";
                     resp.message = err.message;
                     utils.sendResponse(res, resp, connection, 500);
@@ -436,7 +428,7 @@ exports.getAllPredictionsPlusForState = function (req, res) {
     };
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
+            utils.handleError('getAllPredictionsPlusForState - poolConnection', err);
             resp.result = "failed";
             resp.message = err.message;
             utils.sendResponse(res, resp, connection, 500);
@@ -452,8 +444,7 @@ exports.getAllPredictionsPlusForState = function (req, res) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, rows) {
                 if (err) {
-                    winston.info("error in database query getAllPredictionsPlusForState");
-                    winston.info(err.message);
+                    utils.handleError('getAllPredictionsPlusForState - select query from predictions_plus', err);
                     resp.result = "failed";
                     resp.message = err.message;
                     utils.sendResponse(res, resp, connection, 500);

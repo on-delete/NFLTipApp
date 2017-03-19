@@ -3,22 +3,12 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var winston = require('winston');
 
 var login = require('./public/javascripts/login');
 var register = require('./public/javascripts/register');
 var updateTask = require('./public/javascripts/updateTask');
 var data = require('./public/javascripts/data');
 var update = require('./public/javascripts/updates');
-
-winston.add(
-    winston.transports.File, {
-        filename: 'serverlog.log',
-        level: 'info',
-        json: true,
-        timestamp: true
-    }
-);
 
 var index = require('./routes/index');
 
@@ -38,11 +28,6 @@ app.use('/', index);
 
 /* Uncomment if automatic updates should be triggered again */
 //updateTask.startUpdateTask();
-
-app.get('/startUpdate', function (req, res) {
-    updateTask.startTest();
-    res.end('Ok');
-});
 
 app.post('/nameExisting', function (req, res) {
     register.nameExisting(req, res);

@@ -13,6 +13,7 @@ exports.nameExisting = function (req, res) {
 
     utils.pool.getConnection(function (err, connection) {
         if (err) {
+            utils.handleError('nameExisting - poolConnection', err);
             resp.result = "failed";
             resp.message = err.message;
             utils.sendResponse(res, resp, connection, 500);
@@ -23,6 +24,7 @@ exports.nameExisting = function (req, res) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, rows) {
                 if (err) {
+                    utils.handleError('nameExisting - select query from user', err);
                     resp.result = "failed";
                     resp.message = err.message;
                     utils.sendResponse(res, resp, connection, 500);
@@ -49,12 +51,16 @@ exports.registerUser = function (req, res) {
     };
 
     bcrypt.hash(req.body.user.password, null, null, function (err, hash) {
-        if (err) utils.sendError(resp, err.message, res, null);
+        if (err) {
+            utils.handleError('registerUser - bcrypt.hash', err);
+            utils.sendError(resp, err.message, res, null);
+        }
         else {
             var passwordHash = hash;
 
             utils.pool.getConnection(function (err, connection) {
                 if (err) {
+                    utils.handleError('registerUser - poolConnection', err);
                     resp.result = "failed";
                     resp.message = err.message;
                     utils.sendResponse(res, resp, connection, 500);
@@ -65,6 +71,7 @@ exports.registerUser = function (req, res) {
                     sql = mysql.format(sql, inserts);
                     connection.query(sql, function (err, result) {
                         if (err) {
+                            utils.handleError('registerUser - insert query user', err);
                             resp.result = "failed";
                             resp.message = err.message;
                             utils.sendResponse(res, resp, connection, 500);
@@ -87,8 +94,7 @@ function initPredictionsForNewUser(res, resp, userId, connection) {
     sql = mysql.format(sql, inserts);
     connection.query(sql, function (err) {
         if (err) {
-            winston.info("error in database query insertNewGame");
-            winston.info(err.message);
+            utils.handleError('initPredictionsForNewUser - insert query predictions', err);
             utils.sendError(resp, err.message, res, connection, 500);
         }
         else {
@@ -103,8 +109,7 @@ function initPredictionsPlusForNewUser(res, resp, userId, connection) {
     sql = mysql.format(sql, inserts);
     connection.query(sql, function (err) {
         if (err) {
-            winston.info("error in database query insertNewGame");
-            winston.info(err.message);
+            utils.handleError('initPredictionsPlusForNewUser - insert query predictions_plus', err);
             utils.sendError(resp, err.message, res, connection, 500);
         }
         else {

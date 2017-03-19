@@ -1,7 +1,6 @@
 var utils = require('./utils');
 var mysql = require('mysql');
 var schedule = require('node-schedule');
-var winston = require('winston');
 var limit = require("simple-rate-limiter");
 var request = limit(require("request")).to(1).per(1000);
 var requestWebsite = require("request");
@@ -24,17 +23,11 @@ exports.startUpdateTask = function () {
 
     var j = schedule.scheduleJob(rule, function () {
         var d = new Date();
-        winston.info('new update is started at ' + d);
+        utils.handleInfo('new update is started at ' + d);
         updateSchedule();
         updateStandings();
         updatePredictionsPlus();
     });
-};
-
-exports.startTest = function () {
-    updateSchedule();
-    updateStandings();
-    updatePredictionsPlus();
 };
 
 function updateSchedule() {
@@ -54,7 +47,7 @@ function updateSchedule() {
 
             weeks.forEach(function (week) {
                 request(replaceValuesInSring(year, spart, week), function (error, response, body) {
-                    winston.info('Update schedule for week ' + week + ' in Part ' + spart + ' for year ' + year);
+                    utils.handleInfo('Update schedule for week ' + week + ' in Part ' + spart + ' for year ' + year);
                     if (!error && response.statusCode == 200) {
                         parseString(body, function (err, result) {
                             if (result.ss !== '') {
@@ -65,7 +58,7 @@ function updateSchedule() {
                         });
                     }
                     else {
-                        winston.info("Server request failed. " + error.message);
+                        utils.handleError('Failed request to NFL rest.', error);
                     }
                 });
             })
@@ -80,7 +73,7 @@ function replaceValuesInSring(year, stype, sweek) {
 function checkIfGameAlreadyPresent(game, week) {
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
+            utils.handleError('checkIfGameAlreadyPresent - poolConnection', err);
         }
         else {
             var sql = "SELECT * FROM games WHERE game_id = ?";
@@ -88,7 +81,7 @@ function checkIfGameAlreadyPresent(game, week) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, rows) {
                 if (err) {
-                    winston.info("error in database query checkIfGameAlreadyPresent");
+                    utils.handleError('checkIfGameAlreadyPresent - select query games', err);
                 }
                 else {
                     if (rows[0] !== undefined) {
@@ -117,7 +110,7 @@ function checkIfGameAlreadyPresent(game, week) {
 function updatePresentGame(game) {
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection updatePresentGame");
+            utils.handleError('updatePresentGame - poolConnection', err);
         }
         else {
             var sql = "UPDATE games SET game_finished=?, home_team_score=?, away_team_score=?, game_datetime=? WHERE game_id=?";
@@ -125,7 +118,7 @@ function updatePresentGame(game) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err) {
                 if (err) {
-                    winston.info("error in database query updatePresentGame");
+                    utils.handleError('updatePresentGame - update query games', err);
                 }
             });
         }
@@ -136,7 +129,7 @@ function updatePresentGame(game) {
 function insertNewGame(game, week) {
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
+            utils.handleError('insertNewGame - poolConnection', err);
         }
         else {
             var sql = "INSERT INTO games (game_id, game_datetime, game_finished, home_team_score, away_team_score, week, season_type, home_team_id, away_team_id) " +
@@ -145,8 +138,7 @@ function insertNewGame(game, week) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err) {
                 if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
+                    utils.handleError('insertNewGame - insert query games', err);
                 }
                 else {
                     insertNewPrediction(game.$.eid);
@@ -168,7 +160,7 @@ function getGameDateTime(gameId, time) {
 function insertNewPrediction(gameid) {
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
+            utils.handleError('insertNewPrediction - poolConnection', err);
         }
         else {
             var sql = "INSERT INTO predictions (user_id, predicted, home_team_predicted, game_id) select user_id, 'false', 'NULL', ? from user WHERE user_id <> 3;";
@@ -176,8 +168,7 @@ function insertNewPrediction(gameid) {
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err, result) {
                 if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
+                    utils.handleError('insertNewPrediction - insert query predictions', err);
                 }
             });
         }
@@ -198,7 +189,7 @@ function updateAFCNFCWinner(game) {
 
         utils.pool.getConnection(function (err, connection) {
             if (err) {
-                winston.info("error in database connection");
+                utils.handleError('updateAFCNFCWinner - poolConnection', err);
             }
             else {
                 var sql = "SELECT team_id, team_division FROM teams WHERE team_prefix = ?;";
@@ -206,8 +197,7 @@ function updateAFCNFCWinner(game) {
                 sql = mysql.format(sql, inserts);
                 connection.query(sql, function (err, result) {
                     if (err) {
-                        winston.info("error in database query updateAFCNFCWinner");
-                        winston.info(err.message);
+                        utils.handleError('updateAFCNFCWinner - select query teams', err);
                     }
                     else {
                         if (result[0] !== undefined) {
@@ -228,8 +218,7 @@ function updateAFCNFCWinner(game) {
                             sql = mysql.format(sql, inserts);
                             connection.query(sql, function (err) {
                                 if (err) {
-                                    winston.info("error in database query updateAFCNFCWinner");
-                                    winston.info(err.message);
+                                    utils.handleError('updateAFCNFCWinner - update query predictions_plus', err);
                                 }
                             });
                         }
@@ -254,7 +243,7 @@ function updateSuperBowlWinner(game) {
 
         utils.pool.getConnection(function (err, connection) {
             if (err) {
-                winston.info("error in database connection");
+                utils.handleError('updateSuperBowlWinner - poolConnection', err);
             }
             else {
                 var sql = "UPDATE predictions_plus " +
@@ -266,8 +255,7 @@ function updateSuperBowlWinner(game) {
                 sql = mysql.format(sql, inserts);
                 connection.query(sql, function (err, result) {
                     if (err) {
-                        winston.info("error in database query updateAFCNFCWinner");
-                        winston.info(err.message);
+                        utils.handleError('updateSuperBowlWinner - update query predictions_plus', err);
                     }
                 });
             }
@@ -338,20 +326,22 @@ function updateStandings() {
 
             insertIntoStandingsTable(standings);
         }
+        else{
+            utils.handleError('Failed request on NFL standings site', error);
+        }
     });
 }
 
 function insertIntoStandingsTable(standings) {
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
+            utils.handleError('insertIntoStandingsTable - poolConnection', err);
         }
         else {
             var sql = 'DELETE FROM standings';
             connection.query(sql, function (err) {
                 if (err) {
-                    winston.info("error in database query insertNewGame");
-                    winston.info(err.message);
+                    utils.handleError('insertIntoStandingsTable - delete query standings', err);
                     connection.destroy();
                 }
                 else {
@@ -365,8 +355,7 @@ function insertIntoStandingsTable(standings) {
                             sql = mysql.format(sql, inserts);
                             connection.query(sql, function (err) {
                                 if (err) {
-                                    winston.info("error in database query insertNewGame");
-                                    winston.info(err.message);
+                                    utils.handleError('insertIntoStandingsTable - insert query standings', err);
                                     connection.destroy();
                                 }
                                 else {
@@ -397,14 +386,16 @@ function updatePredictionsPlus() {
 
             updatePredictionsPlusInDatabase(bestOffenseTeamName, bestDefenseTeamName);
         }
+        else{
+            utils.handleError('Failed request on NFL stats site', error);
+        }
     });
 }
 
 function updatePredictionsPlusInDatabase(bestOffenseTeamName, bestDefenseTeamName) {
     utils.pool.getConnection(function (err, connection) {
         if (err) {
-            winston.info("error in database connection");
-            connection.destroy();
+            utils.handleError('updatePredictionsPlusInDatabase - poolConnection', err);
         }
         else {
             var sql = "UPDATE predictions_plus " +
@@ -418,11 +409,10 @@ function updatePredictionsPlusInDatabase(bestOffenseTeamName, bestDefenseTeamNam
             sql = mysql.format(sql, inserts);
             connection.query(sql, function (err) {
                 if (err) {
-                    winston.info("error in database query updatePredictionsPlusInDatabase");
-                    winston.info(err.message);
+                    utils.handleError('updatePredictionsPlusInDatabase - update query predictions_plus', err);
                 }
                 else {
-                    winston.info('Best offense and defence were updated');
+                    utils.handleInfo('Best offense and defence were updated');
                 }
                 connection.destroy();
             });
