@@ -29,6 +29,8 @@ import retrofit2.Callback;
 public class RegisterFragment extends Fragment {
 
     private TextInputEditText etEmail, etPassword, etName;
+    private AppCompatButton btnRegister;
+    private TextView tvLoginLink;
     private ProgressBar progressBar;
     private ApiInterface apiInterface;
 
@@ -43,8 +45,8 @@ public class RegisterFragment extends Fragment {
     }
 
     private void initViews(View view){
-        AppCompatButton btnRegister = (AppCompatButton) view.findViewById(R.id.button_register);
-        TextView tvLoginLink = (TextView) view.findViewById(R.id.text_login);
+        btnRegister = (AppCompatButton) view.findViewById(R.id.button_register);
+        tvLoginLink = (TextView) view.findViewById(R.id.text_login);
         etEmail = (TextInputEditText) view.findViewById(R.id.text_email);
         etPassword = (TextInputEditText) view.findViewById(R.id.text_password);
         etName = (TextInputEditText) view.findViewById(R.id.text_team_name);
@@ -84,6 +86,8 @@ public class RegisterFragment extends Fragment {
     }
 
     private void nameExistingProcess(final User newUser) {
+        setClickableStatus(false);
+
         NameExistRequest request = new NameExistRequest();
         request.setName(newUser.getName());
         Call<NameExistResponse> response = apiInterface.nameExist(request);
@@ -106,11 +110,13 @@ public class RegisterFragment extends Fragment {
                         }
                     }
                 }
+                setClickableStatus(true);
             }
 
             @Override
             public void onFailure(Call<NameExistResponse> call, Throwable t) {
                 progressBar.setVisibility(View.INVISIBLE);
+                setClickableStatus(true);
                 Log.d(Constants.TAG, t.getMessage());
                 Snackbar.make(getActivity().findViewById(R.id.fragment_host), "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
             }
@@ -118,6 +124,8 @@ public class RegisterFragment extends Fragment {
     }
 
     private void registerProcess(User newUser){
+        setClickableStatus(false);
+
         RegisterRequest request = new RegisterRequest();
         request.setUser(newUser);
         Call<RegisterResponse> response = apiInterface.registerUser(request);
@@ -134,11 +142,13 @@ public class RegisterFragment extends Fragment {
                 else{
                     goToLogin();
                 }
+                setClickableStatus(true);
             }
 
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                 progressBar.setVisibility(View.INVISIBLE);
+                setClickableStatus(true);
                 Log.d(Constants.TAG, t.getMessage());
                 Snackbar.make(getActivity().findViewById(R.id.fragment_host), "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
             }
@@ -150,5 +160,10 @@ public class RegisterFragment extends Fragment {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_host, login);
         ft.commit();
+    }
+
+    private void setClickableStatus(boolean status){
+        btnRegister.setClickable(status);
+        tvLoginLink.setClickable(status);
     }
 }

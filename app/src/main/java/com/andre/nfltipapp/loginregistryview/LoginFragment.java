@@ -31,6 +31,8 @@ import retrofit2.Callback;
 public class LoginFragment extends Fragment {
 
     private TextInputEditText etName, etPassword;
+    private AppCompatButton btnLogin;
+    private TextView tvRegisterLink;
     private ProgressBar progressBar;
     private ApiInterface apiInterface;
 
@@ -45,8 +47,8 @@ public class LoginFragment extends Fragment {
     }
 
     private void initView(View view){
-        AppCompatButton btnLogin = (AppCompatButton) view.findViewById(R.id.button_login);
-        TextView tvRegisterLink = (TextView) view.findViewById(R.id.text_register);
+        btnLogin = (AppCompatButton) view.findViewById(R.id.button_login);
+        tvRegisterLink = (TextView) view.findViewById(R.id.text_register);
         etName = (TextInputEditText)view.findViewById(R.id.text_team_name);
         etPassword = (TextInputEditText)view.findViewById(R.id.text_password);
         etName.setText("Andre");
@@ -79,6 +81,8 @@ public class LoginFragment extends Fragment {
     }
 
     private void loginProcess(){
+        setClickableStatus(false);
+
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setName(etName.getText().toString());
         loginRequest.setPassword(etPassword.getText().toString());
@@ -108,11 +112,13 @@ public class LoginFragment extends Fragment {
                         }
                     }
                 }
+                setClickableStatus(true);
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 progressBar.setVisibility(View.INVISIBLE);
+                setClickableStatus(true);
                 Log.d(Constants.TAG, t.getMessage());
                 Snackbar.make(getActivity().findViewById(R.id.fragment_host), "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
             }
@@ -161,5 +167,10 @@ public class LoginFragment extends Fragment {
         intent.putExtra(Constants.DATA, data);
         this.getActivity().finish();
         startActivity(intent);
+    }
+
+    private void setClickableStatus(boolean status){
+        btnLogin.setClickable(status);
+        tvRegisterLink.setClickable(status);
     }
 }
