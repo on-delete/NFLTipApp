@@ -22,7 +22,7 @@ public class Constants {
     public static final String PREDICTION_TYPE_STRING = "predictiontype";
     public static final String AFC_STANDINGS = "afcstandings";
     public static final String NFC_STANDINGS = "nfcstandings";
-    public static final String PREDICTION_BEFORE_SEASON = "Tips vor der Saison";
+    public static final String PREDICTION_BEFORE_SEASON = "Zusatztipps";
     public static final String WEEK = "Woche ";
     public static final String SHARED_PREF_FILENAME = "nfltipapp-userprefs";
 

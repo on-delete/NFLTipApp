@@ -83,10 +83,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initTabIcons(){
-        tblMain.getTabAt(0).setIcon(R.drawable.ic_tab_ranking_white);
-        tblMain.getTabAt(1).setIcon(R.drawable.ic_tab_prognosen_white);
-        tblMain.getTabAt(2).setIcon(R.drawable.ic_tab_statistic_white);
-        tblMain.getTabAt(3).setIcon(R.drawable.ic_tab_tabelle_white);
+        tblMain.getTabAt(0).setIcon(R.drawable.ic_tab_tabelle_white);
+        tblMain.getTabAt(1).setIcon(R.drawable.ic_tab_ranking_white);
+        tblMain.getTabAt(2).setIcon(R.drawable.ic_tab_prognosen_white);
+        tblMain.getTabAt(3).setIcon(R.drawable.ic_tab_statistic_white);
     }
 
     @Override
