@@ -29,4 +29,5 @@
     <string name="nfc_winner">NFC Winner</string>
     <string name="best_offense">Best Offense</string>
     <string name="best_defense">Best Defense</string>
+    <string name="logout">Ausloggen</string>
 </resources>

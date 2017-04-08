@@ -24,6 +24,7 @@ public class Constants {
     public static final String NFC_STANDINGS = "nfcstandings";
     public static final String PREDICTION_BEFORE_SEASON = "Tips vor der Saison";
     public static final String WEEK = "Woche ";
+    public static final String SHARED_PREF_FILENAME = "nfltipapp-userprefs";
 
     public static final String DEFAULT_BACKGROUND_COLOR = "#E6E6E6";
     public static final String DEFAULT_TEAM_BACKGROUND_COLOR = "#BFBFBF";

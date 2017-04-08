@@ -6,14 +6,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.MainActivity;
@@ -31,22 +29,24 @@ import retrofit2.Callback;
 
 import static com.andre.nfltipapp.Constants.SHARED_PREF_FILENAME;
 
-public class LoginFragment extends Fragment {
+public class LoggedInFragment extends Fragment{
 
-    private TextInputEditText etName, etPassword;
     private AppCompatButton btnLogin;
-    private TextView tvRegisterLink;
     private ProgressBar progressBar;
     private ApiInterface apiInterface;
     private SharedPreferences pref;
+    private String username;
+    private String password;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_login,container,false);
+        View view = inflater.inflate(R.layout.fragment_logged_in,container,false);
 
         apiInterface = Api.getInstance(getActivity()).getApiInterface();
 
         this.pref = getActivity().getApplicationContext().getSharedPreferences(SHARED_PREF_FILENAME, 0);
+        this.username = pref.getString("username", null);
+        this.password = pref.getString("password", null);
 
         initView(view);
         return view;
@@ -54,32 +54,16 @@ public class LoginFragment extends Fragment {
 
     private void initView(View view){
         btnLogin = (AppCompatButton) view.findViewById(R.id.button_login);
-        tvRegisterLink = (TextView) view.findViewById(R.id.text_register);
-        etName = (TextInputEditText)view.findViewById(R.id.text_team_name);
-        etPassword = (TextInputEditText)view.findViewById(R.id.text_password);
 
         progressBar = (ProgressBar)view.findViewById(R.id.progress_bar);
+
+        loginProcess();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(etName.getText().toString().isEmpty()){
-                    etName.setError("Kein Name angegeben!");
-                }
-                if(etPassword.getText().toString().isEmpty()){
-                    etPassword.setError("Kein Password angegeben!");
-                }
-
-                if(!etName.getText().toString().isEmpty() && !etPassword.getText().toString().isEmpty()) {
-                    progressBar.setVisibility(View.VISIBLE);
-                    loginProcess();
-                }
-            }
-        });
-        tvRegisterLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToRegister();
+                progressBar.setVisibility(View.VISIBLE);
+                loginProcess();
             }
         });
     }
@@ -88,8 +72,12 @@ public class LoginFragment extends Fragment {
         setClickableStatus(false);
 
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setName(etName.getText().toString());
-        loginRequest.setPassword(etPassword.getText().toString());
+        if(username != null) {
+            loginRequest.setName(username);
+        }
+        if(password != null) {
+            loginRequest.setPassword(password);
+        }
         Call<LoginResponse> response = apiInterface.loginUser(loginRequest);
 
         response.enqueue(new Callback<LoginResponse>() {
@@ -105,15 +93,15 @@ public class LoginFragment extends Fragment {
                     if (resp.getResult().equals(Constants.SUCCESS)) {
                         switch (resp.getMessage()) {
                             case "login_successfull":
-                                pref.edit().putString("username", etName.getText().toString()).apply();
-                                pref.edit().putString("password", etPassword.getText().toString()).apply();
                                 getDataProcess(resp.getUserId());
                                 break;
                             case "password_wrong":
-                                etPassword.setError("Falsches Password!");
+                                pref.edit().putString("password", null).apply();
+                                goToLogin();
                                 break;
                             default:
-                                etName.setError("User nicht vorhanden!");
+                                pref.edit().putString("username", null).apply();
+                                goToLogin();
                                 break;
                         }
                     }
@@ -131,7 +119,7 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    private void getDataProcess(final String userId){
+    public void getDataProcess(final String userId){
         DataRequest request = new DataRequest();
         request.setUserId(userId);
         Call<DataResponse> response = apiInterface.getData(request);
@@ -159,8 +147,8 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    private void goToRegister(){
-        Fragment register = new RegisterFragment();
+    private void goToLogin(){
+        Fragment register = new LoginFragment();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_host, register);
         ft.commit();
@@ -177,6 +165,5 @@ public class LoginFragment extends Fragment {
 
     private void setClickableStatus(boolean status){
         btnLogin.setClickable(status);
-        tvRegisterLink.setClickable(status);
     }
 }
