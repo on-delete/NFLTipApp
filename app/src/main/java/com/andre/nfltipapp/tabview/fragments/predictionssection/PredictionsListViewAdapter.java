@@ -17,6 +17,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
@@ -38,7 +39,10 @@ import com.andre.nfltipapp.tabview.fragments.AllPredictionsForGameActivity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,7 +58,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private LayoutInflater layoutInflater;
 
     private List<String> predictionListHeaders = new ArrayList<>();
-    private HashMap<String, List<?>> predictionListItems = new HashMap<>();
+    private HashMap<String, Map<String, List<GamePrediction>>> predictionListItems = new HashMap<>();
     private ArrayList<TeamInfoSpinnerObject> teamInfoList = new ArrayList<>();
     private ArrayList<String> teamPrefixList = new ArrayList<>();
     private ArrayList<TeamInfoSpinnerObject> teamInfoAFCList = new ArrayList<>();
@@ -74,6 +78,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private boolean userInteraction = true;
     private boolean userInteractionHomeCheckbox = true;
     private boolean userInteractionAwayCheckbox = true;
+    private PredictionBeforeSeason predictionBeforeSeason = null;
 
     PredictionsListViewAdapter(Activity activity, List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionBeforeSeasonList, String userId) {
         this.activity = activity;
@@ -87,42 +92,46 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     private void initPredictionListItems(List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionBeforeSeasonList){
         //if(!Utils.isPredictionTimeOver(predictionBeforeSeasonList.get(0).getFirstgamedate(), 0)){
             this.predictionListHeaders.add(Constants.PREDICTION_BEFORE_SEASON);
-            predictionListItems.put(Constants.PREDICTION_BEFORE_SEASON, predictionBeforeSeasonList);
+            for(int i = 0; i < predictionBeforeSeasonList.size(); i++){
+                PredictionBeforeSeason tempPrediction = predictionBeforeSeasonList.get(i);
+                if(tempPrediction.getUser().equals("user")){
+                    this.predictionBeforeSeason = tempPrediction;
+                }
+            }
         //}
 
         for(PredictionsForWeek predictionsForWeekItem : predictionsForWeekList){
-            List<GamePrediction> tempGamesList = new ArrayList<>();
+            Map<String, List<GamePrediction>> tempGamesPerDayList = new LinkedHashMap<>();
 
             for (GamePrediction gamePrediction : predictionsForWeekItem.getGamePredictions()){
                 if(gamePrediction.isFinished()==0){
-                    tempGamesList.add(gamePrediction);
+                    String gameDay = Utils.getGameDay(gamePrediction.getGamedatetime());
+
+                    if(tempGamesPerDayList.containsKey(gameDay)){
+                        tempGamesPerDayList.get(gameDay).add(gamePrediction);
+                    } else {
+                        List<GamePrediction> subList = new ArrayList<>();
+                        subList.add(gamePrediction);
+                        tempGamesPerDayList.put(gameDay, subList);
+                    }
                 }
             }
 
-            if(tempGamesList.size()>0){
+            if(tempGamesPerDayList.size()>0){
                 String title = Constants.WEEK + predictionsForWeekItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) : "");
                 this.predictionListHeaders.add(title);
-                this.predictionListItems.put(title, tempGamesList);
+                this.predictionListItems.put(title, tempGamesPerDayList);
             }
         }
     }
 
     @Override
     public Object getChild(int listPosition, int predictionListPosition) {
-        List<?> genericList = this.predictionListItems.get(this.predictionListHeaders.get(listPosition));
+        if(predictionBeforeSeason != null && listPosition == 0){
+            return predictionBeforeSeason;
+        }
 
-        if(genericList.get(0) instanceof GamePrediction){
-            return genericList.get(predictionListPosition);
-        }
-        else{
-            for(int i = 0; i < genericList.size(); i++){
-                PredictionBeforeSeason tempPrediction = (PredictionBeforeSeason) genericList.get(i);
-                if(tempPrediction.getUser().equals("user")){
-                    return tempPrediction;
-                }
-            }
-            return null;
-        }
+        return this.predictionListItems.get(this.predictionListHeaders.get(listPosition));
     }
 
     @Override
@@ -138,15 +147,41 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         Object listItem = getChild(listPosition, predictionListPosition);
-        if(listItem instanceof GamePrediction){
-            return initPredictionView(parent, (GamePrediction) listItem);
+        if(listItem instanceof Map){
+            Map<String, List<GamePrediction>> tempPredicitons = (Map<String, List<GamePrediction>>) listItem;
+            Set keys = tempPredicitons.keySet();
+            int i = 0;
+            for(Object key : keys){
+                String keyTemp = (String) key;
+                if(i == predictionListPosition){
+                    return initGameDayPredicitonsView(parent, keyTemp, tempPredicitons.get(keyTemp));
+                }
+                i++;
+            }
+            return null;
         }
         else {
             return initPredictionBeforeSeasonView(parent, (PredictionBeforeSeason) listItem);
         }
     }
 
-    private View initPredictionView(ViewGroup parent, final GamePrediction gamePrediction){
+    private View initGameDayPredicitonsView(ViewGroup parent, String gameDay, final List<GamePrediction> gamePrediction){
+        View convertView = layoutInflater.inflate(R.layout.list_item_prediction_per_day_list, parent, false);
+
+        TextView tvGameDay = (TextView) convertView.findViewById(R.id.text_game_day);
+        TableLayout tvPredictionList = (TableLayout) convertView.findViewById(R.id.table_predictions_for_game_root);
+
+        tvGameDay.setText(gameDay);
+
+        for(int i = 0; i<gamePrediction.size(); i++){
+            View predicitonView = initPredictionView(parent, gamePrediction.get(i));
+            tvPredictionList.addView(predicitonView);
+        }
+
+        return convertView;
+    }
+
+    private View initPredictionView(ViewGroup parent, GamePrediction gamePrediction){
         View convertView = layoutInflater.inflate(R.layout.list_item_prediction_for_game, parent, false);
 
         final LinearLayout llDisableOverlay = (LinearLayout) convertView.findViewById(R.id.linear_disable_overlay);
@@ -158,8 +193,12 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         ImageView ivHomeTeamIcon = (ImageView) convertView.findViewById(R.id.image_home_team);
         LinearLayout llAwayTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_background_team_away);
         LinearLayout llHomeTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_background_team_home);
+        TextView tvGameTime = (TextView) convertView.findViewById(R.id.text_prediction_game_time);
+
+        tvGameTime.setText(Utils.getGameTime(gamePrediction.getGamedatetime()));
 
         llAwayTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamColor()));
+        tvGameTime.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamColor()));
         llHomeTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamColor()));
 
         ivAwayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamIcon());
@@ -440,14 +479,11 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int listPosition) {
-        List<?> genericList = this.predictionListItems.get(this.predictionListHeaders.get(listPosition));
-
-        if(genericList.get(0) instanceof GamePrediction){
-            return genericList.size();
-        }
-        else{
+        if(predictionBeforeSeason != null && listPosition == 0){
             return 1;
         }
+
+        return this.predictionListItems.get(this.predictionListHeaders.get(listPosition)).size();
     }
 
     @Override
