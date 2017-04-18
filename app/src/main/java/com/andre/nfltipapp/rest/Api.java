@@ -75,12 +75,12 @@ public class Api {
         } catch (Exception e) {
             e.printStackTrace();
             return new OkHttpClient.Builder()
-                    .connectTimeout(2, TimeUnit.SECONDS)
+                    .connectTimeout(3, TimeUnit.SECONDS)
                     .build();
         }
 
         return new OkHttpClient.Builder()
-                .connectTimeout(2, TimeUnit.SECONDS)
+                .connectTimeout(3, TimeUnit.SECONDS)
                 .sslSocketFactory(sslContext.getSocketFactory())
                 .build();
     }

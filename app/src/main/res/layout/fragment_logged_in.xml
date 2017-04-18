@@ -22,7 +22,8 @@
         android:background="@color/colorPrimary"
         android:textColor="@android:color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:visibility="invisible"/>
 
     <ProgressBar
         style="@style/Base.Widget.AppCompat.ProgressBar"

@@ -62,15 +62,14 @@ public class LoggedInFragment extends Fragment{
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
+                btnLogin.setVisibility(View.INVISIBLE);
                 loginProcess();
             }
         });
     }
 
     private void loginProcess(){
-        setClickableStatus(false);
-
+        progressBar.setVisibility(View.VISIBLE);
         LoginRequest loginRequest = new LoginRequest();
         if(username != null) {
             loginRequest.setName(username);
@@ -88,6 +87,7 @@ public class LoggedInFragment extends Fragment{
                 if(response.code()==500){
                     Log.d(Constants.TAG, resp.getMessage());
                     Snackbar.make(getActivity().findViewById(R.id.fragment_host),"Server error!", Snackbar.LENGTH_LONG).show();
+                    btnLogin.setVisibility(View.VISIBLE);
                 }
                 else {
                     if (resp.getResult().equals(Constants.SUCCESS)) {
@@ -111,8 +111,8 @@ public class LoggedInFragment extends Fragment{
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
+                btnLogin.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
-                setClickableStatus(true);
                 Log.d(Constants.TAG, t.getMessage());
                 Snackbar.make(getActivity().findViewById(R.id.fragment_host), "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
             }
@@ -120,6 +120,7 @@ public class LoggedInFragment extends Fragment{
     }
 
     public void getDataProcess(final String userId){
+        progressBar.setVisibility(View.VISIBLE);
         DataRequest request = new DataRequest();
         request.setUserId(userId);
         Call<DataResponse> response = apiInterface.getData(request);
@@ -132,6 +133,7 @@ public class LoggedInFragment extends Fragment{
                 if(response.code()==500){
                     Log.d(Constants.TAG, resp.getMessage());
                     Snackbar.make(getActivity().findViewById(R.id.fragment_host), "Server error!", Snackbar.LENGTH_LONG).show();
+                    btnLogin.setVisibility(View.VISIBLE);
                 }
                 else {
                     goToMainActivity(userId, resp.getData());
@@ -140,6 +142,7 @@ public class LoggedInFragment extends Fragment{
 
             @Override
             public void onFailure(Call<DataResponse> call, Throwable t) {
+                btnLogin.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
                 Log.d(Constants.TAG, t.getMessage());
                 Snackbar.make(getActivity().findViewById(R.id.fragment_host), "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();

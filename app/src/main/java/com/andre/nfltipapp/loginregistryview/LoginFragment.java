@@ -132,6 +132,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void getDataProcess(final String userId){
+        progressBar.setVisibility(View.VISIBLE);
         DataRequest request = new DataRequest();
         request.setUserId(userId);
         Call<DataResponse> response = apiInterface.getData(request);

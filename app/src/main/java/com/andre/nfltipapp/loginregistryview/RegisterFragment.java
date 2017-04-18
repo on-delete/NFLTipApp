@@ -124,6 +124,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void registerProcess(User newUser){
+        progressBar.setVisibility(View.VISIBLE);
         setClickableStatus(false);
 
         RegisterRequest request = new RegisterRequest();
