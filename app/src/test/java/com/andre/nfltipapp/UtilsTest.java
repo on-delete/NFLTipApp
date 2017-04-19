@@ -40,8 +40,10 @@ public class UtilsTest {
     @Test
     public void getGameDay_should_return_day(){
         Calendar testDate = Calendar.getInstance();
+        Calendar testDateUS = Calendar.getInstance();
+        testDateUS.add(Calendar.HOUR, -7);
 
-        String testDateString = testDate.get(Calendar.YEAR) + "-" + (testDate.get(Calendar.MONTH) + 1) + "-" + testDate.get(Calendar.DAY_OF_MONTH) + " " + (testDate.get(Calendar.HOUR) < 10 ? ("0" + testDate.get(Calendar.HOUR)) : testDate.get(Calendar.HOUR)) + ":" + (testDate.get(Calendar.MINUTE) < 10 ? ("0" + testDate.get(Calendar.MINUTE)) : testDate.get(Calendar.MINUTE)) + ":" + (testDate.get(Calendar.SECOND) < 10 ? ("0" + testDate.get(Calendar.SECOND)) : testDate.get(Calendar.SECOND)) + " " + (testDate.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM");
+        String testDateString = testDateUS.get(Calendar.YEAR) + "-" + (testDateUS.get(Calendar.MONTH) + 1) + "-" + testDateUS.get(Calendar.DAY_OF_MONTH) + " " + (testDateUS.get(Calendar.HOUR) < 10 ? ("0" + testDateUS.get(Calendar.HOUR)) : testDateUS.get(Calendar.HOUR)) + ":" + (testDateUS.get(Calendar.MINUTE) < 10 ? ("0" + testDateUS.get(Calendar.MINUTE)) : testDateUS.get(Calendar.MINUTE)) + ":" + (testDateUS.get(Calendar.SECOND) < 10 ? ("0" + testDateUS.get(Calendar.SECOND)) : testDateUS.get(Calendar.SECOND)) + " " + (testDateUS.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM");
         String expectedDateString = Utils.getWeekdayName(testDate.get(Calendar.DAY_OF_WEEK)) + " - " + testDate.get(Calendar.DAY_OF_MONTH) + "." + (testDate.get(Calendar.MONTH) + 1) + "." + testDate.get(Calendar.YEAR);
 
         assertEquals("Dates should be equal", expectedDateString, Utils.getGameDay(testDateString));
