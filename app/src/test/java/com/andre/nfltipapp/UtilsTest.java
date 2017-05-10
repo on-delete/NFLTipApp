@@ -41,7 +41,7 @@ public class UtilsTest {
     public void getGameDay_should_return_day(){
         Calendar testDate = Calendar.getInstance();
         Calendar testDateUS = Calendar.getInstance();
-        testDateUS.add(Calendar.HOUR, -7);
+        testDateUS.set(Calendar.HOUR, 1);
 
         String testDateString = testDateUS.get(Calendar.YEAR) + "-" + (testDateUS.get(Calendar.MONTH) + 1) + "-" + testDateUS.get(Calendar.DAY_OF_MONTH) + " " + (testDateUS.get(Calendar.HOUR) < 10 ? ("0" + testDateUS.get(Calendar.HOUR)) : testDateUS.get(Calendar.HOUR)) + ":" + (testDateUS.get(Calendar.MINUTE) < 10 ? ("0" + testDateUS.get(Calendar.MINUTE)) : testDateUS.get(Calendar.MINUTE)) + ":" + (testDateUS.get(Calendar.SECOND) < 10 ? ("0" + testDateUS.get(Calendar.SECOND)) : testDateUS.get(Calendar.SECOND)) + " " + (testDateUS.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM");
         String expectedDateString = Utils.getWeekdayName(testDate.get(Calendar.DAY_OF_WEEK)) + " - " + testDate.get(Calendar.DAY_OF_MONTH) + "." + (testDate.get(Calendar.MONTH) + 1) + "." + testDate.get(Calendar.YEAR);
@@ -53,10 +53,52 @@ public class UtilsTest {
     public void getGameTime_should_return_time(){
         Calendar testDate = Calendar.getInstance();
         Calendar testDateUS = Calendar.getInstance();
-        testDateUS.add(Calendar.HOUR, -7);
+        testDateUS.set(Calendar.HOUR, 1);
+        testDateUS.set(Calendar.MINUTE, 0);
+        testDateUS.set(Calendar.SECOND, 0);
+        testDateUS.set(Calendar.AM_PM, Calendar.PM);
+
+        //Test both timezones are in standard time = +7hrs
+        testDate.set(Calendar.MONTH, 0);
+        testDate.set(Calendar.DAY_OF_MONTH, 10);
+        testDateUS.set(Calendar.MONTH, 0);
+        testDateUS.set(Calendar.DAY_OF_MONTH, 10);
 
         String testDateString = testDateUS.get(Calendar.YEAR) + "-" + (testDateUS.get(Calendar.MONTH) + 1) + "-" + testDateUS.get(Calendar.DAY_OF_MONTH) + " " + (testDateUS.get(Calendar.HOUR) < 10 ? ("0" + testDateUS.get(Calendar.HOUR)) : testDateUS.get(Calendar.HOUR)) + ":" + (testDateUS.get(Calendar.MINUTE) < 10 ? ("0" + testDateUS.get(Calendar.MINUTE)) : testDateUS.get(Calendar.MINUTE)) + ":" + (testDateUS.get(Calendar.SECOND) < 10 ? ("0" + testDateUS.get(Calendar.SECOND)) : testDateUS.get(Calendar.SECOND)) + " " + (testDateUS.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM");
-        String expectedDateString = (testDate.get(Calendar.HOUR_OF_DAY) < 10 ? ("0" + testDate.get(Calendar.HOUR_OF_DAY)) : testDate.get(Calendar.HOUR_OF_DAY)) + ":" + (testDate.get(Calendar.MINUTE) < 10 ? ("0" + testDate.get(Calendar.MINUTE)) : testDate.get(Calendar.MINUTE));
+        String expectedDateString = "19:00";
+
+        assertEquals("Times should be equal", expectedDateString, Utils.getGameTime(testDateString));
+
+        //us timezone is in daylight time = +6hrs
+        testDate.set(Calendar.MONTH, 2);
+        testDate.set(Calendar.DAY_OF_MONTH, 14);
+        testDateUS.set(Calendar.MONTH, 2);
+        testDateUS.set(Calendar.DAY_OF_MONTH, 14);
+
+        testDateString = testDateUS.get(Calendar.YEAR) + "-" + (testDateUS.get(Calendar.MONTH) + 1) + "-" + testDateUS.get(Calendar.DAY_OF_MONTH) + " " + (testDateUS.get(Calendar.HOUR) < 10 ? ("0" + testDateUS.get(Calendar.HOUR)) : testDateUS.get(Calendar.HOUR)) + ":" + (testDateUS.get(Calendar.MINUTE) < 10 ? ("0" + testDateUS.get(Calendar.MINUTE)) : testDateUS.get(Calendar.MINUTE)) + ":" + (testDateUS.get(Calendar.SECOND) < 10 ? ("0" + testDateUS.get(Calendar.SECOND)) : testDateUS.get(Calendar.SECOND)) + " " + (testDateUS.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM");
+        expectedDateString = "18:00";
+
+        assertEquals("Times should be equal", expectedDateString, Utils.getGameTime(testDateString));
+
+        //both timezones are in daylight = +7hrs
+        testDate.set(Calendar.MONTH, 6);
+        testDate.set(Calendar.DAY_OF_MONTH, 14);
+        testDateUS.set(Calendar.MONTH, 6);
+        testDateUS.set(Calendar.DAY_OF_MONTH, 14);
+
+        testDateString = testDateUS.get(Calendar.YEAR) + "-" + (testDateUS.get(Calendar.MONTH) + 1) + "-" + testDateUS.get(Calendar.DAY_OF_MONTH) + " " + (testDateUS.get(Calendar.HOUR) < 10 ? ("0" + testDateUS.get(Calendar.HOUR)) : testDateUS.get(Calendar.HOUR)) + ":" + (testDateUS.get(Calendar.MINUTE) < 10 ? ("0" + testDateUS.get(Calendar.MINUTE)) : testDateUS.get(Calendar.MINUTE)) + ":" + (testDateUS.get(Calendar.SECOND) < 10 ? ("0" + testDateUS.get(Calendar.SECOND)) : testDateUS.get(Calendar.SECOND)) + " " + (testDateUS.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM");
+        expectedDateString = "19:00";
+
+        assertEquals("Times should be equal", expectedDateString, Utils.getGameTime(testDateString));
+
+        //europe is in standard time again = +6hrs
+        testDate.set(Calendar.MONTH, 10);
+        testDate.set(Calendar.DAY_OF_MONTH, 1);
+        testDateUS.set(Calendar.MONTH, 10);
+        testDateUS.set(Calendar.DAY_OF_MONTH, 1);
+
+        testDateString = testDateUS.get(Calendar.YEAR) + "-" + (testDateUS.get(Calendar.MONTH) + 1) + "-" + testDateUS.get(Calendar.DAY_OF_MONTH) + " " + (testDateUS.get(Calendar.HOUR) < 10 ? ("0" + testDateUS.get(Calendar.HOUR)) : testDateUS.get(Calendar.HOUR)) + ":" + (testDateUS.get(Calendar.MINUTE) < 10 ? ("0" + testDateUS.get(Calendar.MINUTE)) : testDateUS.get(Calendar.MINUTE)) + ":" + (testDateUS.get(Calendar.SECOND) < 10 ? ("0" + testDateUS.get(Calendar.SECOND)) : testDateUS.get(Calendar.SECOND)) + " " + (testDateUS.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM");
+        expectedDateString = "18:00";
 
         assertEquals("Times should be equal", expectedDateString, Utils.getGameTime(testDateString));
     }

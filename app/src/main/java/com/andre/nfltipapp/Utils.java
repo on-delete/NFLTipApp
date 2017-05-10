@@ -17,9 +17,10 @@ public class Utils {
     private static Calendar getESTTimeFromGameTime(String gameTime){
         try {
             DateFormat sdf = new SimpleDateFormat("y-M-d h:m:s a", Locale.US);
-            Calendar targetCalendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
-            sdf.setTimeZone(TimeZone.getTimeZone("EST"));
+            sdf.setTimeZone(TimeZone.getTimeZone("America/New_York"));
             Date targetDate = sdf.parse(gameTime);
+
+            Calendar targetCalendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Berlin"));
             targetCalendar.setTime(targetDate);
             return targetCalendar;
         } catch (ParseException e) {
