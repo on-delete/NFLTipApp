@@ -57,7 +57,7 @@ public class Constants {
         put("OAK", new TeamInfo("Oakland", "Raiders", DIVISION.AFC, R.drawable.ic_oak, "#1E1E1E"));
         put("KC", new TeamInfo("Kansas City", "Chiefs", DIVISION.AFC, R.drawable.ic_kc, "#CF1933"));
         put("DEN", new TeamInfo("Denver", "Broncos", DIVISION.AFC, R.drawable.ic_den, "#022858"));
-        put("SD", new TeamInfo("San Diego", "Chargers", DIVISION.AFC, R.drawable.ic_sd, "#022651"));
+        put("LAC", new TeamInfo("Los Angeles", "Chargers", DIVISION.AFC, R.drawable.ic_sd, "#022651"));
         put("DAL", new TeamInfo("Dallas", "Cowboys", DIVISION.NFC, R.drawable.ic_dal, "#A5ACB0"));
         put("NYG", new TeamInfo("New York", "Giants", DIVISION.NFC, R.drawable.ic_nyg, "#023B79"));
         put("WAS", new TeamInfo("Washington", "Redskins", DIVISION.NFC, R.drawable.ic_was, "#5A1911"));
