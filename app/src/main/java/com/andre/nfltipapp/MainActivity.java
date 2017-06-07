@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.andre.nfltipapp.loginregistryview.LoginActivity;
+import com.andre.nfltipapp.model.Data;
 import com.andre.nfltipapp.tabview.TabSectionsPagerAdapter;
 
 import static com.andre.nfltipapp.Constants.SHARED_PREF_FILENAME;
@@ -27,6 +28,11 @@ public class MainActivity extends AppCompatActivity {
         pref = getApplicationContext().getSharedPreferences(SHARED_PREF_FILENAME, 0);
 
         String userId = getIntent().getStringExtra(Constants.USERID);
+        Data data = getIntent().getParcelableExtra(Constants.DATA);
+
+        DataService dataService = new DataService();
+        dataService.setData(data);
+        dataService.setUserId(userId);
 
         Toolbar tbMain = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(tbMain);
@@ -43,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(Constants.TAB_NAME_LIST[0]);
         }
 
-        TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), userId);
+        TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), dataService);
 
         ViewPager vpMain = (ViewPager) findViewById(R.id.view_pager);
         vpMain.setAdapter(tabSectionsPagerAdapter);

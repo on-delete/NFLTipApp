@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
+import com.andre.nfltipapp.DataService;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
 import com.andre.nfltipapp.tabview.fragments.model.Ranking;
@@ -24,22 +25,21 @@ public class RankingSectionFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_section_ranking, container, false);
 
         Bundle bundle = this.getArguments();
-        String userId = "";
+        DataService dataService = null;
         if (bundle != null) {
-            userId = bundle.getString(Constants.USERID);
+            dataService = bundle.getParcelable("dataService");
         }
 
         LinearLayout llTable = (LinearLayout) rootView.findViewById(R.id.linear_ranking_table);
 
-        Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
-        List<Ranking> rankingList = data.getRanking();
+        List<Ranking> rankingList = dataService.getData().getRanking();
 
         for(Ranking rankingEntry : rankingList){
             View rowView = inflater.inflate(R.layout.ranking_table_row, container, false);
 
             TextView tvName = (TextView) rowView.findViewById(R.id.text_player_name);
             tvName.setText(rankingEntry.getName());
-            if(userId != null && userId.equals(rankingEntry.getUserid())){
+            if(dataService.getUserId() != null && dataService.getUserId().equals(rankingEntry.getUserid())){
                 tvName.setTypeface(null, Typeface.BOLD);
             }
             TextView tvPoints = (TextView) rowView.findViewById(R.id.text_player_points) ;

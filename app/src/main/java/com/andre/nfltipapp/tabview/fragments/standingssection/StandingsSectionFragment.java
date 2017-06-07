@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.andre.nfltipapp.Constants;
+import com.andre.nfltipapp.DataService;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
 import com.andre.nfltipapp.tabview.fragments.standingssection.model.Standing;
@@ -29,8 +30,13 @@ public class StandingsSectionFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_section_standings, container, false);
 
-        Data data = getActivity().getIntent().getParcelableExtra(Constants.DATA);
-        final ArrayList<Standing> standingsList = data.getStandings();
+        Bundle bundle = this.getArguments();
+        DataService dataService = null;
+        if (bundle != null) {
+            dataService = bundle.getParcelable("dataService");
+        }
+
+        final ArrayList<Standing> standingsList = dataService.getData().getStandings();
 
         btAfc = (Button) rootView.findViewById(R.id.button_afc);
         btAfc.setOnClickListener(new View.OnClickListener() {
