@@ -1,12 +1,21 @@
 package com.andre.nfltipapp;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.andre.nfltipapp.model.Data;
+import com.andre.nfltipapp.model.DataRequest;
+import com.andre.nfltipapp.model.DataResponse;
+import com.andre.nfltipapp.rest.Api;
+import com.andre.nfltipapp.rest.ApiInterface;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class DataService implements Parcelable{
 
@@ -39,7 +48,7 @@ public class DataService implements Parcelable{
 
         this.userId = parcel.readString();
 
-        dataUpdatedListenerList = new ArrayList<>();
+        this.dataUpdatedListenerList = new ArrayList<>();
         parcel.readArrayList(DataUpdatedListener.class.getClassLoader());
     }
 
@@ -51,9 +60,47 @@ public class DataService implements Parcelable{
         this.dataUpdatedListenerList.remove(listener);
     }
 
-    public void dataUpdated(Data newData) {
+    public void dataUpdate(Context context) {
+        getDataFromServer(context);
+    }
+
+    private void getDataFromServer(Context context){
+        DataRequest request = new DataRequest();
+        request.setUserId(getUserId());
+        ApiInterface apiInterface = Api.getInstance(context).getApiInterface();
+        Call<DataResponse> response = apiInterface.getData(request);
+
+        response.enqueue(new Callback<DataResponse>() {
+            @Override
+            public void onResponse(Call<DataResponse> call, retrofit2.Response<DataResponse> response) {
+                DataResponse resp = response.body();
+                if(response.code()==500){
+                    Log.d(Constants.TAG, resp.getMessage());
+                    notifyFailure("Server error!");
+                }
+                else {
+                    Log.d(Constants.TAG, resp.getData().toString());
+                    notifyDataUpdate(resp.getData());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataResponse> call, Throwable t) {
+                Log.d(Constants.TAG, t.getMessage());
+                notifyFailure("Server nicht erreichbar!");
+            }
+        });
+    }
+
+    private void notifyDataUpdate(Data data){
         for (DataUpdatedListener dataUpdatedListener : this.dataUpdatedListenerList) {
-            dataUpdatedListener.onDataUpdated(newData);
+            dataUpdatedListener.onDataUpdated(data);
+        }
+    }
+
+    private void notifyFailure(String error){
+        for (DataUpdatedListener dataUpdatedListener : this.dataUpdatedListenerList) {
+            dataUpdatedListener.onFailure(error);
         }
     }
 

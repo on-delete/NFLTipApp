@@ -4,4 +4,6 @@ import com.andre.nfltipapp.model.Data;
 
 public interface DataUpdatedListener {
     void onDataUpdated(Data data);
+
+    void onFailure(String error);
 }

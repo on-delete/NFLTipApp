@@ -59,6 +59,14 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         initStatisticListItems(predictionsForWeekList, predictionBeforeSeasonList);
     }
 
+    public void updateLists(List<PredictionsForWeek> predictionsForWeeks, List<PredictionBeforeSeason> predictionBeforeSeason) {
+        this.statisticListHeaders = new ArrayList<>();
+        this.statisticListItems = new HashMap<>();
+
+        initStatisticListItems(predictionsForWeeks, predictionBeforeSeason);
+        notifyDataSetChanged();
+    }
+
     private void initStatisticListItems(List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionBeforeSeasonList){
         if(Utils.isPredictionTimeOver(predictionBeforeSeasonList.get(0).getFirstgamedate(), 0)){
             this.statisticListHeaders.add(Constants.PREDICTION_BEFORE_SEASON);

@@ -8,11 +8,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.TextView;
 
-import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.DataService;
 import com.andre.nfltipapp.DataUpdatedListener;
 import com.andre.nfltipapp.R;
@@ -53,9 +50,8 @@ public class StatisticsSectionFragment extends Fragment {
         List<PredictionsForWeek> predictionsForWeekList = dataService.getData().getPredictionsForWeeks();
         List<PredictionBeforeSeason> predictionsBeforeSeasonList = dataService.getData().getPredictionBeforeSeason();
 
-        ExpandableListAdapter elvStatisticsAdapter = new StatisticsListViewAdapter(activity, predictionsForWeekList, predictionsBeforeSeasonList, dataService.getUserId());
+        final StatisticsListViewAdapter elvStatisticsAdapter = new StatisticsListViewAdapter(activity, predictionsForWeekList, predictionsBeforeSeasonList, dataService.getUserId());
         elvStatistics.setAdapter(elvStatisticsAdapter);
-        elvStatistics.setEmptyView(emptyText);
 
         elvStatistics.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
@@ -72,15 +68,22 @@ public class StatisticsSectionFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                dataService.dataUpdated(null);
-                swipeRefreshLayout.setRefreshing(false);
+                dataService.dataUpdate(activity.getApplicationContext());
             }
         });
 
         dataService.addDataUpdateListener(new DataUpdatedListener() {
             @Override
             public void onDataUpdated(Data data) {
-                System.out.println("update data statistics");
+                elvStatisticsAdapter.updateLists(data.getPredictionsForWeeks(), data.getPredictionBeforeSeason());
+                if(swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
             }
         });
 

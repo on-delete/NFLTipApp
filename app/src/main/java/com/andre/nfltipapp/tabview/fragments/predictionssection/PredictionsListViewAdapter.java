@@ -89,6 +89,15 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         initPredictionListItems(predictionsForWeekList, predictionBeforeSeasonList);
     }
 
+    public void updateLists(List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionBeforeSeasonList){
+        this.predictionListHeaders = new ArrayList<>();
+        this.predictionBeforeSeason = null;
+        this.predictionListItems = new HashMap<>();
+
+        initPredictionListItems(predictionsForWeekList, predictionBeforeSeasonList);
+        notifyDataSetChanged();
+    }
+
     private void initPredictionListItems(List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionBeforeSeasonList){
         //if(!Utils.isPredictionTimeOver(predictionBeforeSeasonList.get(0).getFirstgamedate(), 0)){
             this.predictionListHeaders.add(Constants.PREDICTION_BEFORE_SEASON);

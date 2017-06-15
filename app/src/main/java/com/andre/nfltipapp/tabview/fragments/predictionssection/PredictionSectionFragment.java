@@ -8,10 +8,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
-import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.DataService;
 import com.andre.nfltipapp.DataUpdatedListener;
 import com.andre.nfltipapp.R;
@@ -52,7 +50,7 @@ public class PredictionSectionFragment extends Fragment {
         List<PredictionsForWeek> predictionsForWeekList = dataService.getData().getPredictionsForWeeks();
         List<PredictionBeforeSeason> predictionBeforeSeasonList = dataService.getData().getPredictionBeforeSeason();
 
-        ExpandableListAdapter elvPredictionsAdapter = new PredictionsListViewAdapter(activity, predictionsForWeekList, predictionBeforeSeasonList, dataService.getUserId());
+        final PredictionsListViewAdapter elvPredictionsAdapter = new PredictionsListViewAdapter(activity, predictionsForWeekList, predictionBeforeSeasonList, dataService.getUserId());
         elvPredictions.setAdapter(elvPredictionsAdapter);
 
         elvPredictions.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
@@ -70,15 +68,22 @@ public class PredictionSectionFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                dataService.dataUpdated(null);
-                swipeRefreshLayout.setRefreshing(false);
+                dataService.dataUpdate(activity.getApplicationContext());
             }
         });
 
         dataService.addDataUpdateListener(new DataUpdatedListener() {
             @Override
             public void onDataUpdated(Data data) {
-                System.out.println("update data prediction");
+                elvPredictionsAdapter.updateLists(data.getPredictionsForWeeks(), data.getPredictionBeforeSeason());
+                if(swipeRefreshLayout.isRefreshing()) {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+
             }
         });
 
