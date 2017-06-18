@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         ViewPager vpMain = (ViewPager) findViewById(R.id.view_pager);
         vpMain.setAdapter(tabSectionsPagerAdapter);
+        vpMain.setOffscreenPageLimit(Constants.TAB_NAME_LIST.length);
 
         tblMain = (TabLayout) findViewById(R.id.tab_host);
         tblMain.setupWithViewPager(vpMain);
