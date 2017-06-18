@@ -31,7 +31,16 @@ public class GamePrediction implements Parcelable{
         return gameid;
     }
 
-    public String getGamedatetime() { return gamedatetime + " PM"; }
+    public String getGamedatetime() {
+        String am = " AM";
+        String pm = " PM";
+
+        if(this.gamedatetime.contains("09:30")){
+            return gamedatetime + am;
+        }
+
+        return gamedatetime + pm;
+    }
 
     public String getHometeam() {
         return hometeam;
