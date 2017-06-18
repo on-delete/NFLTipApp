@@ -47,9 +47,6 @@ public class DataService implements Parcelable{
         this.data = parcel.readParcelable(Data.class.getClassLoader());
 
         this.userId = parcel.readString();
-
-        this.dataUpdatedListenerList = new ArrayList<>();
-        parcel.readArrayList(DataUpdatedListener.class.getClassLoader());
     }
 
     public void addDataUpdateListener(DataUpdatedListener listener) {
@@ -93,6 +90,8 @@ public class DataService implements Parcelable{
     }
 
     private void notifyDataUpdate(Data data){
+        this.data = data;
+
         for (DataUpdatedListener dataUpdatedListener : this.dataUpdatedListenerList) {
             dataUpdatedListener.onDataUpdated(data);
         }
@@ -113,7 +112,6 @@ public class DataService implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.data, flags);
         dest.writeString(this.userId);
-        dest.writeList(dataUpdatedListenerList);
     }
 
     public static final Parcelable.Creator CREATOR =
