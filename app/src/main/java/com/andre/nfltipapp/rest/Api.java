@@ -60,12 +60,12 @@ public class Api {
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
-            InputStream certInputStream = context.getResources().openRawResource(R.raw.server_cert);
+            InputStream certInputStream = context.getResources().openRawResource(R.raw.privkey);
             BufferedInputStream bis = new BufferedInputStream(certInputStream);
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             while (bis.available() > 0) {
                 Certificate cert = certificateFactory.generateCertificate(bis);
-                keyStore.setCertificateEntry("www.rocciberge.de", cert);
+                keyStore.setCertificateEntry("www.lvps84-39-96-88.my-simplyroot.de", cert);
             }
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(keyStore);

@@ -6,6 +6,7 @@ import com.andre.nfltipapp.loginregistryview.model.NameExistRequest;
 import com.andre.nfltipapp.loginregistryview.model.NameExistResponse;
 import com.andre.nfltipapp.loginregistryview.model.RegisterRequest;
 import com.andre.nfltipapp.loginregistryview.model.RegisterResponse;
+import com.andre.nfltipapp.loginregistryview.model.ResetPasswordResponse;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonRequest;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonResponse;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
@@ -45,4 +46,7 @@ public interface ApiInterface {
 
     @POST("getAllPredictionsForGame")
     Call<AllPredictionsResponse> allPredictions(@Body AllPredictionsRequest request);
+
+    @POST("resetPassword")
+    Call<ResetPasswordResponse> resetPassword(@Body NameExistRequest request);
 }

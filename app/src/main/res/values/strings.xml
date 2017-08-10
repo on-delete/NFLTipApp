@@ -30,4 +30,6 @@
     <string name="best_offense">Best Offense</string>
     <string name="best_defense">Best Defense</string>
     <string name="logout">Ausloggen</string>
+    <string name="password_reset">Passwort zurücksetzen</string>
+    <string name="lost_password">Passwort vergessen?</string>
 </resources>

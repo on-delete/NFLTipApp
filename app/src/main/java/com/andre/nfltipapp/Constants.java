@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Constants {
 
-    public static final String BASE_URL = "https://rocciberge.de:3000/";
+    public static final String BASE_URL = "https://www.rocciberge.de:3000/";
 
     public static final String TAG = "nfltipapp";
 
@@ -94,4 +94,7 @@ public class Constants {
         AFC,
         NFC
     }
+
+    public static final String SUCCESS_STRING_PART_1 = "Erfolgreich! Eine E-Mail wurde an";
+    public static final String SUCCESS_STRING_PART_2 = "gesendet";
 }

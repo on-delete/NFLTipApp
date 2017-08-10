@@ -36,6 +36,7 @@ public class LoginFragment extends Fragment {
     private TextInputEditText etName, etPassword;
     private AppCompatButton btnLogin;
     private TextView tvRegisterLink;
+    private TextView tvPasswordLostLink;
     private ProgressBar progressBar;
     private ApiInterface apiInterface;
     private SharedPreferences pref;
@@ -57,6 +58,7 @@ public class LoginFragment extends Fragment {
         tvRegisterLink = (TextView) view.findViewById(R.id.text_register);
         etName = (TextInputEditText)view.findViewById(R.id.text_team_name);
         etPassword = (TextInputEditText)view.findViewById(R.id.text_password);
+        tvPasswordLostLink = (TextView) view.findViewById(R.id.text_reset_password);
 
         progressBar = (ProgressBar)view.findViewById(R.id.progress_bar);
 
@@ -80,6 +82,12 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 goToRegister();
+            }
+        });
+        tvPasswordLostLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToPasswordReset();
             }
         });
     }
@@ -164,6 +172,13 @@ public class LoginFragment extends Fragment {
         Fragment register = new RegisterFragment();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_host, register);
+        ft.commit();
+    }
+
+    private void goToPasswordReset() {
+        Fragment resetPassword = new ResetPasswordFragment();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_host, resetPassword);
         ft.commit();
     }
 
