@@ -35,7 +35,7 @@ public class RankingSectionFragment extends Fragment {
     private DataService dataService;
     private DataUpdatedListener dataUpdatedListener;
 
-    private GridLayout glPlayerContainer;
+    private LinearLayout llPlayerContainer;
 
     private String userId;
 
@@ -61,7 +61,7 @@ public class RankingSectionFragment extends Fragment {
         dataService = bundle.getParcelable("dataService");
         userId = dataService.getUserId();
 
-        glPlayerContainer = (GridLayout) rootView.findViewById(R.id.ranking_player_cards_container);
+        llPlayerContainer = (LinearLayout) rootView.findViewById(R.id.ranking_player_cards_container);
 
         initRankingView(dataService.getData().getRanking());
 
@@ -75,7 +75,7 @@ public class RankingSectionFragment extends Fragment {
         DataUpdatedListener dataUpdatedListener = new DataUpdatedListener() {
             @Override
             public void onDataUpdated(Data data) {
-                glPlayerContainer.removeAllViews();
+                llPlayerContainer.removeAllViews();
                 initRankingView(data.getRanking());
 
                 if(swipeRefreshLayout.isRefreshing()) {
@@ -108,22 +108,21 @@ public class RankingSectionFragment extends Fragment {
     private void initRankingView(List<Ranking> rankingList) {
         for(Ranking rankingEntry : rankingList){
             View playerCardView = inflater.inflate(R.layout.ranking_player_card, container, false);
-            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-            params.width = 0;
-            params.height = WRAP_CONTENT;
-            params.setGravity(Gravity.FILL);
-            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
-            playerCardView.setLayoutParams(params);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            layoutParams.setMargins(0, 0, 0, 10);
+            playerCardView.setLayoutParams(layoutParams);
 
             TextView tvName = (TextView) playerCardView.findViewById(R.id.player_card_name);
             tvName.setText(rankingEntry.getName());
             if(userId != null && userId.equals(rankingEntry.getUserid())){
-                playerCardView.setBackgroundResource(R.drawable.back_dark_grey_with_border_bottom);
+                playerCardView.setBackgroundResource(R.drawable.back_dark_grey_with_left_bottom);
             }
             TextView tvPoints = (TextView) playerCardView.findViewById(R.id.player_card_points) ;
             tvPoints.setText(rankingEntry.getPoints() + " P.");
 
-            glPlayerContainer.addView(playerCardView, glPlayerContainer.getChildCount());
+            llPlayerContainer.addView(playerCardView);
         }
     }
 }

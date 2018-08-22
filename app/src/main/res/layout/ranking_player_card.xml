@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/back_dark_grey"
-    android:layout_width="0dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:orientation="vertical"
+    android:orientation="horizontal"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
     android:paddingTop="20dp"
-    android:paddingBottom="20dp">
+    android:paddingBottom="15dp">
 
     <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/user_dark"
         android:contentDescription="@string/picture_of_the_player" />
 
     <TextView
         android:id="@+id/player_card_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:text="Andre"
+        android:layout_weight="1"
+        android:layout_marginStart="15dp"
         android:textColor="#3c3c3c"
-        android:textSize="12sp"/>
+        android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/player_card_points"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="0 P."
-        android:textColor="#3c3c3c" />
+        android:layout_weight="0.5"
+        android:textSize="18sp"
+        android:textColor="#3c3c3c"/>
 </LinearLayout>

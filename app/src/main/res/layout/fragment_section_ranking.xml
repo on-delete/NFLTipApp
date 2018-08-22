@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/ranking_swipe_container"
+ <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingEnd="20dp"
+    android:paddingStart="20dp"
+    android:paddingTop="20dp">
 
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="10dp"
-        android:paddingEnd="20dp"
-        android:paddingStart="20dp"
-        android:paddingTop="20dp">
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:text="@string/ranking"
+        android:textColor="#3c3c3c"
+        android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="match_parent"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/ranking_swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp">
+
+        <ScrollView
             android:layout_height="wrap_content"
-            android:paddingEnd="5dp"
-            android:paddingStart="5dp"
-            android:text="@string/ranking"
-            android:textColor="#3c3c3c"
-            android:textSize="16sp" />
+            android:layout_width="match_parent">
 
-        <GridLayout
-            android:id="@+id/ranking_player_cards_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:columnCount="3"
-            android:useDefaultMargins="true"/>
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ranking_player_cards_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
 
-</android.support.v4.widget.SwipeRefreshLayout>
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+</LinearLayout>

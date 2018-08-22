@@ -31,7 +31,7 @@ public class Constants {
     public static final String TABLE_SELECTED_TEXT_COLOR = "#FAFAFA";
     public static final String TABLE_DEFAULT_TEXT_COLOR = "#151515";
 
-    public static final String[] TAB_NAME_LIST = {"Tabelle", "Ranking", "Prognosen", "Statistik"};
+    public static final String[] TAB_NAME_LIST = {"Tabelle", "Ranking", "Tipps", "Ergebnisse"};
 
     public static final Map<String, String> WEEK_TYPE_MAP = new HashMap<String, String>() {{
         put("REG", "Regular Season");

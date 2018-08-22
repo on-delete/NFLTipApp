@@ -1,8 +1,8 @@
 <resources>
     <string name="title_table">Tabelle</string>
     <string name="title_ranking">Ranking</string>
-    <string name="title_tips">Prognosen</string>
-    <string name="title_statistics">Statistik</string>
+    <string name="title_tips">Tipps</string>
+    <string name="title_statistics">Ergebnisse</string>
 
     <string name="app_name">NFL Tipapp</string>
     <string name="email">Email</string>
@@ -39,7 +39,7 @@
     <string name="lost_password">Passwort vergessen?</string>
     <string name="picture_of_the_player">Picture of the player</string>
     <string name="ranking">RANKING</string>
-    <string name="prognosen">Prognosen</string>
-    <string name="statistic">Statistik</string>
+    <string name="prognosen">Tipps</string>
+    <string name="statistic">Ergebnisse</string>
     <string name="image_for_calendar">image for calendar</string>
 </resources>
