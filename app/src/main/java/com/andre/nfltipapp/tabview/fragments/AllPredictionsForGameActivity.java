@@ -1,5 +1,6 @@
 package com.andre.nfltipapp.tabview.fragments;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.Utils;
 import com.andre.nfltipapp.tabview.fragments.model.GamePrediction;
 import com.andre.nfltipapp.tabview.fragments.model.GamePredictionStatistic;
 
@@ -30,63 +32,53 @@ public class AllPredictionsForGameActivity extends AppCompatActivity {
         GamePrediction gamePrediction = getIntent().getParcelableExtra(Constants.GAME);
         String userId = getIntent().getStringExtra(Constants.USERID);
 
-        ImageView ivAwayTeamIcon = (ImageView) findViewById(R.id.image_team_icon_away);
-        ImageView ivHomeTeamIcon = (ImageView) findViewById(R.id.image_team_icon_home);
+        TextView tvGametime = (TextView) findViewById(R.id.text_game_time);
+        TextView tvTeamNameAway = (TextView) findViewById(R.id.text_team_name_away);
+        TextView tvTeamNameHome = (TextView) findViewById(R.id.text_team_name_home);
         this.llAllPredictionsTable = (LinearLayout) findViewById(R.id.linear_predictions_for_game_table);
 
         setTitle(gamePrediction.getAwayteam() + " vs " + gamePrediction.getHometeam());
 
-        ivAwayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamIcon());
-        ivHomeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamIcon());
+        tvGametime.setText(Utils.getGameDay(gamePrediction.getGamedatetime()) + " | " + Utils.getGameTime(gamePrediction.getGamedatetime()));
+
+        tvTeamNameAway.setText(gamePrediction.getAwayteam());
+        tvTeamNameHome.setText(gamePrediction.getHometeam());
 
         if(gamePrediction.getAwaypoints() > gamePrediction.getHomepoints()){
-            ivAwayTeamIcon.setBackground(getDrawable(R.drawable.back_green));
-            ivHomeTeamIcon.setBackground(getDrawable(R.drawable.back_red));
+            tvTeamNameAway.setTextColor(Color.parseColor("#013369"));
         }
         else if (gamePrediction.getAwaypoints() < gamePrediction.getHomepoints()){
-            ivAwayTeamIcon.setBackground(getDrawable(R.drawable.back_red));
-            ivHomeTeamIcon.setBackground(getDrawable(R.drawable.back_green));
-        }
-        else{
-            ivAwayTeamIcon.setBackground(getDrawable(R.drawable.back_yellow));
-            ivHomeTeamIcon.setBackground(getDrawable(R.drawable.back_yellow));
+            tvTeamNameHome.setTextColor(Color.parseColor("#013369"));
         }
 
-        List<GamePredictionStatistic> predictionListCopy = new ArrayList<>(predictionList);
-
-        for(int i = 0; i < predictionList.size(); i++){
-            GamePredictionStatistic predictionTemp = predictionList.get(i);
-            if(predictionTemp.getUserid().equals(userId)){
-                View view = initView(predictionTemp);
-                view.setBackgroundResource(R.drawable.bottom_border);
-                TextView tvName = (TextView) view.findViewById(R.id.text_player_name) ;
-                tvName.setTypeface(null, Typeface.BOLD);
-
-                predictionListCopy.remove(i);
-            }
-        }
-
-        for(GamePredictionStatistic prediction : predictionListCopy){
-            initView(prediction);
+        for(GamePredictionStatistic prediction : predictionList){
+            initView(prediction, gamePrediction, userId);
         }
     }
 
-    private View initView (GamePredictionStatistic prediction){
+    private View initView (GamePredictionStatistic prediction, GamePrediction gamePrediction, String userId){
         View rowView = getLayoutInflater().inflate(R.layout.statistic_prediction_for_game_table_row, null);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        layoutParams.setMargins(0, 0, 0, 10);
+        rowView.setLayoutParams(layoutParams);
+
+        if(userId.equals(prediction.getUserid())) {
+            rowView.setBackgroundResource(R.drawable.back_dark_grey_with_left_bottom);
+        }
 
         TextView tvName = (TextView) rowView.findViewById(R.id.text_player_name) ;
         tvName.setText(prediction.getUsername());
-        CheckBox cbAwayTeam = (CheckBox) rowView.findViewById(R.id.checkbox_away_team);
-        cbAwayTeam.setEnabled(false);
-        CheckBox cbHomeTeam = (CheckBox) rowView.findViewById(R.id.checkbox_home_team);
-        cbHomeTeam.setEnabled(false);
+
+        ImageView ivSternAway = (ImageView) rowView.findViewById(R.id.image_stern_away);
+        ImageView ivSternHome = (ImageView) rowView.findViewById(R.id.image_stern_home);
 
         if(prediction.getPredicted()==1) {
-            if(prediction.getHometeampredicted() == 1){
-                cbHomeTeam.setChecked(true);
-            }
-            else {
-                cbAwayTeam.setChecked(true);
+            if (prediction.getHometeampredicted() == 1) {
+                ivSternHome.setBackgroundResource(R.drawable.stern_blau);
+            } else {
+                ivSternAway.setBackgroundResource(R.drawable.stern_blau);
             }
         }
 

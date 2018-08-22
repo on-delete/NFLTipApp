@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_standings"
+        android:icon="@drawable/ic_tab_tabelle_white"
+        android:title="@string/title_table" />
+
+    <item
+        android:id="@+id/navigation_ranking"
+        android:icon="@drawable/pokal"
+        android:title="@string/title_ranking" />
+
+    <item
+        android:id="@+id/navigation_predictions"
+        android:icon="@drawable/kalender"
+        android:title="@string/title_tips" />
+
+    <item
+        android:id="@+id/navigation_statistics"
+        android:icon="@drawable/user"
+        android:title="@string/title_statistics" />
+</menu>

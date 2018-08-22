@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.Utils;
+import com.andre.nfltipapp.drawable.PredictionsTeamBackground;
 import com.andre.nfltipapp.rest.Api;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonRequest;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonResponse;
@@ -83,7 +84,7 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             }
 
             if(tempGamesList.size()>0){
-                String title = Constants.WEEK + predictionsForWeekItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) : "");
+                String title = Constants.WEEK + predictionsForWeekItem.getWeek() + " | " + (Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) : "");
                 this.statisticListHeaders.add(title);
                 this.statisticListItems.put(title, tempGamesList);
             }
@@ -138,10 +139,12 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.text_home_team_score);
         TextView tvAwayScore = (TextView) convertView
                 .findViewById(R.id.text_away_team_score);
+        TextView tvAwayTeamCityName = (TextView) convertView.findViewById(R.id.text_team_city_away);
+        TextView tvAwayTeamName = (TextView) convertView.findViewById(R.id.text_team_name_away);
+        TextView tvHomeTeamCityName = (TextView) convertView.findViewById(R.id.text_team_city_home);
+        TextView tvHomeTeamName = (TextView) convertView.findViewById(R.id.text_team_name_home);
 
         LinearLayout llStatisticsListItem = (LinearLayout)  convertView.findViewById(R.id.linear_statistic_list_item);
-        ImageView ivAwayTeamIcon = (ImageView) convertView.findViewById(R.id.image_away_team);
-        ImageView ivHomeTeamIcon = (ImageView) convertView.findViewById(R.id.image_home_team);
         LinearLayout llAwayTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_background_team_away);
         LinearLayout llHomeTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_background_team_home);
 
@@ -154,14 +157,15 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             }
         });
 
-        llAwayTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamColor()));
-        llHomeTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamColor()));
-
-        ivAwayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamIcon());
-        ivHomeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamIcon());
+        llAwayTeamBackground.setBackground(new PredictionsTeamBackground(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamColor()), true));
+        llHomeTeamBackground.setBackground(new PredictionsTeamBackground(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamColor()), false));
 
         tvHomeScore.setText(String.valueOf(gamePrediction.getHomepoints()));
         tvAwayScore.setText(String.valueOf(gamePrediction.getAwaypoints()));
+        tvAwayTeamCityName.setText(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamCity());
+        tvAwayTeamName.setText(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamName());
+        tvHomeTeamCityName.setText(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamCity());
+        tvHomeTeamName.setText(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamName());
 
         return convertView;
     }
@@ -184,13 +188,13 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
         final LinearLayout llTeamBackground = (LinearLayout) subView.findViewById(R.id.linear_team_background);
 
+        ImageView ivPredictionType = (ImageView) subView.findViewById(R.id.image_prediction_type);
         TextView tvPredictionType = (TextView) subView.findViewById(R.id.text_prediction_type);
         TextView tvTeamName = (TextView) subView.findViewById(R.id.text_team_name);
-        ImageView ivTeamIcon = (ImageView) subView.findViewById(R.id.image_team_icon);
 
-        setTeamInfos(team, llTeamBackground, ivTeamIcon, tvTeamName);
+        setTeamInfos(team, llTeamBackground, tvTeamName);
 
-        setPredictionTypeText(predictionType, tvPredictionType);
+        setPredictionTypeText(predictionType, tvPredictionType, ivPredictionType);
 
         llTeamBackground.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,26 +208,31 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         return subView;
     }
 
-    private void setPredictionTypeText(PREDICTION_TYPE predictionType, TextView tvPredictionType){
+    private void setPredictionTypeText(PREDICTION_TYPE predictionType, TextView tvPredictionType, ImageView ivPredictionType){
         switch (predictionType) {
             case SUPERBOWL: {
                 tvPredictionType.setText(R.string.superbowl);
+                ivPredictionType.setBackgroundResource(R.drawable.pokal);
                 break;
             }
             case AFC_WINNER: {
                 tvPredictionType.setText(R.string.afc_winner);
+                ivPredictionType.setBackgroundResource(R.drawable.pokal);
                 break;
             }
             case NFC_WINNER: {
                 tvPredictionType.setText(R.string.nfc_winner);
+                ivPredictionType.setBackgroundResource(R.drawable.pokal);
                 break;
             }
             case BEST_OFFENSE: {
                 tvPredictionType.setText(R.string.best_offense);
+                ivPredictionType.setBackgroundResource(R.drawable.schwert);
                 break;
             }
             case BEST_DEFENSE: {
                 tvPredictionType.setText(R.string.best_defense);
+                ivPredictionType.setBackgroundResource(R.drawable.schild);
                 break;
             }
             default:
@@ -231,15 +240,13 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    private void setTeamInfos(String team, LinearLayout llTeamBackground, ImageView ivTeamIcon, TextView tvTeamName){
+    private void setTeamInfos(String team, LinearLayout llTeamBackground, TextView tvTeamName){
         if(team.equals("")){
             llTeamBackground.setBackgroundColor(Color.parseColor("#BFBFBF"));
-            ivTeamIcon.setImageResource(R.drawable.ic_default_icon);
             tvTeamName.setText("-");
         }
         else {
             llTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(team).getTeamColor()));
-            ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(team).getTeamIcon());
             tvTeamName.setText(Constants.TEAM_INFO_MAP.get(team).getTeamName());
         }
     }
@@ -281,9 +288,20 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
             convertView = layoutInflater.inflate(R.layout.list_header_view, parent, false);
         }
 
-        TextView llStatisticListHeader = (TextView) convertView
-                .findViewById(R.id.text_list_header);
-        llStatisticListHeader.setText(listTitle);
+        TextView llPredictionListHeader = (TextView) convertView.findViewById(R.id.text_list_header);
+        ImageView ivListHeaderImage = (ImageView) convertView.findViewById(R.id.image_list_header);
+
+        if(listTitle.equals(Constants.PREDICTION_BEFORE_SEASON)) {
+            convertView.setBackgroundColor(Color.parseColor("#013369"));
+            llPredictionListHeader.setTextColor(Color.parseColor("#f0f0f0"));
+            ivListHeaderImage.setBackgroundResource(R.drawable.stern);
+        } else {
+            convertView.setBackgroundResource(R.drawable.back_dark_grey);
+            llPredictionListHeader.setTextColor(Color.parseColor("#3c3c3c"));
+            ivListHeaderImage.setBackgroundResource(R.drawable.kalender_dark);
+        }
+
+        llPredictionListHeader.setText(listTitle);
 
         return convertView;
     }

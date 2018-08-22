@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.Utils;
+import com.andre.nfltipapp.drawable.PredictionsTeamBackground;
 import com.andre.nfltipapp.rest.Api;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsResponse;
@@ -99,7 +100,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
     }
 
     private void initPredictionListItems(List<PredictionsForWeek> predictionsForWeekList, List<PredictionBeforeSeason> predictionBeforeSeasonList){
-        //if(!Utils.isPredictionTimeOver(predictionBeforeSeasonList.get(0).getFirstgamedate(), 0)){
+        if(!Utils.isPredictionTimeOver(predictionBeforeSeasonList.get(0).getFirstgamedate(), 0)){
             this.predictionListHeaders.add(Constants.PREDICTION_BEFORE_SEASON);
             for(int i = 0; i < predictionBeforeSeasonList.size(); i++){
                 PredictionBeforeSeason tempPrediction = predictionBeforeSeasonList.get(i);
@@ -107,7 +108,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     this.predictionBeforeSeason = tempPrediction;
                 }
             }
-        //}
+        }
 
         for(PredictionsForWeek predictionsForWeekItem : predictionsForWeekList){
             Map<String, List<GamePrediction>> tempGamesPerDayList = new LinkedHashMap<>();
@@ -127,7 +128,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             }
 
             if(tempGamesPerDayList.size()>0){
-                String title = Constants.WEEK + predictionsForWeekItem.getWeek() + " - " + (Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) : "");
+                String title = Constants.WEEK + predictionsForWeekItem.getWeek() + " | " + (Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) != null ? Constants.WEEK_TYPE_MAP.get(predictionsForWeekItem.getType()) : "");
                 this.predictionListHeaders.add(title);
                 this.predictionListItems.put(title, tempGamesPerDayList);
             }
@@ -198,20 +199,22 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.checkbox_home_team);
         final CheckBox cbAwayTeam = (CheckBox) convertView
                 .findViewById(R.id.checkbox_away_team);
-        ImageView ivAwayTeamIcon = (ImageView) convertView.findViewById(R.id.image_away_team);
-        ImageView ivHomeTeamIcon = (ImageView) convertView.findViewById(R.id.image_home_team);
         LinearLayout llAwayTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_background_team_away);
         LinearLayout llHomeTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_background_team_home);
         TextView tvGameTime = (TextView) convertView.findViewById(R.id.text_prediction_game_time);
+        TextView tvAwayTeamCityName = (TextView) convertView.findViewById(R.id.text_team_city_away);
+        TextView tvAwayTeamName = (TextView) convertView.findViewById(R.id.text_team_name_away);
+        TextView tvHomeTeamCityName = (TextView) convertView.findViewById(R.id.text_team_city_home);
+        TextView tvHomeTeamName = (TextView) convertView.findViewById(R.id.text_team_name_home);
 
         tvGameTime.setText(Utils.getGameTime(gamePrediction.getGamedatetime()));
+        tvAwayTeamCityName.setText(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamCity());
+        tvAwayTeamName.setText(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamName());
+        tvHomeTeamCityName.setText(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamCity());
+        tvHomeTeamName.setText(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamName());
 
-        llAwayTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamColor()));
-        tvGameTime.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamColor()));
-        llHomeTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamColor()));
-
-        ivAwayTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamIcon());
-        ivHomeTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamIcon());
+        llAwayTeamBackground.setBackground(new PredictionsTeamBackground(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getAwayteam()).getTeamColor()), true));
+        llHomeTeamBackground.setBackground(new PredictionsTeamBackground(Color.parseColor(Constants.TEAM_INFO_MAP.get(gamePrediction.getHometeam()).getTeamColor()), false));
 
         cbHomeTeam.setChecked(false);
         cbAwayTeam.setChecked(false);
@@ -378,7 +381,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
 
         TextView tvTeamName = (TextView) subView.findViewById(R.id.text_team_name);
         Spinner spTeamChoice = (Spinner) subView.findViewById(R.id.spinner_team_choice);
-        final ImageView ivTeamIcon = (ImageView) subView.findViewById(R.id.image_team_icon);
+        final ImageView ivPredicitonType = (ImageView) subView.findViewById(R.id.image_prediction_type);
 
         TeamPickSpinnerAdapter adapter = new TeamPickSpinnerAdapter(this.activity, R.layout.costum_spinner_view, teamInfoList);
         spTeamChoice.setAdapter(adapter);
@@ -390,9 +393,9 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
             spTeamChoice.setSelection(0, false);
         }
 
-        setTeamInfos(spTeamChoice.getSelectedItemPosition(), teamPrefixList, llTeamBackground, ivTeamIcon);
+        setTeamInfos(spTeamChoice.getSelectedItemPosition(), teamPrefixList, llTeamBackground);
 
-        initViewsToModel(predictionType, tvTeamName, spTeamChoice);
+        initViewsToModel(predictionType, tvTeamName, spTeamChoice, ivPredicitonType);
 
         spTeamChoice.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -430,7 +433,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     Snackbar.make(activity.findViewById(R.id.list_view_predictions) ,"Zusatztips sind jetzt gesperrt!", Snackbar.LENGTH_LONG).show();
                 }
                 else {*/
-                    sendUpdateRequest(predictionType, position, (Spinner) parent, llTeamBackground, ivTeamIcon, predictionBeforeSeason, teamInfoList, teamPrefixList);
+                    sendUpdateRequest(predictionType, position, (Spinner) parent, llTeamBackground, predictionBeforeSeason, teamInfoList, teamPrefixList);
                 //}
             }
 
@@ -443,41 +446,44 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         return subView;
     }
 
-    private void setTeamInfos(int position, ArrayList<String> teamPrefixList, LinearLayout teamBackground, ImageView teamIcon){
+    private void setTeamInfos(int position, ArrayList<String> teamPrefixList, LinearLayout teamBackground){
         if(position == 0){
             teamBackground.setBackgroundColor(Color.parseColor(Constants.DEFAULT_TEAM_BACKGROUND_COLOR));
-            teamIcon.setImageResource(R.drawable.ic_default_icon);
         }
         else {
             teamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position)).getTeamColor()));
-            teamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(teamPrefixList.get(position)).getTeamIcon());
         }
     }
 
-    private void initViewsToModel(PREDICTION_TYPE predictionType, TextView tvTeamName, Spinner spTeamChoice){
+    private void initViewsToModel(PREDICTION_TYPE predictionType, TextView tvTeamName, Spinner spTeamChoice, ImageView ivPredicitonType){
         switch (predictionType) {
             case SUPERBOWL: {
                 tvTeamName.setText(R.string.superbowl);
+                ivPredicitonType.setBackgroundResource(R.drawable.pokal);
                 lastSuperbowlSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 break;
             }
             case AFC_WINNER: {
                 tvTeamName.setText(R.string.afc_winner);
+                ivPredicitonType.setBackgroundResource(R.drawable.pokal);
                 lastAFCSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 break;
             }
             case NFC_WINNER: {
                 tvTeamName.setText(R.string.nfc_winner);
+                ivPredicitonType.setBackgroundResource(R.drawable.pokal);
                 lastNFCSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 break;
             }
             case BEST_OFFENSE: {
                 tvTeamName.setText(R.string.best_offense);
+                ivPredicitonType.setBackgroundResource(R.drawable.schwert);
                 lastOffenseSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 break;
             }
             case BEST_DEFENSE: {
                 tvTeamName.setText(R.string.best_defense);
+                ivPredicitonType.setBackgroundResource(R.drawable.schild);
                 lastDefenseSpinnerPosition = spTeamChoice.getSelectedItemPosition();
                 break;
             }
@@ -519,7 +525,20 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_header_view, parent, false);
         }
+
         TextView llPredictionListHeader = (TextView) convertView.findViewById(R.id.text_list_header);
+        ImageView ivListHeaderImage = (ImageView) convertView.findViewById(R.id.image_list_header);
+
+        if(listTitle.equals(Constants.PREDICTION_BEFORE_SEASON)) {
+            convertView.setBackgroundColor(Color.parseColor("#013369"));
+            llPredictionListHeader.setTextColor(Color.parseColor("#f0f0f0"));
+            ivListHeaderImage.setBackgroundResource(R.drawable.stern);
+        } else {
+            convertView.setBackgroundResource(R.drawable.back_dark_grey);
+            llPredictionListHeader.setTextColor(Color.parseColor("#3c3c3c"));
+            ivListHeaderImage.setBackgroundResource(R.drawable.kalender_dark);
+        }
+
         llPredictionListHeader.setText(listTitle);
 
         return convertView;
@@ -589,7 +608,7 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    private void sendUpdateRequest(final PREDICTION_TYPE predictionType, final int position, final Spinner spTeamChoice, final LinearLayout llTeamBackground, final ImageView ivTeamIcon, final PredictionBeforeSeason predictionBeforeSeason, final ArrayList<TeamInfoSpinnerObject> teamInfoList, final ArrayList<String> teamPrefixList){
+    private void sendUpdateRequest(final PREDICTION_TYPE predictionType, final int position, final Spinner spTeamChoice, final LinearLayout llTeamBackground, final PredictionBeforeSeason predictionBeforeSeason, final ArrayList<TeamInfoSpinnerObject> teamInfoList, final ArrayList<String> teamPrefixList){
         final String teamPredicted = position == 0 ? "" : teamInfoList.get(position).getTeamPrefix();
         UpdatePredictionBeforeSeasonRequest updatePredictionBeforeSeasonRequest = new UpdatePredictionBeforeSeasonRequest();
         updatePredictionBeforeSeasonRequest.setTeamprefix(teamPredicted);
@@ -605,17 +624,17 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
                 if(response.code()==500){
                     Log.d(Constants.TAG, resp.getMessage());
                     Snackbar.make(activity.findViewById(R.id.list_view_predictions) , "Server error!", Snackbar.LENGTH_LONG).show();
-                    setSpinnerToLastValue(predictionType, teamPrefixList, spTeamChoice, llTeamBackground, ivTeamIcon);
+                    setSpinnerToLastValue(predictionType, teamPrefixList, spTeamChoice, llTeamBackground);
                 }
                 else{
                     updateModel(predictionType, teamPredicted, spTeamChoice, predictionBeforeSeason);
-                    setTeamInfos(spTeamChoice.getSelectedItemPosition(), teamPrefixList, llTeamBackground, ivTeamIcon);
+                    setTeamInfos(spTeamChoice.getSelectedItemPosition(), teamPrefixList, llTeamBackground);
                 }
             }
 
             @Override
             public void onFailure(Call<UpdateResponse> call, Throwable t) {
-                setSpinnerToLastValue(predictionType, teamPrefixList, spTeamChoice, llTeamBackground, ivTeamIcon);
+                setSpinnerToLastValue(predictionType, teamPrefixList, spTeamChoice, llTeamBackground);
                 Snackbar.make(activity.findViewById(R.id.list_view_predictions) , "Server nicht erreichbar!", Snackbar.LENGTH_LONG).show();
                 Log.d(Constants.TAG, t.getMessage());
             }
@@ -712,32 +731,32 @@ class PredictionsListViewAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    private void setSpinnerToLastValue(PREDICTION_TYPE predictionType, ArrayList<String> teamPrefixList, Spinner spTeamChoice, LinearLayout llTeamBackground, ImageView ivTeamIcon){
+    private void setSpinnerToLastValue(PREDICTION_TYPE predictionType, ArrayList<String> teamPrefixList, Spinner spTeamChoice, LinearLayout llTeamBackground){
         userInteraction = false;
         switch (predictionType) {
             case SUPERBOWL: {
                 spTeamChoice.setSelection(lastSuperbowlSpinnerPosition, false);
-                setTeamInfos(lastSuperbowlSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastSuperbowlSpinnerPosition, teamPrefixList, llTeamBackground);
                 break;
             }
             case AFC_WINNER: {
                 spTeamChoice.setSelection(lastAFCSpinnerPosition, false);
-                setTeamInfos(lastAFCSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastAFCSpinnerPosition, teamPrefixList, llTeamBackground);
                 break;
             }
             case NFC_WINNER: {
                 spTeamChoice.setSelection(lastNFCSpinnerPosition, false);
-                setTeamInfos(lastNFCSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastNFCSpinnerPosition, teamPrefixList, llTeamBackground);
                 break;
             }
             case BEST_OFFENSE: {
                 spTeamChoice.setSelection(lastOffenseSpinnerPosition, false);
-                setTeamInfos(lastOffenseSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastOffenseSpinnerPosition, teamPrefixList, llTeamBackground);
                 break;
             }
             case BEST_DEFENSE: {
                 spTeamChoice.setSelection(lastDefenseSpinnerPosition, false);
-                setTeamInfos(lastDefenseSpinnerPosition, teamPrefixList, llTeamBackground, ivTeamIcon);
+                setTeamInfos(lastDefenseSpinnerPosition, teamPrefixList, llTeamBackground);
                 break;
             }
             default:

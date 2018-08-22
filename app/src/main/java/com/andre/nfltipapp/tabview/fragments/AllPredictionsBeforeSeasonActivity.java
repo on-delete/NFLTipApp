@@ -1,11 +1,10 @@
 package com.andre.nfltipapp.tabview.fragments;
 
 import android.annotation.SuppressLint;
-import android.graphics.Typeface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,7 +13,6 @@ import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.tabview.fragments.statisticssection.model.PredictionsBeforeSeasonStatistic;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
 
@@ -33,7 +31,7 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
         Constants.PREDICTION_TYPE predictionType = Constants.PREDICTION_TYPE.valueOf(predictionTypeParcel);
 
         TextView tvPredictionType = (TextView) findViewById(R.id.text_prediction_type);
-        ImageView ivTeamIcon = (ImageView) findViewById(R.id.image_team_icon);
+        TextView tvTeamName = (TextView) findViewById(R.id.text_team_name);
         this.llAllPredictionsTable = (LinearLayout) findViewById(R.id.linear_predictions_before_season_table);
 
         switch (predictionType) {
@@ -62,57 +60,39 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
         }
 
         if(teamName.equals("")){
-            ivTeamIcon.setImageResource(R.drawable.ic_default_icon);
+            tvTeamName.setText("-");
         }
         else {
-            ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(teamName).getTeamIcon());
+            tvTeamName.setText(Constants.TEAM_INFO_MAP.get(teamName).getTeamName());
         }
 
-        List<PredictionsBeforeSeasonStatistic> predictionListCopy = new ArrayList<>(predictionList);
-
-        for(int i = 0; i < predictionList.size(); i++){
-            PredictionsBeforeSeasonStatistic predictionTemp = predictionList.get(i);
-            if(predictionTemp.getUserid().equals(userId)){
-                View view = initView(predictionTemp);
-                view.setBackgroundResource(R.drawable.bottom_border);
-                TextView tvName = (TextView) view.findViewById(R.id.text_player_name);
-                tvName.setTypeface(null, Typeface.BOLD);
-
-                predictionListCopy.remove(i);
-            }
-        }
-
-        for(PredictionsBeforeSeasonStatistic prediction : predictionListCopy){
-            initView(prediction);
+        for(PredictionsBeforeSeasonStatistic prediction : predictionList){
+            initView(prediction, userId);
         }
     }
 
-    private View initView (PredictionsBeforeSeasonStatistic prediction){
+    private void initView (PredictionsBeforeSeasonStatistic prediction, String userId){
         @SuppressLint("InflateParams") View rowView = getLayoutInflater().inflate(R.layout.statistic_prediction_before_season_table_row, null);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        layoutParams.setMargins(0, 0, 0, 10);
+        rowView.setLayoutParams(layoutParams);
+        if(userId.equals(prediction.getUserid())) {
+            rowView.setBackgroundResource(R.drawable.back_dark_grey_with_left_bottom);
+        }
 
         TextView tvName = (TextView) rowView.findViewById(R.id.text_player_name);
+        TextView tvPlayerSelection = (TextView) rowView.findViewById(R.id.text_player_selection);
         tvName.setText(prediction.getUsername());
-
-        ImageView ivTeamIconPredicted = (ImageView) rowView.findViewById(R.id.image_player_pred_team);
+        tvPlayerSelection.setText(prediction.getTeamprefix().equals("") ? "-" : Constants.TEAM_INFO_MAP.get(prediction.getTeamprefix()).getTeamName());
 
         if(!teamName.equals("")){
             if(teamName.equals(prediction.getTeamprefix())){
-                ivTeamIconPredicted.setBackground(getDrawable(R.drawable.back_green));
+                tvPlayerSelection.setTextColor(Color.parseColor("#013369"));
             }
-            else{
-                ivTeamIconPredicted.setBackground(getDrawable(R.drawable.back_red));
-            }
-        }
-
-        if(prediction.getTeamprefix().equals("")){
-            ivTeamIconPredicted.setImageResource(R.drawable.ic_default_icon);
-        }
-        else {
-            ivTeamIconPredicted.setImageResource(Constants.TEAM_INFO_MAP.get(prediction.getTeamprefix()).getTeamIcon());
         }
 
         llAllPredictionsTable.addView(rowView);
-
-        return rowView;
     }
 }

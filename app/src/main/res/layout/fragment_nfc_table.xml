@@ -12,12 +12,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="15dp"
+            android:paddingStart="41dp"
             android:paddingEnd="15dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="@string/nfc_east"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:background="#D8D8D8"/>
     </LinearLayout>
 
@@ -30,12 +30,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="15dp"
+            android:paddingStart="41dp"
             android:paddingEnd="15dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="@string/nfc_north"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:background="#D8D8D8"/>
     </LinearLayout>
 
@@ -48,12 +48,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="15dp"
+            android:paddingStart="41dp"
             android:paddingEnd="15dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="@string/nfc_south"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:background="#D8D8D8"/>
     </LinearLayout>
 
@@ -66,12 +66,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="15dp"
+            android:paddingStart="41dp"
             android:paddingEnd="15dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="@string/nfc_west"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:background="#D8D8D8"/>
     </LinearLayout>
 

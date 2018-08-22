@@ -8,61 +8,87 @@
         <LinearLayout
             android:id="@+id/linear_background_team_away"
             android:orientation="horizontal"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
 
-            <ImageView
-                android:id="@+id/image_away_team"
-                android:layout_width="82dp"
-                android:layout_height="55dp"/>
-
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingEnd="20dp">
+                android:orientation="vertical"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
 
                 <TextView
-                    android:id="@+id/text_away_team_score"
+                    android:id="@+id/text_team_city_away"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:textSize="26sp"
-                    android:textColor="@android:color/white"/>
-            </RelativeLayout>
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:id="@+id/text_team_name_away"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/text_away_team_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="#FFFFFF"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linear_background_team_home"
             android:orientation="horizontal"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
 
-            <RelativeLayout
+            <TextView
+                android:id="@+id/text_home_team_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="#FFFFFF"/>
+
+            <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingStart="20dp">
+                android:gravity="end"
+                android:orientation="vertical"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
 
                 <TextView
-                    android:id="@+id/text_home_team_score"
+                    android:id="@+id/text_team_city_home"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="false"
-                    android:layout_centerVertical="true"
-                    android:textSize="26sp"
-                    android:textColor="@android:color/white"/>
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"/>
 
-            </RelativeLayout>
+                <TextView
+                    android:id="@+id/text_team_name_home"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"/>
 
-            <ImageView
-                android:id="@+id/image_home_team"
-                android:layout_width="82dp"
-                android:layout_height="55dp"/>
+            </LinearLayout>
 
         </LinearLayout>
 

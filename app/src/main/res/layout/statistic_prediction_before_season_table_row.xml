@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="15dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:paddingStart="40dp"
+    android:paddingEnd="40dp"
+    android:layout_marginBottom="5dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@drawable/back_dark_grey">
 
         <TextView
             android:id="@+id/text_player_name"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:layout_weight="1"
-            android:textSize="@dimen/font_size"/>
+            android:layout_weight="1.4"
+            android:textSize="16sp"
+            android:textColor="#3c3c3c"/>
 
-        <ImageView
-            android:id="@+id/image_player_pred_team"
-            android:layout_width="82dp"
-            android:layout_height="55dp"
-            android:padding="5dp"/>
+        <TextView
+            android:id="@+id/text_player_selection"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#3c3c3c"/>
 
 </LinearLayout>

@@ -6,12 +6,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.drawable.StandingsTeamBackground;
 import com.andre.nfltipapp.tabview.fragments.standingssection.model.Standing;
 
 import java.util.ArrayList;
@@ -39,7 +39,6 @@ public class NfcTableFragment extends Fragment {
             View rowRootView = inflater.inflate(R.layout.standings_table_row, container, false);
 
             LinearLayout llTableRow = (LinearLayout) rowRootView.findViewById(R.id.linear_standings_table_row);
-            ImageView ivTeamIcon = (ImageView) rowRootView.findViewById(R.id.image_team);
 
             TextView tvTeamCityName = (TextView) rowRootView.findViewById(R.id.text_team_city);
             TextView tvTeamDivGames = (TextView) rowRootView.findViewById(R.id.text_team_divgames);
@@ -48,8 +47,8 @@ public class NfcTableFragment extends Fragment {
             TextView tvTeamGames = (TextView) rowRootView.findViewById(R.id.text_team_games);
             TextView tvTeamScore = (TextView) rowRootView.findViewById(R.id.text_team_score);
 
-            llTableRow.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(standing.getTeamprefix()).getTeamColor()));
-            ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(standing.getTeamprefix()).getTeamIcon());
+//            llTableRow.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(standing.getTeamprefix()).getTeamColor()));
+            llTableRow.setBackground(new StandingsTeamBackground(Color.parseColor(Constants.TEAM_INFO_MAP.get(standing.getTeamprefix()).getTeamColor())));
 
             tvTeamCityName.setText(Constants.TEAM_INFO_MAP.get(standing.getTeamprefix()).getTeamCity());
             tvTeamDivGames.setText(standing.getDivgames());

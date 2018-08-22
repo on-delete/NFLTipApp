@@ -30,6 +30,9 @@ public class StatisticsSectionFragment extends Fragment {
 
     private Activity activity;
 
+    private DataService dataService;
+    private DataUpdatedListener dataUpdatedListener;
+
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
@@ -43,10 +46,11 @@ public class StatisticsSectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_section_statistics, container, false);
+        final View emptyView = inflater.inflate(R.layout.list_empty_view, container, false);
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.statistics_swipe_container);
 
         Bundle bundle = this.getArguments();
-        final DataService dataService = bundle.getParcelable("dataService");
+        dataService = bundle.getParcelable("dataService");
 
         elvStatistics = (ExpandableListView) rootView.findViewById(R.id.list_view_statistics);
 
@@ -55,6 +59,7 @@ public class StatisticsSectionFragment extends Fragment {
 
         final StatisticsListViewAdapter elvStatisticsAdapter = new StatisticsListViewAdapter(activity, predictionsForWeekList, predictionsBeforeSeasonList, dataService.getUserId());
         elvStatistics.setAdapter(elvStatisticsAdapter);
+        elvStatistics.setEmptyView(emptyView);
 
         elvStatistics.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
@@ -75,7 +80,7 @@ public class StatisticsSectionFragment extends Fragment {
             }
         });
 
-        dataService.addDataUpdateListener(new DataUpdatedListener() {
+        DataUpdatedListener dataUpdatedListener = new DataUpdatedListener() {
             @Override
             public void onDataUpdated(Data data) {
                 elvStatisticsAdapter.updateLists(data.getPredictionsForWeeks(), data.getPredictionBeforeSeason());
@@ -92,8 +97,17 @@ public class StatisticsSectionFragment extends Fragment {
                     Log.d(Constants.TAG, error);
                 }
             }
-        });
+        };
+        dataService.addDataUpdateListener(dataUpdatedListener);
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(dataService != null && dataUpdatedListener != null) {
+            dataService.removeDataUpdateListener(dataUpdatedListener);
+        }
     }
 }

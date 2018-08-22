@@ -30,6 +30,9 @@ public class PredictionSectionFragment extends Fragment {
 
     private Activity activity;
 
+    private DataService dataService;
+    private DataUpdatedListener dataUpdatedListener;
+
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
@@ -46,7 +49,7 @@ public class PredictionSectionFragment extends Fragment {
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.prediction_swipe_container);
 
         Bundle bundle = this.getArguments();
-        final DataService dataService = bundle.getParcelable("dataService");
+        dataService = bundle.getParcelable("dataService");
 
         elvPredictions = (ExpandableListView) rootView.findViewById(R.id.list_view_predictions);
 
@@ -75,7 +78,7 @@ public class PredictionSectionFragment extends Fragment {
             }
         });
 
-        dataService.addDataUpdateListener(new DataUpdatedListener() {
+        DataUpdatedListener dataUpdatedListener = new DataUpdatedListener() {
             @Override
             public void onDataUpdated(Data data) {
                 elvPredictionsAdapter.updateLists(data.getPredictionsForWeeks(), data.getPredictionBeforeSeason());
@@ -92,8 +95,17 @@ public class PredictionSectionFragment extends Fragment {
                     Log.d(Constants.TAG, error);
                 }
             }
-        });
+        };
+        dataService.addDataUpdateListener(dataUpdatedListener);
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(dataService != null && dataUpdatedListener != null) {
+            dataService.removeDataUpdateListener(dataUpdatedListener);
+        }
     }
 }

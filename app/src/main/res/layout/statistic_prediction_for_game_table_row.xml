@@ -1,44 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:paddingStart="15dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:paddingStart="40dp"
+    android:paddingEnd="40dp"
+    android:layout_marginBottom="5dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@drawable/back_dark_grey">
 
-        <TextView
-            android:id="@+id/text_player_name"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:textSize="@dimen/font_size"/>
+    <TextView
+        android:id="@+id/text_player_name"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.4"
+        android:textSize="16sp"
+        android:textColor="#3c3c3c"/>
 
-        <LinearLayout
-            android:layout_width="82dp"
-            android:layout_height="55dp"
-            android:layout_margin="5dp"
-            android:gravity="center">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:gravity="center">
 
-            <CheckBox
-                android:id="@+id/checkbox_away_team"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleX="1.5"
-                android:scaleY="1.5"/>
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/image_stern_away"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/stern"/>
 
-        <LinearLayout
-            android:layout_width="82dp"
-            android:layout_height="55dp"
-            android:layout_margin="5dp"
-            android:gravity="center">
+    </LinearLayout>
 
-            <CheckBox
-                android:id="@+id/checkbox_home_team"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleX="1.5"
-                android:scaleY="1.5"/>
-        </LinearLayout>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.2"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/image_stern_home"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/stern"/>
+
+    </LinearLayout>
 
 </LinearLayout>

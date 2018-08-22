@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -32,6 +33,8 @@ public class StandingsSectionFragment extends Fragment {
 
     private Bundle bundle = new Bundle();
     private Activity activity;
+    private DataService dataService;
+    private DataUpdatedListener dataUpdatedListener;
 
     private int selectedFragment = 0;
     private final int BOTTOM_AFC_RANGE = 0;
@@ -54,7 +57,7 @@ public class StandingsSectionFragment extends Fragment {
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.standings_swipe_container);
 
         Bundle bundle = this.getArguments();
-        final DataService dataService = bundle.getParcelable("dataService");
+        dataService = bundle.getParcelable("dataService");
 
         ArrayList<Standing> standingsList = dataService.getData().getStandings();
 
@@ -84,7 +87,7 @@ public class StandingsSectionFragment extends Fragment {
             }
         });
 
-        dataService.addDataUpdateListener(new DataUpdatedListener() {
+        dataUpdatedListener = new DataUpdatedListener() {
             @Override
             public void onDataUpdated(Data data) {
                 ArrayList<Standing> standingsList = data.getStandings();
@@ -109,9 +112,18 @@ public class StandingsSectionFragment extends Fragment {
                     Log.d(Constants.TAG, error);
                 }
             }
-        });
+        };
+        dataService.addDataUpdateListener(dataUpdatedListener);
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(dataService != null && dataUpdatedListener != null) {
+            dataService.removeDataUpdateListener(dataUpdatedListener);
+        }
     }
 
     private void changeTableToAfc(){

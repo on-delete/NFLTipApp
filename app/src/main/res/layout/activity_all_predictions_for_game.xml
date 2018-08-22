@@ -7,37 +7,56 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_weight="5"
-        android:layout_height="match_parent"
-        android:background="@drawable/ic_football_stadium">
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:background="#fafafa">
+
+        <TextView
+            android:id="@+id/text_game_time"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.4"
+            android:gravity="start"
+            android:textSize="12sp"
+            android:textColor="#3c3c3c"/>
+
+        <TextView
+            android:id="@+id/text_team_name_away"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#e1e1e1"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:textColor="#3c3c3c"
+            android:text="VS"/>
 
-        <ImageView
-            android:id="@+id/image_team_icon_away"
-            android:layout_width="82dp"
-            android:layout_height="55dp"
-            android:layout_marginEnd="10dp"
-            android:padding="5dp"
-            android:layout_gravity="center"/>
-
-        <ImageView
-            android:id="@+id/image_team_icon_home"
-            android:layout_width="82dp"
-            android:layout_height="55dp"
-            android:padding="5dp"
-            android:layout_marginEnd="10dp"
-            android:layout_gravity="center"/>
+        <TextView
+            android:id="@+id/text_team_name_home"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#e1e1e1"/>
 
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/linear_predictions_for_game_table"

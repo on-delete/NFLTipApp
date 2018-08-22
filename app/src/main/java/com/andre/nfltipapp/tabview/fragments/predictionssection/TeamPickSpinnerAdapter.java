@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -50,17 +49,14 @@ class TeamPickSpinnerAdapter extends ArrayAdapter<TeamInfoSpinnerObject> {
 
         LinearLayout llTeamBackground = (LinearLayout) convertView.findViewById(R.id.linear_team_background);
         TextView tvTeamName = (TextView) convertView.findViewById(R.id.text_team_name);
-        ImageView ivTeamIcon = (ImageView) convertView.findViewById(R.id.image_team_icon);
 
         if(position!=0 && position < objects.size()){
             llTeamBackground.setBackgroundColor(Color.parseColor(Constants.TEAM_INFO_MAP.get(objects.get(position).getTeamPrefix()).getTeamColor()));
-            ivTeamIcon.setImageResource(Constants.TEAM_INFO_MAP.get(objects.get(position).getTeamPrefix()).getTeamIcon());
             tvTeamName.setText(objects.get(position).getTeamName());
         }
         else{
             llTeamBackground.setBackgroundColor(Color.parseColor(Constants.DEFAULT_TEAM_BACKGROUND_COLOR));
             tvTeamName.setText("");
-            ivTeamIcon.setImageResource(R.drawable.ic_default_icon);
         }
 
         return convertView;

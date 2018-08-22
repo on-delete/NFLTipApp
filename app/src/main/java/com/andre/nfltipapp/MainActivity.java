@@ -3,27 +3,29 @@ package com.andre.nfltipapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
+import android.support.design.widget.BottomNavigationView;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.andre.nfltipapp.loginregistryview.LoginActivity;
 import com.andre.nfltipapp.model.Data;
-import com.andre.nfltipapp.tabview.TabSectionsPagerAdapter;
+import com.andre.nfltipapp.tabview.NavigationSelectedListener;
+import com.andre.nfltipapp.tabview.fragments.standingssection.StandingsSectionFragment;
 
 import static com.andre.nfltipapp.Constants.SHARED_PREF_FILENAME;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TabLayout tblMain;
     private SharedPreferences pref;
+    private Bundle bundle = new Bundle();
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        FragmentManager fm = getSupportFragmentManager();
 
         pref = getApplicationContext().getSharedPreferences(SHARED_PREF_FILENAME, 0);
 
@@ -34,50 +36,18 @@ public class MainActivity extends AppCompatActivity {
         dataService.setData(data);
         dataService.setUserId(userId);
 
-        Toolbar tbMain = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(tbMain);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        NavigationSelectedListener navigationSelectedListener = new NavigationSelectedListener(fm, dataService);
+        navigation.setOnNavigationItemSelectedListener(navigationSelectedListener);
 
-        tbMain.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                logout();
-                return true;
-            }
-        });
-
-        if(getSupportActionBar()!=null){
-            getSupportActionBar().setTitle(Constants.TAB_NAME_LIST[0]);
+        bundle.putParcelable("dataService", dataService);
+        Fragment selectedFragment = fm.findFragmentByTag("standings");
+        if(selectedFragment == null) {
+            selectedFragment = new StandingsSectionFragment();
+            selectedFragment.setArguments(bundle);
         }
-
-        TabSectionsPagerAdapter tabSectionsPagerAdapter = new TabSectionsPagerAdapter(getSupportFragmentManager(), dataService);
-
-        ViewPager vpMain = (ViewPager) findViewById(R.id.view_pager);
-        vpMain.setAdapter(tabSectionsPagerAdapter);
-        vpMain.setOffscreenPageLimit(Constants.TAB_NAME_LIST.length);
-
-        tblMain = (TabLayout) findViewById(R.id.tab_host);
-        tblMain.setupWithViewPager(vpMain);
-
-        initTabIcons();
-
-        vpMain.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if(position <= Constants.TAB_NAME_LIST.length){
-                    getSupportActionBar().setTitle(Constants.TAB_NAME_LIST[position]);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragment_container, selectedFragment, "standings").commit();
     }
 
     private void logout() {
@@ -87,18 +57,5 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LoginActivity.class);
         this.finish();
         startActivity(intent);
-    }
-
-    private void initTabIcons(){
-        tblMain.getTabAt(0).setIcon(R.drawable.ic_tab_tabelle_white);
-        tblMain.getTabAt(1).setIcon(R.drawable.ic_tab_ranking_white);
-        tblMain.getTabAt(2).setIcon(R.drawable.ic_tab_prognosen_white);
-        tblMain.getTabAt(3).setIcon(R.drawable.ic_tab_statistic_white);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
     }
 }

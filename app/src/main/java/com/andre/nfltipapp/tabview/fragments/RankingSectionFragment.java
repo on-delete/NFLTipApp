@@ -2,15 +2,16 @@ package com.andre.nfltipapp.tabview.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,13 +24,18 @@ import com.andre.nfltipapp.tabview.fragments.model.Ranking;
 
 import java.util.List;
 
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 public class RankingSectionFragment extends Fragment {
 
     private LayoutInflater inflater;
     private ViewGroup container;
     private Activity activity;
 
-    private LinearLayout llTable;
+    private DataService dataService;
+    private DataUpdatedListener dataUpdatedListener;
+
+    private GridLayout glPlayerContainer;
 
     private String userId;
 
@@ -52,10 +58,10 @@ public class RankingSectionFragment extends Fragment {
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.ranking_swipe_container);
 
         Bundle bundle = this.getArguments();
-        final DataService dataService = bundle.getParcelable("dataService");
+        dataService = bundle.getParcelable("dataService");
         userId = dataService.getUserId();
 
-        llTable = (LinearLayout) rootView.findViewById(R.id.linear_ranking_table);
+        glPlayerContainer = (GridLayout) rootView.findViewById(R.id.ranking_player_cards_container);
 
         initRankingView(dataService.getData().getRanking());
 
@@ -66,10 +72,10 @@ public class RankingSectionFragment extends Fragment {
             }
         });
 
-        dataService.addDataUpdateListener(new DataUpdatedListener() {
+        DataUpdatedListener dataUpdatedListener = new DataUpdatedListener() {
             @Override
             public void onDataUpdated(Data data) {
-                llTable.removeAllViews();
+                glPlayerContainer.removeAllViews();
                 initRankingView(data.getRanking());
 
                 if(swipeRefreshLayout.isRefreshing()) {
@@ -85,25 +91,39 @@ public class RankingSectionFragment extends Fragment {
                     Log.d(Constants.TAG, error);
                 }
             }
-        });
-
+        };
+        dataService.addDataUpdateListener(dataUpdatedListener);
 
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(dataService != null && dataUpdatedListener != null) {
+            dataService.removeDataUpdateListener(dataUpdatedListener);
+        }
+    }
+
     private void initRankingView(List<Ranking> rankingList) {
         for(Ranking rankingEntry : rankingList){
-            View rowView = inflater.inflate(R.layout.ranking_table_row, container, false);
+            View playerCardView = inflater.inflate(R.layout.ranking_player_card, container, false);
+            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+            params.width = 0;
+            params.height = WRAP_CONTENT;
+            params.setGravity(Gravity.FILL);
+            params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+            playerCardView.setLayoutParams(params);
 
-            TextView tvName = (TextView) rowView.findViewById(R.id.text_player_name);
+            TextView tvName = (TextView) playerCardView.findViewById(R.id.player_card_name);
             tvName.setText(rankingEntry.getName());
             if(userId != null && userId.equals(rankingEntry.getUserid())){
-                tvName.setTypeface(null, Typeface.BOLD);
+                playerCardView.setBackgroundResource(R.drawable.back_dark_grey_with_border_bottom);
             }
-            TextView tvPoints = (TextView) rowView.findViewById(R.id.text_player_points) ;
-            tvPoints.setText(rankingEntry.getPoints());
+            TextView tvPoints = (TextView) playerCardView.findViewById(R.id.player_card_points) ;
+            tvPoints.setText(rankingEntry.getPoints() + " P.");
 
-            llTable.addView(rowView);
+            glPlayerContainer.addView(playerCardView, glPlayerContainer.getChildCount());
         }
     }
 }
