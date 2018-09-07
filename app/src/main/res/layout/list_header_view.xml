@@ -28,6 +28,7 @@
         android:paddingEnd="?android:attr/expandableListPreferredItemPaddingLeft"
         android:textStyle="bold"
         android:textSize="12sp"
+        android:textColor="#f0f0f0"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"/>
 

@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fafafa">
+    android:background="#1b1b1b">
 
     <TextView
         android:id="@+id/text_game_day"
@@ -12,7 +12,7 @@
         android:layout_marginBottom="5dp"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:textColor="#1b1b1b"/>
+        android:textColor="#f0f0f0"/>
 
     <TableLayout
         android:id="@+id/table_predictions_for_game_root"

@@ -89,7 +89,7 @@ public class AllPredictionsBeforeSeasonActivity extends AppCompatActivity {
 
         if(!teamName.equals("")){
             if(teamName.equals(prediction.getTeamprefix())){
-                tvPlayerSelection.setTextColor(Color.parseColor("#013369"));
+                tvPlayerSelection.setTextColor(Color.parseColor("#d50a0a"));
             }
         }
 

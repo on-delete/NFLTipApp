@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <LinearLayout
         android:id="@+id/linear_subtable_nfc_east"
@@ -18,7 +19,8 @@
             android:paddingBottom="5dp"
             android:text="@string/nfc_east"
             android:textSize="14sp"
-            android:background="#D8D8D8"/>
+            android:textColor="#b2b2b2"
+            android:background="#1b1b1b"/>
     </LinearLayout>
 
     <LinearLayout
@@ -36,7 +38,8 @@
             android:paddingBottom="5dp"
             android:text="@string/nfc_north"
             android:textSize="14sp"
-            android:background="#D8D8D8"/>
+            android:textColor="#b2b2b2"
+            android:background="#1b1b1b"/>
     </LinearLayout>
 
     <LinearLayout
@@ -54,7 +57,8 @@
             android:paddingBottom="5dp"
             android:text="@string/nfc_south"
             android:textSize="14sp"
-            android:background="#D8D8D8"/>
+            android:textColor="#b2b2b2"
+            android:background="#1b1b1b"/>
     </LinearLayout>
 
     <LinearLayout
@@ -72,7 +76,8 @@
             android:paddingBottom="5dp"
             android:text="@string/nfc_west"
             android:textSize="14sp"
-            android:background="#D8D8D8"/>
+            android:textColor="#b2b2b2"
+            android:background="#1b1b1b"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -17,8 +17,8 @@ import com.andre.nfltipapp.DataService;
 import com.andre.nfltipapp.DataUpdatedListener;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.model.Data;
-import com.andre.nfltipapp.tabview.fragments.model.PredictionsForWeek;
 import com.andre.nfltipapp.tabview.fragments.model.PredictionBeforeSeason;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionsForWeek;
 
 import java.util.List;
 

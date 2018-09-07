@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:paddingEnd="20dp"
     android:paddingStart="20dp"
-    android:paddingTop="20dp">
+    android:paddingTop="20dp"
+    android:background="#1b1b1b">
 
     <TextView
         android:layout_width="match_parent"
@@ -13,7 +14,7 @@
         android:paddingEnd="5dp"
         android:paddingStart="5dp"
         android:text="@string/prognosen"
-        android:textColor="#3c3c3c"
+        android:textColor="#f0f0f0"
         android:textSize="16sp" />
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -27,9 +28,9 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:groupIndicator="@null"
-            android:divider="#fafafa"
+            android:divider="#1b1b1b"
             android:dividerHeight="5dp"
-            android:childDivider="#fafafa"
+            android:childDivider="#1b1b1b"
             android:background="@drawable/back_dark_grey"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>

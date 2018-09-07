@@ -8,10 +8,10 @@
         <stroke
             android:width="0.5dp"
             android:color="@android:color/black" />
-        <solid android:color="#e1e1e1" />
+        <solid android:color="#3c3c3c" />
         <stroke
             android:width="10dp"
-            android:color="#013369" />
+            android:color="#d50a0a" />
     </shape>
 </item>
 </layer-list>

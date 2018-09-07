@@ -15,13 +15,13 @@ import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
 import com.andre.nfltipapp.R;
-import com.andre.nfltipapp.rest.Api;
-import com.andre.nfltipapp.rest.ApiInterface;
 import com.andre.nfltipapp.loginregistryview.model.NameExistRequest;
 import com.andre.nfltipapp.loginregistryview.model.NameExistResponse;
 import com.andre.nfltipapp.loginregistryview.model.RegisterRequest;
 import com.andre.nfltipapp.loginregistryview.model.RegisterResponse;
 import com.andre.nfltipapp.loginregistryview.model.User;
+import com.andre.nfltipapp.rest.Api;
+import com.andre.nfltipapp.rest.ApiInterface;
 
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -3,8 +3,8 @@ package com.andre.nfltipapp.loginregistryview;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.andre.nfltipapp.R;
 

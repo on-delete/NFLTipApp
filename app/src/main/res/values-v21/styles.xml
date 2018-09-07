@@ -15,7 +15,4 @@
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
     </style>
 
-    <style name="TabLayout_Theme" parent="@style/AppTheme">
-        <item name="android:singleLine">true</item>
-    </style>
 </resources>

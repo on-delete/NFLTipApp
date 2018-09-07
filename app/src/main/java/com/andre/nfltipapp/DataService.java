@@ -43,7 +43,7 @@ public class DataService implements Parcelable{
     DataService() {
     }
 
-    public DataService(Parcel parcel){
+    private DataService(Parcel parcel){
         this.data = parcel.readParcelable(Data.class.getClassLoader());
 
         this.userId = parcel.readString();

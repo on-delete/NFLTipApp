@@ -27,14 +27,14 @@
                     android:id="@+id/text_team_city_away"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#f0f0f0"
                     android:textSize="12sp"/>
 
                 <TextView
                     android:id="@+id/text_team_name_away"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#f0f0f0"
                     android:textSize="14sp"/>
 
             </LinearLayout>
@@ -44,7 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:textColor="#FFFFFF"/>
+                android:textColor="#f0f0f0"/>
 
         </LinearLayout>
 
@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:textColor="#FFFFFF"/>
+                android:textColor="#f0f0f0"/>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -78,14 +78,14 @@
                     android:id="@+id/text_team_city_home"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#f0f0f0"
                     android:textSize="12sp"/>
 
                 <TextView
                     android:id="@+id/text_team_name_home"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#f0f0f0"
                     android:textSize="14sp"/>
 
             </LinearLayout>

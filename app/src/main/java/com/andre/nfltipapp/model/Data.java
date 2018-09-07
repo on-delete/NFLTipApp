@@ -3,8 +3,8 @@ package com.andre.nfltipapp.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.andre.nfltipapp.tabview.fragments.model.PredictionsForWeek;
 import com.andre.nfltipapp.tabview.fragments.model.PredictionBeforeSeason;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionsForWeek;
 import com.andre.nfltipapp.tabview.fragments.model.Ranking;
 import com.andre.nfltipapp.tabview.fragments.standingssection.model.Standing;
 

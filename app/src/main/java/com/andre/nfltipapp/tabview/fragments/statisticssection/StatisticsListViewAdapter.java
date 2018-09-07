@@ -15,20 +15,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.andre.nfltipapp.Constants;
+import com.andre.nfltipapp.Constants.PREDICTION_TYPE;
 import com.andre.nfltipapp.R;
 import com.andre.nfltipapp.Utils;
 import com.andre.nfltipapp.drawable.PredictionsTeamBackground;
 import com.andre.nfltipapp.rest.Api;
-import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonRequest;
-import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonResponse;
-import com.andre.nfltipapp.tabview.fragments.model.PredictionBeforeSeason;
+import com.andre.nfltipapp.rest.ApiInterface;
+import com.andre.nfltipapp.tabview.fragments.AllPredictionsBeforeSeasonActivity;
 import com.andre.nfltipapp.tabview.fragments.AllPredictionsForGameActivity;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsRequest;
 import com.andre.nfltipapp.tabview.fragments.model.AllPredictionsResponse;
 import com.andre.nfltipapp.tabview.fragments.model.GamePrediction;
+import com.andre.nfltipapp.tabview.fragments.model.PredictionBeforeSeason;
 import com.andre.nfltipapp.tabview.fragments.model.PredictionsForWeek;
-import com.andre.nfltipapp.rest.ApiInterface;
-import com.andre.nfltipapp.tabview.fragments.AllPredictionsBeforeSeasonActivity;
+import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonRequest;
+import com.andre.nfltipapp.tabview.fragments.statisticssection.model.AllPredictionsBeforeSeasonResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,8 +38,6 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-
-import com.andre.nfltipapp.Constants.PREDICTION_TYPE;
 
 class StatisticsListViewAdapter extends BaseExpandableListAdapter {
 
@@ -292,13 +291,13 @@ class StatisticsListViewAdapter extends BaseExpandableListAdapter {
         ImageView ivListHeaderImage = (ImageView) convertView.findViewById(R.id.image_list_header);
 
         if(listTitle.equals(Constants.PREDICTION_BEFORE_SEASON)) {
-            convertView.setBackgroundColor(Color.parseColor("#013369"));
+            convertView.setBackgroundColor(Color.parseColor("#d50a0a"));
             llPredictionListHeader.setTextColor(Color.parseColor("#f0f0f0"));
             ivListHeaderImage.setBackgroundResource(R.drawable.stern);
         } else {
             convertView.setBackgroundResource(R.drawable.back_dark_grey);
-            llPredictionListHeader.setTextColor(Color.parseColor("#3c3c3c"));
-            ivListHeaderImage.setBackgroundResource(R.drawable.kalender_dark);
+            llPredictionListHeader.setTextColor(Color.parseColor("#f0f0f0"));
+            ivListHeaderImage.setBackgroundResource(R.drawable.kalender);
         }
 
         llPredictionListHeader.setText(listTitle);

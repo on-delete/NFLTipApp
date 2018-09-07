@@ -1,11 +1,9 @@
 package com.andre.nfltipapp.tabview.fragments;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,7 +15,6 @@ import com.andre.nfltipapp.tabview.fragments.model.GamePrediction;
 import com.andre.nfltipapp.tabview.fragments.model.GamePredictionStatistic;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class AllPredictionsForGameActivity extends AppCompatActivity {
 
@@ -45,18 +42,18 @@ public class AllPredictionsForGameActivity extends AppCompatActivity {
         tvTeamNameHome.setText(gamePrediction.getHometeam());
 
         if(gamePrediction.getAwaypoints() > gamePrediction.getHomepoints()){
-            tvTeamNameAway.setTextColor(Color.parseColor("#013369"));
+            tvTeamNameAway.setTextColor(Color.parseColor("#d50a0a"));
         }
         else if (gamePrediction.getAwaypoints() < gamePrediction.getHomepoints()){
-            tvTeamNameHome.setTextColor(Color.parseColor("#013369"));
+            tvTeamNameHome.setTextColor(Color.parseColor("#d50a0a"));
         }
 
         for(GamePredictionStatistic prediction : predictionList){
-            initView(prediction, gamePrediction, userId);
+            initView(prediction, userId);
         }
     }
 
-    private View initView (GamePredictionStatistic prediction, GamePrediction gamePrediction, String userId){
+    private void initView (GamePredictionStatistic prediction, String userId){
         View rowView = getLayoutInflater().inflate(R.layout.statistic_prediction_for_game_table_row, null);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -68,22 +65,20 @@ public class AllPredictionsForGameActivity extends AppCompatActivity {
             rowView.setBackgroundResource(R.drawable.back_dark_grey_with_left_bottom);
         }
 
-        TextView tvName = (TextView) rowView.findViewById(R.id.text_player_name) ;
+        TextView tvName = rowView.findViewById(R.id.text_player_name);
         tvName.setText(prediction.getUsername());
 
-        ImageView ivSternAway = (ImageView) rowView.findViewById(R.id.image_stern_away);
-        ImageView ivSternHome = (ImageView) rowView.findViewById(R.id.image_stern_home);
+        ImageView ivSternAway = rowView.findViewById(R.id.image_stern_away);
+        ImageView ivSternHome = rowView.findViewById(R.id.image_stern_home);
 
         if(prediction.getPredicted()==1) {
             if (prediction.getHometeampredicted() == 1) {
-                ivSternHome.setBackgroundResource(R.drawable.stern_blau);
+                ivSternHome.setBackgroundResource(R.drawable.stern_rot);
             } else {
-                ivSternAway.setBackgroundResource(R.drawable.stern_blau);
+                ivSternAway.setBackgroundResource(R.drawable.stern_rot);
             }
         }
 
         this.llAllPredictionsTable.addView(rowView);
-
-        return rowView;
     }
 }

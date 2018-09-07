@@ -18,7 +18,8 @@
             android:paddingBottom="5dp"
             android:text="@string/afc_east"
             android:textSize="14sp"
-            android:background="#D8D8D8"/>
+            android:textColor="#b2b2b2"
+            android:background="#1b1b1b"/>
     </LinearLayout>
 
     <LinearLayout
@@ -36,7 +37,8 @@
             android:paddingBottom="5dp"
             android:text="@string/afc_north"
             android:textSize="14sp"
-            android:background="#D8D8D8"/>
+            android:textColor="#b2b2b2"
+            android:background="#1b1b1b"/>
     </LinearLayout>
 
     <LinearLayout
@@ -54,7 +56,8 @@
             android:paddingBottom="5dp"
             android:text="@string/afc_south"
             android:textSize="14sp"
-            android:background="#D8D8D8"/>
+            android:textColor="#b2b2b2"
+            android:background="#1b1b1b"/>
     </LinearLayout>
 
     <LinearLayout
@@ -72,7 +75,8 @@
             android:paddingBottom="5dp"
             android:text="@string/afc_west"
             android:textSize="14sp"
-            android:background="#D8D8D8"/>
+            android:textColor="#b2b2b2"
+            android:background="#1b1b1b"/>
     </LinearLayout>
 
 </LinearLayout>

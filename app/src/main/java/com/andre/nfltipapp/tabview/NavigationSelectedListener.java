@@ -10,6 +10,7 @@ import android.view.MenuItem;
 
 import com.andre.nfltipapp.DataService;
 import com.andre.nfltipapp.R;
+import com.andre.nfltipapp.tabview.fragments.DashboardFragment;
 import com.andre.nfltipapp.tabview.fragments.RankingSectionFragment;
 import com.andre.nfltipapp.tabview.fragments.predictionssection.PredictionSectionFragment;
 import com.andre.nfltipapp.tabview.fragments.standingssection.StandingsSectionFragment;
@@ -29,8 +30,16 @@ public class NavigationSelectedListener implements BottomNavigationView.OnNaviga
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Fragment selectedFragment = null;
+        Fragment selectedFragment;
         switch (item.getItemId()) {
+            case R.id.navigation_dashboard:
+                selectedFragment = fm.findFragmentByTag("dashboard");
+                    if(selectedFragment == null) {
+                    selectedFragment = new DashboardFragment();
+                    selectedFragment.setArguments(bundle);
+                }
+                setFragment(selectedFragment, "dashboard");
+                return true;
             case R.id.navigation_standings:
                 selectedFragment = fm.findFragmentByTag("standings");
                 if(selectedFragment == null) {
